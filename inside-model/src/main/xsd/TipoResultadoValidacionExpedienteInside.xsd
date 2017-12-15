@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:insideexpvalidacionres="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/validacion/expediente-e/resultados"
+xmlns:insideexpvalidacion="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/validacion/expediente-e"
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/validacion/expediente-e/resultados" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/validacion/expediente-e" schemaLocation="TipoExpedienteValidacionInside.xsd"/> 
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">RESULTADO DE VALIDACIÓN DE UN EXPEDIENTE ELECTRÓNICO EN FORMATO ENI (v1.0)</xsd:documentation>
+	</xsd:annotation>		
+	
+	<xsd:element name="TipoResultadoValidacionExpedienteInside" type="insideexpvalidacionres:TipoResultadoValidacionExpedienteInside"/>
+	
+	<xsd:complexType name="TipoResultadoValidacionExpedienteInside">
+		<xsd:sequence>
+			<xsd:element name="validacionDetalle"  type="insideexpvalidacionres:TipoResultadoValidacionDetalleExpedienteInside" minOccurs="1" maxOccurs="unbounded"/>									
+		</xsd:sequence>
+	</xsd:complexType>	
+	
+	<xsd:complexType name="TipoResultadoValidacionDetalleExpedienteInside">
+		<xsd:sequence>
+			<xsd:element name="tipoValidacion" type="insideexpvalidacion:TipoOpcionValidacionExpediente"/>
+			<xsd:element name="resultadoValidacion" type="xsd:boolean"/>
+			<xsd:element name="detalleValidacion" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

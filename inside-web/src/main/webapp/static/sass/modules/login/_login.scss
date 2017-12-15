@@ -1,0 +1,124 @@
+/**********************/
+
+/* LOGIN */
+
+.login {
+    margin: 5% auto 10%;
+    text-align: center;
+    
+    // @include ie-shadow();
+
+    /* label {
+        display: block;
+    } */
+
+    /* p {
+        @include fontSize(11px);
+    } */
+    
+    input[type="text"],
+    input[type="password"] { 
+        // width: 100%;
+        // margin: 3px 0 1em 0;
+        // width: 180px;
+        // display: block;
+        
+        // padding: 5px;
+        
+        // @include border-radius(2px);
+        
+        // border: 1px solid #CCC;
+        
+        // @include box-shadow(0px 1px 2px rgba(0,0,0,0.7) inset, 
+        //                     0px 1px 1px rgba(255,255,255,0.3));
+    }
+
+    input[type="text"]:focus, 
+    #login form input[type="password"]:focus { 
+        @include box-shadow(0px 1px 2px rgba(0,0,0,0.7) inset, 
+                            0px 1px 1px rgba(255,255,255,0.3), 
+                            0 1px 12px rgba(88, 172, 196, 0.5));
+    }
+
+
+}
+
+.login-content {
+    display: inline-block;
+    
+    text-align: left;
+    
+    @include pie-clearfix();
+
+    @include background(linear-gradient(top, #f0f0f0 0%,#d8d8d8 100%));
+    
+    @include border-radius(5px);
+    
+    @include box-shadow(0 1px 2px rgba(0, 0, 0, 0.6), 
+                        0 1px 1px rgba(255, 255, 255, 0.75) inset);
+    
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        min-width: $login-min-width;
+    }
+
+    // background: #F0F0F0;
+    
+    /* .error-box {
+        padding: 12px 10px 10px 50px;
+        margin: 2em 2px 0 2px;
+        min-height: 18px;
+
+        color: #666;
+        border: 1px solid #D6D6D6;  
+        background: transparent url('images/boxes_error_24.png') no-repeat 10px center;
+        
+        border-color: #FF8F8F;
+        border-width: 1px 0;
+        
+        @include border-radius(0);
+        
+        @include box-shadow(0 1px 0px rgba(255,255,255,0.5) inset, 
+                            0 1px 0px rgba(255,255,255,0.5))
+    } */
+
+    /* &.error {
+        display: block;
+        
+        -moz-animation-name: shake;
+        -moz-animation-duration: .35s;
+        -moz-animation-iteration-count: 1;
+        -moz-animation-timing-function: ease;
+        -moz-animation-direction: alternate;
+        -moz-animation-delay: 0.7s;
+        
+        -webkit-animation-name: shake;
+        -webkit-animation-duration: .35s;
+        -webkit-animation-iteration-count: 1;
+        -webkit-animation-timing-function: ease;
+        -webkit-animation-direction: alternate;
+        -webkit-animation-delay: 0.7s;
+    } */
+
+}
+
+.login-column {
+    padding: 10px 20px;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+        max-width: $login-col-width;
+        padding: 30px;
+    }
+}
+
+.login-title {
+    padding-top: 0;
+    margin-bottom: 1em;
+    
+    color: #777;
+    // font-size: 1.167em;
+    font-weight: $login-title-fontweight;
+    
+    text-shadow: 0 1px 0 rgba(255,255,255,0.9);
+}

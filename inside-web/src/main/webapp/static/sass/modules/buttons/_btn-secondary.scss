@@ -1,0 +1,61 @@
+// Not optimized!
+/* Simbutton secondary */
+
+.secondary {
+    @extend .simbutton;
+    
+    color: $btnsecondary-font-color;
+    font-weight: $btnsecondary-font-weight;
+    line-height: emCalc($btnsecondary-line-height);
+
+    color: $btnsecondary-font-color;
+    @include fontSize($btnsecondary-font-size);
+    font-weight: $btnsecondary-font-weight;
+    line-height: emCalc($btnsecondary-line-height);
+    text-shadow: $btnsecondary-text-shadow;
+
+    border-style: $btnsecondary-border-style;
+    border-width: $btnsecondary-border-width;
+    border-color: $btnsecondary-border-color-leg;
+    border-color: $btnsecondary-border-color;
+
+    cursor: pointer;
+
+    @include border-radius($btnsecondary-border-radius);
+
+    @include box-shadow($btnsecondary-box-shadow);
+    @include background($btnsecondary-bg);
+
+    &:link,
+    &:visited {
+        color: $btnsecondary-font-color;
+        /* font-weight: $btnsecondary-font-weight;
+        line-height: emCalc($btnsecondary-line-height);
+
+        color: $btnsecondary-font-color;
+        @include fontSize($btnsecondary-font-size);
+        font-weight: $btnsecondary-font-weight;
+        line-height: emCalc($btnsecondary-line-height);
+        text-shadow: $btnsecondary-text-shadow;
+
+        border-style: $btnsecondary-border-style;
+        border-width: $btnsecondary-border-width;
+        border-color: $btnsecondary-border-color-leg;
+        border-color: $btnsecondary-border-color;
+
+        @include border-radius($btnsecondary-border-radius);
+
+        @include box-shadow($btnsecondary-box-shadow);
+        @include background($btnsecondary-bg); */
+    }
+
+    &:hover,
+    &:focus {
+        @include background($btnsecondary-hover-bg);
+    }
+
+    &:active {
+        @include box-shadow($btnsecondary-active-box-shadow);
+        @include background($btnsecondary-active-bg);
+    }
+}

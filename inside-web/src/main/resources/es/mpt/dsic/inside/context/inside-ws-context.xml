@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<beans 
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd 
+                        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="es.mpt.dsic.inside, es.mpt.dsic.inside.remisionnube.*" />
+	
+	<import resource="classpath:es/mpt/dsic/loadTables/context/loadTables-context.xml" />
+	
+	<import resource="quartz-temporalData.xml" />
+	
+	<import resource="classpath:es/mpt/dsic/inside/context/inside-service-context.xml" />
+	
+	<import resource="classpath:es/mpt/dsic/justicia/context/puntoUnicoJusticia.xml" />
+	
+	<bean id="PuntoUnicoRemisionNubeService" class="es.mpt.dsic.inside.remisionnube.service.impl.PuntoUnicoRemisionNubeServiceImpl">
+ 	</bean>
+	
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+	
+	<bean id="validationService" class="es.mpt.dsic.inside.ws.validation.impl.InsideValidationDataServiceImpl"/>
+
+	<import resource="inside-ws-namespaces-bindings.xml"/>
+	<import resource="locale.xml"/>
+	
+	
+	<!-- seguridad ws -->
+	<import
+		resource="classpath:es/mpt/dsic/inside/context/inside-ws-security-context.xml" />
+	<context:property-placeholder location="file:${config.path}/ws-security.properties"
+											ignore-unresolvable="true"/>
+ 
+ 	<!-- Inside credenciales en body -->
+	<jaxws:endpoint id="insidelWs" 
+					address="/InsideService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideCredentialWebServiceImpl">
+			</bean>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="soapAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>			
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/BusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideInfo.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideInfo.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInsideConDocumentos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaBusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoAltaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>		
+	</jaxws:endpoint>
+	
+	<!-- Inside MTOM credential -->
+	<jaxws:endpoint id="insideMtomWs" 
+					address="/InsideMtomService">
+			<jaxws:implementor>
+				<bean class="es.mpt.dsic.inside.ws.service.impl.InsideCredentialMtomWebServiceImpl"/>
+			</jaxws:implementor>
+			<jaxws:features>
+				<bean class="org.apache.cxf.feature.LoggingFeature" />
+			</jaxws:features>
+			<jaxws:properties>
+				<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+				<entry key="mtom-enabled" value="${mtom-enabled}"/>	
+			</jaxws:properties>
+			<jaxws:inInterceptors>
+				<ref bean="soapAuthenticationInterceptor"/>
+			</jaxws:inInterceptors>
+			<jaxws:dataBinding>			
+				<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+					<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+				</bean>
+			</jaxws:dataBinding>
+			<jaxws:schemaLocations>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEniMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoAltaInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInsideMtom.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideInfo.xsd</jaxws:schemaLocation>	
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideInfo.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+				<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			</jaxws:schemaLocations>
+	</jaxws:endpoint>
+	
+	<!-- Inside username token -->
+	<jaxws:endpoint id="insideUserTokenWs" 
+					address="/InsideUserTokenService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideUserTokenWebServiceImpl"/>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+			<entry key="ws-security.ut.validator">
+        		<ref bean="customUserTokenValidator"/>
+    		</entry>
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JUserTokenInInterceptor"/>
+			<ref bean="userTokenAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>			
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/BusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideInfo.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideInfo.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInsideConDocumentos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaBusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoAltaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaConsultaEnvioJusticiaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaPdfExpedienteInside.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>		
+	</jaxws:endpoint>
+	
+	<!-- Inside Mtom username token -->
+	<jaxws:endpoint id="insideUserTokenMtomWs" 
+				address="/InsideUserTokenMtomService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideUserTokenMtomWebServiceImpl"/>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="mtom-enabled" value="${mtom-enabled}"/>	
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+			<entry key="ws-security.ut.validator">
+        		<ref bean="customUserTokenValidator"/>
+    		</entry>
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JUserTokenInInterceptor"/>
+			<ref bean="userTokenAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>			
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEniMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoAltaInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideInfo.xsd</jaxws:schemaLocation>	
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideInfo.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>
+	</jaxws:endpoint>
+	
+	<!-- Inside certificado -->
+	<jaxws:endpoint id="insideCertificateWs" 
+					address="/InsideCertificateService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideCertificateWebServiceImpl">
+			</bean>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JCertificateInInterceptor"/>
+			<ref bean="certificateAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>			
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/BusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideInfo.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideInfo.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInsideConDocumentos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteInsideMetadatos.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaBusquedaMetadatosInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoAltaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>	
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaPdfExpedienteInside.xsd</jaxws:schemaLocation>			
+		</jaxws:schemaLocations>		
+	</jaxws:endpoint>
+	
+	<!-- Admin -->
+	<jaxws:endpoint id="adminWs" 
+				address="/AdminService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.AdminWebServiceImpl"/>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JCertificateInInterceptor"/>
+			<ref bean="certificateAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>			
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding"/>
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/UsuarioInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/AplicacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/UnidadInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/UnidadAplicacionEeutilInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/NumeroProcedimientoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/EstructuraCarpetaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/SolicitudAccesoExpAppUrl.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaEnvioJusticiaInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/FilterPageRequest.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>
+	</jaxws:endpoint>
+	
+	<!-- GInside User Name Token -->
+	<jaxws:endpoint id="ginsideUserTokenWs" address="/GInsideUserTokenService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.GInsideUserTokenWebServiceImpl">
+			</bean>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+			<entry key="ws-security.ut.validator">
+        		<ref bean="customUserTokenValidator"/>
+    		</entry>
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JUserTokenInInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding" />
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInsideWS.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInsideConMAdicionales.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInsideConMAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>
+	</jaxws:endpoint>
+
+	<!-- GInside username token Mtom -->
+	<jaxws:endpoint id="ginsideUserTokenMtomWs" address="/GInsideUserTokenMtomService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.GInsideUserTokenMtomWebServiceImpl">
+			</bean>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="mtom-enabled" value="${mtom-enabled}"/>	
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+			<entry key="ws-security.ut.validator">
+        		<ref bean="customUserTokenValidator"/>
+    		</entry>
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JUserTokenInInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="insideMtom-ws-namespaces-binding" />
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInsideWS.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteValidacionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInsideConMAdicionales.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoValidacionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInsideConMAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEniMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInsideMtom.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniMtom.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>
+	</jaxws:endpoint>
+	
+	
+	<!-- GInside Certificado -->
+	<jaxws:endpoint id="ginsideCertificateWs" address="/GInsideCertificateService">
+		<jaxws:implementor>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.GInsideCertificateWebServiceImpl">
+			</bean>
+		</jaxws:implementor>
+		<jaxws:features>
+			<bean class="org.apache.cxf.feature.LoggingFeature" />
+		</jaxws:features>
+		<jaxws:properties>
+			<entry key="schema-validation-enabled" value="${schema-validation-enabled}" />
+			<entry key="ws-security.enable.nonce.cache" value="${ws-security.enable.nonce.cache}" />
+			<entry key="ws-security.enable.timestamp.cache" value="${ws-security.enable.timestamp.cache}" />
+		</jaxws:properties>
+		<jaxws:inInterceptors>
+			<ref bean="wSS4JCertificateInInterceptor"/>
+			<ref bean="certificateAuthenticationInterceptor"/>
+		</jaxws:inInterceptors>
+		<jaxws:dataBinding>
+			<bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+				<property name="namespaceMap" ref="inside-ws-namespaces-binding" />
+			</bean>
+		</jaxws:dataBinding>
+		<jaxws:schemaLocations>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSCredentialInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/WSErrorInside.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ContenidoDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteConversionInsideWS.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoExpedienteInsideConMAdicionales.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/firmasEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/xmldsig-core-schema.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceContenidoExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/IndiceExpedienteEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosDocumentoEni.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/MetadatosExpedienteEni.xsd</jaxws:schemaLocation>			
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoConversionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoValidacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoInsideConMAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionDocumentoInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoResultadoValidacionExpedienteInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
+			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
+		</jaxws:schemaLocations>
+	</jaxws:endpoint>
+	
+</beans>

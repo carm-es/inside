@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorator="common/inside_layout">
+
+<head>
+    <!-- Styles -->  
+    <link th:href="|${#httpServletRequest.getContextPath()}/css/indice.css?v=${session.versionNumber}|" rel="stylesheet" media="screen" />
+          
+    <!-- Scripts -->  
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/generarExpediente.js?v=${session.versionNumber}|"></script>
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/indice.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/metadatos.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/moxie.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/plupload.dev.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/i18n/es.js?v=${session.versionNumber}|"></script>
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/token.js?v=${session.versionNumber}|"></script>
+    <!-- Mini applet afirma -->
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/applet-firma/miniafirma1.5/constantes.js?v=${session.versionNumber}|"></script>
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/applet-firma/miniafirma1.5/miniapplet.js?v=${session.versionNumber}|"></script>
+    
+    <script>
+    $(document).ready(function() {	
+    	configurarPlUploadCreateDoc();
+    });
+    </script>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+    <div class="mf-window-header">
+        <div class="mf-window-header--hgroup">
+       	    <nav class="mf-breadcrumb" role="navigation">
+                <ol class="mf-breadcrumb--menu">
+                    <li class="mf-breadcrumb--item"><a href="principal" th:text="#{layout.menu.option.inicio}"></a></li>
+					<li class="mf-breadcrumb--item"><a href="expedientesAlmacenados" th:text="#{generadorExpedientes.almacenados}"></a></li>
+                </ol>
+            </nav>
+            <h3 class="mf-window-header--title" th:utext="#{editarExpediente.tittle}"></h3>
+        </div>
+        <ul class="mf-window-toolbar">
+            <li class="mf-window-toolbar--tool" id="button_guardar" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                <a href="#!" th:onclick="'updateExpedient(&quot;' + #{generarExpediente.guardar.mensaje} + '&quot;)'">
+                    <span class="mf-icon mf-icon-save2"></span>
+                    <span th:text="#{generarExpediente.actualizar}"></span>
+                </a>
+            </li>
+            <li class="mf-window-toolbar--tool">
+                <a style="cursor:pointer" onclick="showAyudaDialog()">
+                    <span class="mf-icon mf-icon-globe-help"></span>
+                    <span th:text="#{generarExpediente.ayuda}"></span>
+                </a>
+            </li>
+        </ul>
+        <ul class="mf-window-toolbar"  th:fragment="actionButtons" id="actionButtons">
+            <li class="mf-window-toolbar--tool">
+	            <a href="#!" onclick="descargarExpedienteCompleto()" th:title="#{generarExpediente.descargarEni.completo}">
+	                <span class="mf-icon mf-icon-doc-download-justify"></span>
+	                <span th:text="#{generarExpediente.descargarEni.completo}"></span>
+	            </a>
+            </li>
+            <li class="mf-window-toolbar--tool">
+	            <a href="#!" onclick="descargarExpedienteCompletoFisico()" th:title="#{generarExpediente.descargarEni.fisico}">
+	                <span class="mf-icon mf-icon-doc-download"></span>
+	                <span th:text="#{generarExpediente.descargarEni.fisico}"></span>
+	            </a>
+            </li>            
+            <li class="mf-window-toolbar--tool">
+	            <a href="#!" onclick="descargarExpediente()" th:title="#{generarExpediente.descargarEni.title}">
+	                <span class="mf-icon mf-icon-doc-xml"></span>
+	                <span th:text="#{generarExpediente.descargarEni}"></span>
+	            </a>
+            </li>
+                       
+             <li class="mf-window-toolbar--tool">
+                <a href="#!" onclick="verContenido()" th:title="#{generarExpediente.verContenido.title}">
+                    <span class="mf-icon mf-icon-doc-download"></span>
+                    <span th:text="#{generarExpediente.verContenido}"></span>
+                </a>
+            </li>
+        </ul>
+        <ul class="mf-window-toolbar">
+        	<li class="mf-window-toolbar--tool" th:if="${rastroExpediente}">
+				<a href="volverVistasAsociadas">
+					<span class="mf-icon mf-icon-arrow3-back"></span> 
+					<span th:text="#{vistasAsociadas.listado}"></span>
+				</a>
+			</li>
+			<li class="mf-window-toolbar--tool" th:if="${vistasAsociadas}">
+	            <a href="#!" onclick="cargarVistasExpediente()" th:title="#{editarExpediente.vistasAsociadas.title}">
+	                <span class="mf-icon mf-icon-doc-list"></span>
+	                <span th:text="#{editarExpediente.vistasAsociadas.title}"></span>
+	            </a>
+            </li>
+        </ul>
+        <ul class="mf-window-toolbar">
+        	<li class="mf-window-toolbar--tool">
+					<a href="#!" onclick="backStored()" th:title="#{generarDocumento.atras}"> 
+						<span class="mf-icon mf-icon-arrow3-back"></span> 
+						<span th:text="#{generarDocumento.atras}"></span>
+					</a>
+			</li>
+        </ul> 
+    </div>
+            
+    <div id="contentData">
+		<form id="backStoredExpForm" th:fragment="backStoredExpForm" th:action="@{/expedientesAlmacenados}" method="get"></form>
+        <form id="descargarExpedienteEniCompletoForm" th:fragment="descargarExpedienteEniCompletoForm" th:action="@{/descargarExpedienteEniCompleto}" method="post">
+            <input type="hidden" name="contenido" id="contenido" th:value="${expedienteEniConvert}"/>
+            <input type="hidden" name="identificador" id="identificador" th:value="${expedienteMetadatos.expediente.metadatosExp.identificador}"/>
+            <input type="hidden" name="viewName" id="viewName" value="expediente/generarExpediente"/>
+        </form>     
+        <form id="descargarExpedienteEniCompletoFisicoForm" th:fragment="descargarExpedienteEniCompletoFisicoForm" th:action="@{/descargarExpedienteEniCompletoFisico}" method="post">
+            <input type="hidden" name="contenido" id="contenido" th:value="${expedienteEniConvert}"/>
+            <input type="hidden" name="identificador" id="identificador" th:value="${expedienteMetadatos.expediente.metadatosExp.identificador}"/>
+            <input type="hidden" name="viewName" id="viewName" value="expediente/generarExpediente"/>
+        </form>  
+        <form id="descargarExpedienteEniForm" th:fragment="descargarExpedienteEniForm" th:action="@{/descargarExpedienteEni}" method="post">
+            <input type="hidden" name="contenido" id="contenido" th:value="${expedienteEniConvert}"/>
+            <input type="hidden" name="identificador" id="identificador" th:value="${expedienteMetadatos.expediente.metadatosExp.identificador}"/>
+            <input type="hidden" name="viewName" id="viewName" value="expediente/generarExpediente"/>
+        </form> 
+
+        <form id="verContenidoForm" th:fragment="verContenidoForm" th:action="@{/visualizarExpediente}" method="post">
+            <input type="hidden" name="visualizar" id="visualizar" th:value="${visualizar}"/>
+            <input type="hidden" name="identificador" id="identificador" th:value="${expedienteMetadatos.expediente.metadatosExp.identificador}"/>
+            <input type="hidden" name="viewName" id="viewName" value="expediente/generarExpediente"/>
+        </form> 
+        <form id="descargarDocForm" th:fragment="descargarDocForm" th:action="@{/descargarDocumentoEni}" method="post">
+            <input type="hidden" name="identificador" id="identificador"/>
+       </form>
+       <form id="descargarContenidoDocForm" th:fragment="descargarContenidoDocForm" th:action="@{/descargarContenidoDocumento}" method="post">
+            <input type="hidden" name="identificador" id="identificador"/>
+        </form>
+        <form id="volverVistasAsociadasForm" th:fragment="volverVistasAsociadasForm" th:action="@{/volverVistasAsociadas}" method="get">
+        </form>
+        <form id="cargarVistasExpedienteForm" th:fragment="cargarVistasExpedienteForm" th:action="@{/cargarVistasExpediente}" method="post">
+        	 <input type="hidden" name="identificador" id="identificador" th:value="${expedienteMetadatos.expediente.metadatosExp.identificador}"/>
+        	 <input type="hidden" name="version" id="version"  th:value="${version}"/>
+        </form>
+        <form id="redireccionaExpedientesAlmacenadosForm" th:action="@{/expedientesAlmacenados}">
+            <input type="hidden" name="textoMensajeUsuario" id="textoMensajeUsuario"/>
+            <input type="hidden" name="nivelMensajeUsuario" id="nivelMensajeUsuario"/>
+        </form>        
+        <form id="expedienteForm" th:action="@{/generarExpediente}" method="post" class="" th:object="${expedienteMetadatos}">
+            <input type="hidden" name="contenidoExp" id="contenidoExp" th:value="${contenidoExp}"/>
+            <input type="hidden" id="viewName" name="viewName" value="expediente/generarExpediente" />
+            <input type="hidden" id="expedienteBytes" name="expedienteBytes" />
+            <input type="hidden" id="fecCapHidden" th:value="${fechaCaptura}"/>
+            <div th:fragment="metadatosEniExp">
+                <fieldset class="mf-form__stack">
+                    <legend>
+                        <span th:text="#{generarExpediente.metadatos.tittle}"></span>
+                    </legend>
+                    <div class="boxes">
+                    	<div>
+                    		<div class="fld">
+	                            <label for="identificador" class="required" th:text="#{generarExpediente.metadato.identificador}"></label> 
+	                            <input type="hidden" id="identificador" name="identificador" th:field="*{expediente.metadatosExp.identificador}" />
+	                            <input style="width:525px" disabled="disabled" type="text" th:field="*{expediente.metadatosExp.identificador}" th:title="*{expediente.metadatosExp.identificador}" />
+	                            <a class="mf-icon mf-icon-help" href="#!" th:title="#{generarExpediente.metadato.identificador.help} + '&#13;' + #{generarExpediente.metadato.identificador.help2}"></a>    
+	                        </div>
+	                    </div>
+	                    <div>    
+	                        <div class="fld">
+	                            <label for="version" th:text="#{editarExpediente.version}"></label> 
+	                            <input disabled="disabled" type="text" id="version" name="version" value="" maxlength="45" th:value="${version}" />
+	                        </div>
+	                    </div>
+	                    <div>
+							<div class="fld">
+	                            <label for="fechaVersion" th:text="#{editarExpediente.fechaVersion}"></label> 
+	                            <input disabled="disabled" type="date" id="fechaVersion" name="fechaVersion" class="mf-datepicker" title="dd/mm/aaaa" 
+	                            th:value="${#calendars.format(fechaVersion, 'yyyy-MM-dd')}" size="14" />
+	                        </div>
+                    	</div>
+                    </div>
+                    <div class="boxes">
+                    	<div>
+	                        <div class="fld" sec:authorize="!hasRole('CONSULTA_ROLE')">
+	                            <label for="clasificacion" class="required" th:text="#{generarExpediente.metadato.clasificacion}"></label> <input type="text" id="clasificacion" name="clasificacion" value="" maxlength="45" th:field="*{expediente.metadatosExp.clasificacion}" />
+	                            <a class="mf-icon mf-icon-help" href="#!" th:title="#{generarExpediente.metadato.clasificacion.help}" ></a> 
+	                        </div>
+	                        <div class="fld" sec:authorize="hasRole('CONSULTA_ROLE')">
+	                            <label for="clasificacion" class="required" th:text="#{generarExpediente.metadato.clasificacion}"></label> <input type="text" disabled="disabled" id="clasificacion" name="clasificacion" value="" maxlength="45" th:field="*{expediente.metadatosExp.clasificacion}" />
+	                            <a class="mf-icon mf-icon-help" href="#!" th:title="#{generarExpediente.metadato.clasificacion.help}" ></a> 
+	                        </div>	                        
+	                        
+	                        <div class="fld" sec:authorize="!hasRole('CONSULTA_ROLE')">
+	                            <label for="estado" th:text="#{generarExpediente.metadato.estado}"></label> 
+	                            <select id="estado" name="estado" th:field="*{expediente.metadatosExp.estado.value}">
+	                                <option th:each="estado,iterationStatus : ${estadosExpediente}" th:text="${estado.key}" th:value="${estado.value}"></option>
+	                            </select>
+	                        </div>
+	                        <div class="fld" sec:authorize="hasRole('CONSULTA_ROLE')">
+	                            <label for="estado" th:text="#{generarExpediente.metadato.estado}"></label> 
+	                            <select id="estado" name="estado" th:field="*{expediente.metadatosExp.estado.value}">
+	                                <option disabled="disabled" th:each="estado,iterationStatus : ${estadosExpediente}" th:text="${estado.key}" th:value="${estado.value}"></option>
+	                            </select>
+	                        </div>	                        
+	                   </div>
+	                   <div>
+	                        <div class="fld" sec:authorize="!hasRole('CONSULTA_ROLE')">
+	                            <label for="fechaApertura" th:text="#{generarExpediente.metadato.fechaApertura}"></label> 
+	                            <input type="date" id="fechaApertura" name="fechaApertura" class="mf-datepicker" title="dd/mm/aaaa" 
+	                            th:value="${#calendars.format(fechaApertura, 'yyyy-MM-dd')}" size="14" />
+	                        </div>
+	                        <div class="fld" sec:authorize="hasRole('CONSULTA_ROLE')">
+	                            <label for="fechaApertura" th:text="#{generarExpediente.metadato.fechaApertura}"></label> 
+	                            <input disabled="disabled"  type="date" id="fechaApertura" name="fechaApertura" class="mf-datepicker" title="dd/mm/aaaa" 
+	                            th:value="${#calendars.format(fechaApertura, 'yyyy-MM-dd')}" size="14" />
+	                        </div>	                        
+	                   </div>
+	                    
+	                    <div>
+	                        <div class="fld" sec:authorize="!hasRole('CONSULTA_ROLE')">
+	                            <label class="required" for="organos" th:text="#{generarExpediente.metadato.organos}"></label> 
+	                            <div class="input-auxbtn">
+	                                <div>
+	                                    <input type="text" class="sticked-input-right" id="organos" name="organos" maxlength="50" />
+	                                    <button type="button" name="button" th:value="#{button.anadir}" th:utext="#{generarExpediente.metadato.anadir.button}" onclick="addOrganoExp()"></button>
+	                                </div>                                
+	                                <ul id="listOrganos">
+	                                	<li th:each="key, iterationStatus : *{expediente.metadatosExp.organo}" th:id="${'divOrgano_'+__${iterationStatus.index}__}">
+	                                    	<input type="text" class="sticked-input-right" disabled="disabled" th:field="*{expediente.metadatosExp.organo[__${iterationStatus.index}__]}"/>
+	                                    	<button th:id="${'removeOrganoButton_' + __${iterationStatus.index}__}" class="mf-icon mf-icon-cancel2" type="button" name="button" th:value="#{button.eliminar}" th:onclick="'removeOrganoExp(' + ${iterationStatus.index} + ')'"></button>
+	                               		</li> 
+	                                </ul>
+	                            </div>
+	                        </div>
+	                        <div class="fld" sec:authorize="hasRole('CONSULTA_ROLE')">
+	                            <label class="required" for="organos" th:text="#{generarExpediente.metadato.organos}"></label> 
+	                            <div class="input-auxbtn">
+	                                <div>
+	                                    <input disabled="disabled" type="text" class="sticked-input-right" id="organos" name="organos" maxlength="50" />
+	                                    <button type="button" name="button" th:value="#{button.anadir}" th:utext="#{generarExpediente.metadato.anadir.button}" onclick="addOrganoExp()"></button>
+	                                </div>                                
+	                                <ul id="listOrganos">
+	                                	<li th:each="key, iterationStatus : *{expediente.metadatosExp.organo}" th:id="${'divOrgano_'+__${iterationStatus.index}__}">
+	                                    	<input type="text" class="sticked-input-right" disabled="disabled" th:field="*{expediente.metadatosExp.organo[__${iterationStatus.index}__]}"/>
+	                                    	<button disabled="disabled" th:id="${'removeOrganoButton_' + __${iterationStatus.index}__}" class="mf-icon mf-icon-cancel2" type="button" name="button" th:value="#{button.eliminar}" th:onclick="'removeOrganoExp(' + ${iterationStatus.index} + ')'"></button>
+	                               		</li> 
+	                                </ul>
+	                            </div>
+	                        </div>	                        
+	                    </div>
+                    
+						<div>
+	                        <div class="fld" sec:authorize="!hasRole('CONSULTA_ROLE')">
+	                            <label for="interesados" th:text="#{generarExpediente.metadato.interesados}"></label> 
+	                            <div class="input-auxbtn">
+	                                <div> 
+	                                    <input  type="text"  class="sticked-input-right" id="interesados" name="interesados" maxlength="15"/>
+	                                    <button type="button" name="button" th:value="#{button.anadir}" th:utext="#{generarExpediente.metadato.anadir.button}" onclick="addInteresadoExp()"></button>   
+	                                </div>                                
+	                                <ul id="listInteresados">
+	                                	<li th:each="key, iterationStatus : *{expediente.metadatosExp.interesado}" th:id="${'divInteresado_'+__${iterationStatus.index}__}">
+	                                    	<input type="text" class="sticked-input-right" disabled="disabled" th:field="*{expediente.metadatosExp.interesado[__${iterationStatus.index}__]}"/>
+	                                    	<button th:id="${'removeInteresadoButton_' + __${iterationStatus.index}__}" class="mf-icon mf-icon-cancel2" type="button" name="button" th:value="#{button.eliminar}" th:onclick="'removeInteresadoExp(' + ${iterationStatus.index} + ')'"/>
+	                                	</li>
+	                                </ul>
+	                            </div>
+	                        </div>
+	                        <div class="fld" sec:authorize="hasRole('CONSULTA_ROLE')">
+	                            <label for="interesados" th:text="#{generarExpediente.metadato.interesados}"></label> 
+	                            <div class="input-auxbtn">
+	                                <div> 
+	                                    <input disabled="disabled"  type="text"  class="sticked-input-right" id="interesados" name="interesados" maxlength="15"/>
+	                                    <button type="button" name="button" th:value="#{button.anadir}" th:utext="#{generarExpediente.metadato.anadir.button}" onclick="addInteresadoExp()"></button>   
+	                                </div>                                
+	                                <ul id="listInteresados">
+	                                	<li th:each="key, iterationStatus : *{expediente.metadatosExp.interesado}" th:id="${'divInteresado_'+__${iterationStatus.index}__}">
+	                                    	<input type="text" class="sticked-input-right" disabled="disabled" th:field="*{expediente.metadatosExp.interesado[__${iterationStatus.index}__]}"/>
+	                                    	<button disabled="disabled" th:id="${'removeInteresadoButton_' + __${iterationStatus.index}__}" class="mf-icon mf-icon-cancel2" type="button" name="button" th:value="#{button.eliminar}" th:onclick="'removeInteresadoExp(' + ${iterationStatus.index} + ')'"/>
+	                                	</li>
+	                                </ul>
+	                            </div>
+	                        </div>	                        
+	                    </div>
+	                    </div>
+                    </fieldset>
+                    
+                    <!-- Tipo de firma -->
+               	 	<div class="fld">
+                        <label class="required"
+                            th:text="#{generarDocumento.metadato.firma}"></label>
+                        <ul class="radio-list" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                            <li>
+                                <input type="radio" name="firmaExp" value="client" id="firmaExp" />&nbsp;
+                                <label for="firma" th:text="#{generarExpediente.metadato.firma.firmaCliente}"/>
+                            </li>
+                            <li th:if="${showFirmaServer}">
+                                <input type="radio" name="firmaExp" value="server" id="firmaExp"/>&nbsp; 
+                                <label for="firma" th:text="#{generarExpediente.metadato.firma.firmaServidor}"/>
+                            </li>
+                        </ul>
+                        <ul class="radio-list" sec:authorize="hasRole('CONSULTA_ROLE')">
+                            <li>
+                                <input disabled="disabled" type="radio" name="firmaExp" value="client" id="firmaExp" />&nbsp;
+                                <label for="firma" th:text="#{generarExpediente.metadato.firma.firmaCliente}"/>
+                            </li>
+                            <li th:if="${showFirmaServer}">
+                                <input disabled="disabled" type="radio" name="firmaExp" value="server" id="firmaExp"/>&nbsp; 
+                                <label for="firma" th:text="#{generarExpediente.metadato.firma.firmaServidor}"/>
+                            </li>
+                        </ul>                        
+                        
+                    </div>
+
+                    <fieldset id="js-div-metadatos" class="mf-form__stack mf-form__inline"  sec:authorize="!hasRole('CONSULTA_ROLE')">
+                        <legend th:text="#{generarExpedienteMetadatos.metadato.adicional}"></legend>
+                            <div class="fld">
+                            	<div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalNombreNatural" th:text="#{generarDocumento.metadato.adicional.nombre.natural}"></label> 
+		                               <input type="text" id="metadatosAdicionales.metadatoAdicional100.nombre" th:value="#{generarDocumento.metadato.adicional.nombre.natural.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[100].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorNatural" th:text="#{generarDocumento.metadato.adicional.valor.natual}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional100.valor" th:value="${valorNombreNatural}"
+		                               		name="metadatosAdicionales.metadatoAdicional[100].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                      	</div>
+		                      	<div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalFechaFin" th:text="#{generarExpediente.metadato.adicional.nombre.fecha.fin}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional101.nombre" th:value="#{generarExpediente.metadato.adicional.nombre.fecha.fin.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorFechaFin" th:text="#{generarExpediente.metadato.adicional.valor.fecha.fin}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional101.valor" th:value="${valorFechaFin}" 
+		                               		th:onclick="|javascript:this.value='#{generarExpediente.metadato.adicional.valor.fecha.fin.value}'|" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                      	</div>
+	                            <div class="metadata-box">
+	                                <div class="fld">
+	                                    <label for="metadatoAdicionalNombre" th:text="#{generarDocumento.metadato.adicional.nombre}"></label> 
+	                                    <input  type="text" class="sticked-input-right" id="keyMetadatoAdicional" style="width:250px"
+	                                    name="keyMetadatoAdicional" maxlength="100"/>
+	                                </div>
+	                                <div class="fld">
+	                                    <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
+	                                    <input  type="text" class="sticked-input-right" id="valueMetadatoAdicional" style="width:200px"
+	                                    name="valueMetadatoAdicional" maxlength="100"/>
+	                                </div>
+	                                <button type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()">
+	                                    <span class="mf-icon mf-icon-circle-plus"></span>
+	                                    <span th:text="#{button.anadir}"></span>
+	                                </button>
+	                            </div>
+
+							<div id="listMetadatosAdicionalesExp">
+								<div
+									th:each="metadatoAdicional, iterationStatus : *{metadatosAdicionales.metadatoAdicional}"
+									th:id="${'divMetadatoAdicional_' + iterationStatus.index}">
+									<div class="fld">
+										<input type="text" class="sticked-input-right" style="width:250px"
+											disabled="disabled"
+											th:field="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].nombre}"
+											th:title="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].nombre}" />
+									</div>
+									<div class="fld">
+										<input type="text" class="sticked-input-right" style="width:200px"
+											disabled="disabled"
+											th:field="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].valor}"
+											th:title="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].valor}" />
+									</div>
+									<div class="fld">
+										<button class="mf-icon mf-icon-cancel2" type="button"
+											name="button" th:value="#{button.eliminar}"
+											th:id="${'removeMetadatoButton_' + iterationStatus.index}"
+											th:onclick="'removeMetadatoExp(' + ${iterationStatus.index} + ')'"></button>
+									</div>
+								</div>
+							</div>
+						</div>                  
+                    </fieldset>
+                    <fieldset id="js-div-metadatos" class="mf-form__stack mf-form__inline"  sec:authorize="hasRole('CONSULTA_ROLE')">
+                        <legend th:text="#{generarExpedienteMetadatos.metadato.adicional}"></legend>
+                            <div class="fld">
+                            	<div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalNombreNatural" th:text="#{generarDocumento.metadato.adicional.nombre.natural}"></label> 
+		                               <input disabled="disabled" type="text" id="metadatosAdicionales.metadatoAdicional100.nombre" th:value="#{generarDocumento.metadato.adicional.nombre.natural.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[100].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorNatural" th:text="#{generarDocumento.metadato.adicional.valor.natual}"></label> 
+		                               <input disabled="disabled" type="text" id="metadatosAdicionales.metadatoAdicional100.valor" th:value="${valorNombreNatural}"
+		                               		name="metadatosAdicionales.metadatoAdicional[100].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                      	</div>
+		                      	<div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalFechaFin" th:text="#{generarExpediente.metadato.adicional.nombre.fecha.fin}"></label> 
+		                               <input disabled="disabled" type="text" id="metadatosAdicionales.metadatoAdicional101.nombre" th:value="#{generarExpediente.metadato.adicional.nombre.fecha.fin.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorFechaFin" th:text="#{generarExpediente.metadato.adicional.valor.fecha.fin}"></label> 
+		                               <input disabled="disabled" type="text" id="metadatosAdicionales.metadatoAdicional101.valor" th:value="${valorFechaFin}" 
+		                               		th:onclick="|javascript:this.value='#{generarExpediente.metadato.adicional.valor.fecha.fin.value}'|" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                      	</div>
+	                            <div class="metadata-box">
+	                                <div class="fld">
+	                                    <label for="metadatoAdicionalNombre" th:text="#{generarDocumento.metadato.adicional.nombre}"></label> 
+	                                    <input disabled="disabled" type="text" class="sticked-input-right" id="keyMetadatoAdicional" style="width:250px"
+	                                    name="keyMetadatoAdicional" maxlength="100"/>
+	                                </div>
+	                                <div class="fld">
+	                                    <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
+	                                    <input disabled="disabled" type="text" class="sticked-input-right" id="valueMetadatoAdicional" style="width:200px"
+	                                    name="valueMetadatoAdicional" maxlength="100"/>
+	                                </div>
+	                                <button disabled="disabled" type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()">
+	                                    <span class="mf-icon mf-icon-circle-plus"></span>
+	                                    <span th:text="#{button.anadir}"></span>
+	                                </button>
+	                            </div>
+
+							<div id="listMetadatosAdicionalesExp">
+								<div
+									th:each="metadatoAdicional, iterationStatus : *{metadatosAdicionales.metadatoAdicional}"
+									th:id="${'divMetadatoAdicional_' + iterationStatus.index}">
+									<div class="fld">
+										<input type="text" class="sticked-input-right" style="width:250px"
+											disabled="disabled"
+											th:field="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].nombre}"
+											th:title="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].nombre}" />
+									</div>
+									<div class="fld">
+										<input type="text" class="sticked-input-right" style="width:200px"
+											disabled="disabled"
+											th:field="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].valor}"
+											th:title="*{metadatosAdicionales.metadatoAdicional[__${iterationStatus.index}__].valor}" />
+									</div>
+									<div class="fld">
+										<button class="mf-icon mf-icon-cancel2" type="button"
+											name="button" th:value="#{button.eliminar}" disabled="disabled"
+											th:id="${'removeMetadatoButton_' + iterationStatus.index}"
+											th:onclick="'removeMetadatoExp(' + ${iterationStatus.index} + ')'"></button>
+									</div>
+								</div>
+							</div>
+						</div>                  
+                    </fieldset>                    
+
+                <fieldset class="fld gallery">
+                    <legend>
+                        <span th:text="#{generarExpediente.indice.tittle}"></span>
+                    </legend>
+                    <header>
+                        <div class="actions right" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                        	<!-- Botones "crear carpeta" y "adjuntar documento ENI" -->
+                        	<a href="" class="mf-button" id="js-crear-carpeta">
+                        		<span class="mf-icon mf-icon-folder"></span>
+                        		<span class="" th:text="#{generarExpediente.button.crearCarpeta}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-crear-estructura">
+                        		<span class="mf-icon mf-icon-folder"></span>
+                        		<span class="" th:text="#{generarExpediente.button.estructuraCarpeta}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-crear-documento">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.crearDocumento}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-insertar-documento">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarDocumento}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-insertar-documentoInside">
+                        		<span class="mf-icon mf-icon-docs"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarDocumentoInside}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-create-subExpedient">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarExpedienteInside}"></span>
+                        	</a>
+                            <a href="" class="mf-button" id="js-create-subExpedientToken">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarExpedienteToken}"></span>
+                        	</a>
+                        </div>
+                        <div class="actions right" sec:authorize="hasRole('CONSULTA_ROLE')"  hidden="true">
+                        	<!-- Botones "crear carpeta" y "adjuntar documento ENI" -->
+                        	<a href="" class="mf-button" id="js-crear-carpeta">
+                        		<span class="mf-icon mf-icon-folder"></span>
+                        		<span class="" th:text="#{generarExpediente.button.crearCarpeta}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-crear-estructura">
+                        		<span class="mf-icon mf-icon-folder"></span>
+                        		<span class="" th:text="#{generarExpediente.button.estructuraCarpeta}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-crear-documento">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.crearDocumento}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-insertar-documento">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarDocumento}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-insertar-documentoInside">
+                        		<span class="mf-icon mf-icon-docs"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarDocumentoInside}"></span>
+                        	</a>
+                        	<a href="" class="mf-button" id="js-create-subExpedient">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarExpedienteInside}"></span>
+                        	</a>
+                            <a href="" class="mf-button" id="js-create-subExpedientToken">
+                        		<span class="mf-icon mf-icon-doc-plus"></span>
+                        		<span class="" th:text="#{generarExpediente.button.adjuntarExpedienteToken}"></span>
+                        	</a>
+                        </div>                        
+                    </header>
+                    <div id="js-gallery-content" class="gallery_content">
+                        <div    id="js-arbol"
+                                class="gallery_tree"
+                                data-url_carpeta_nueva="/crearCarpetaIndice" 
+                                data-url_documento_nuevo="/crearDocumentoIndice"
+                                data-url_estructura_carpeta="/crearEstructuraCarpetaIndice"  
+                                data-url_documento_inside="/crearDocumentoInside"
+                                data-url_subexpediente_nuevo="/createSubExpedient" 
+                                data-url_subexpediente_token="/createSubExpedientToken"   
+                                data-url_elemento_mover="/moverElementoIndice" 
+                                data-url_elemento_borrar="/borrarElementoIndice"
+                                data-url_elemento_ver="/visualizarContenido"
+                                data-url_carpeta_renombrar="/renombrarElementoIndice">
+							<div th:fragment="pintarIndice(hijos, idPadre, deshabilitar)" th:each="entry,iterationStatus:${hijos}" th:remove="tag">
+								<li th:if="${entry instanceof T(es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoDocumentoIndizado) and !deshabilitar}" 
+									data-tipo="documento" th:attr="data-nombre=${keyDocs.get(entry.identificadorDocumento)},data-id=${keyDocs.get(entry.identificadorDocumento)}"
+									onclick="onClickItem(event)"
+									class="js-arbol-lista-item" th:id="${'tree-node-' + entry.identificadorDocumento}" ondrop="drop2(event)" ondragover="allowDrop2(event)" ondragleave="dragleave(event)" draggable="true" ondragstart="drag(event)">
+									<div class="js-arbol-lista-item-cont g-arbol-lista-item-cont">
+										<span class="mf-icon mf-icon-doc"></span> 
+										<span class="name" th:text="${entry.id}" th:title="${entry.identificadorDocumento}"></span>
+										<div class="actions">
+											<i title="ver" class="mf-icon mf-icon-eye js-arbol-lista-item-ver" onclick="onClickVer(event)"></i>
+											<i sec:authorize="!hasRole('CONSULTA_ROLE')" title="borrar" class="mf-icon mf-icon-cancel js-arbol-lista-item-delete" onclick="onClickDelete(event)"> </i>
+										</div>
+									</div>
+									<li class="js-arbol-espacio" th:attr="data-orden=${entry.ordenDocumentoExpediente} + 1" ondrop="drop2(event)" ondragover="allowDrop2(event)" ondragleave="dragleave(event)"></li>
+								</li>
+								<li th:if="${entry instanceof T(es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoCarpetaIndizada) and !deshabilitar}" 
+									data-tipo="carpeta" th:attr="data-nombre=${entry.identificadorCarpeta},data-id=${entry.identificadorCarpeta}" 
+									onclick="onClickItem(event)"
+									class="js-arbol-lista-item" th:id="${'tree-node-' + entry.identificadorCarpeta}" ondrop="drop2(event)" ondragover="allowDrop2(event)" ondragleave="dragleave(event)" draggable="true" ondragstart="drag(event)">
+									<div class="js-arbol-lista-item-cont g-arbol-lista-item-cont is-open">
+										<span class="mf-icon mf-icon-folder js-arbol-lista-item-folder" onclick="onClickFolder(event)"></span>
+										<span class="name js-arbol-lista-item-text" th:text="${entry.id}" th:title="${entry.identificadorCarpeta}" onclick="onClickText(event)"></span>
+										<div class="actions">
+											<i sec:authorize="!hasRole('CONSULTA_ROLE')" title="borrar" class="mf-icon mf-icon-cancel js-arbol-lista-item-delete" onclick="onClickDelete(event)"> </i>
+										</div>
+									</div>
+									<div th:if="${#lists.size(entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada)}" th:remove="tag">
+										<ul class="js-arbol-lista">
+											<li class="js-arbol-espacio" data-orden="1" ondrop="drop2(event)" ondragover="allowDrop2(event)" ondragleave="dragleave(event)"></li>
+											<div th:replace="this :: pintarIndice(hijos=${entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada}, idPadre=${null}, deshabilitar=${false})" th:remove="tag" />
+										</ul>
+									</div>
+								</li>
+								<li th:if="${entry instanceof T(es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoIndiceContenido)}" 
+									data-tipo="contenido" onclick="onClickItem(event)" class="js-arbol-lista-item" draggable="true">
+									<div class="js-arbol-lista-item-cont g-arbol-lista-item-cont">
+											<span class="mf-icon mf-icon-books2" style="color:#795548"></span>
+											<span class="name" style="color:#795548" th:text="${#strings.substring(entry.id, 13 , #strings.length(entry.id))}" th:title="#{editarExpediente.vinculado} + ' ' + ${entry.id}"></span>
+									</div>
+									<div th:if="${#lists.size(entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada)}" th:remove="tag">
+										<li class="js-arbol-espacio" data-orden="1" ></li>
+										<div th:replace="this :: pintarIndice(hijos=${entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada},idPadre=${entry.id}, deshabilitar=${true})" th:remove="tag" />
+									</div>
+								</li>
+								<li th:if="${entry instanceof T(es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoDocumentoIndizado) and deshabilitar}" 
+									data-tipo="documento" th:attr="data-nombre=${keyDocs.get(entry.identificadorDocumento)},data-id=${keyDocs.get(entry.identificadorDocumento)}"
+									onclick="onClickItem(event)"
+									class="js-arbol-lista-item" th:id="${'tree-node-' + entry.identificadorDocumento}">
+									<div class="js-arbol-lista-item-cont g-arbol-lista-item-cont">
+										<span class="mf-icon mf-icon-doc" style="color:#a1887f"></span> 
+										<span class="name" style="color:#a1887f" th:text="${entry.id}" th:title="${entry.identificadorDocumento}"></span>
+										<div class="actions">
+											<i title="ver" class="mf-icon mf-icon-eye js-arbol-lista-item-ver" onclick="onClickVer(event)"></i>
+										</div>
+									</div>
+								</li>
+								<li th:if="${entry instanceof T(es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoCarpetaIndizada) and deshabilitar}" 
+									data-tipo="carpeta" th:attr="data-nombre=${entry.identificadorCarpeta},data-id=${entry.identificadorCarpeta}" 
+									onclick="onClickItem(event)"
+									class="js-arbol-lista-item" th:id="${'tree-node-' + entry.identificadorCarpeta}">
+									<div class="js-arbol-lista-item-cont g-arbol-lista-item-cont is-open">
+										<span class="mf-icon mf-icon-folder js-arbol-lista-item-folder" onclick="onClickFolder(event)" style="color:#a1887f"></span>
+										<span class="name js-arbol-lista-item-text" th:text="${entry.id}" th:title="${entry.identificadorCarpeta}" onclick="onClickText(event)" style="color:#a1887f"></span>
+									</div>
+									<div th:if="${#lists.size(entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada)}" th:remove="tag">
+										<ul class="js-arbol-lista">
+											<li class="js-arbol-espacio" data-orden="1"></li>
+											<div th:replace="this :: pintarIndice(hijos=${entry.documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada},idPadre=${idPadre}, deshabilitar=${true})" th:remove="tag" />
+										</ul>
+									</div>
+								</li>								
+							</div>
+							<ul class="js-arbol-lista">
+								<li class="js-arbol-espacio" data-orden="1" ondrop="drop2(event)" ondragover="allowDrop2(event)" ondragleave="dragleave(event)"></li>
+								<div th:replace="this :: pintarIndice(hijos=${indice}, idPadre=${null}, deshabilitar=${false})" th:remove="tag"></div>
+							</ul>
+                            <input id="js-arbol-input" class="is-hidden"/>
+                        </div>
+                        <div id="js-gallery-visor" class="gallery_visor">
+                            
+                            <div class="tr-upload-veil js-upload-veil">
+                                <span class="trad-drag-upload__title" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                                    Arrastrar y soltar un documento Eni 
+                                </span>
+                                <span class="trad-drag-upload__title" sec:authorize="hasRole('CONSULTA_ROLE')">
+                                </span>                                
+                                <table id="ul_1902476311562f8fb3e2eb7"></table>
+                            </div>
+                        </div>
+                        <div id="js-gallery-ver" class="gallery_visor hidden">
+                        	<div class="fld">
+	                        	<ul class="js-gallery-ver--lista-datos dsp_ib">
+	                                <li>ID: <span class="js-gallery-ver--lista-datos-id"></span></li>
+	                                <li>Estado Elaboración: <span class="js-gallery-ver--lista-datos-estado"></span></li>
+	                                <li>Órganos: <span class="js-gallery-ver--lista-datos-organos"></span></li>
+	                            </ul>
+	                            <div class="fld right" >
+	                            	<button id="buttondescargarContenidoDoc" th:title="#{generarDocumento.descargarArchivo.title}" class="mf-icon mf-icon-doc-download js-gallery-ver--lista-download" onclick="$('#descargarContenidoDocForm').submit();" th:value="#{button.descargar}"></button>
+                        			<button th:title="#{generarDocumento.descargarEni.title}" class="mf-icon mf-icon-arrow-download js-gallery-ver--lista-download" onclick="$('#descargarDocForm').submit();" th:value="#{button.descargar}"></button>  
+                            		<button th:title="#{button.cerrar}" class="mf-icon mf-icon-cancel js-gallery-ver--lista-cancel" th:value="#{button.cerrar}"></button> 
+                            	</div>
+                            </div>
+                                              
+
+                            <button class="mf-icon mf-icon-arrow3-back js-gallery-ver--mover-izda"></button>
+                            <iframe class="js-gallery-ver--visor"></iframe>
+                            <button class="mf-icon mf-icon-arrow3-next js-gallery-ver--mover-dcha"></button>                    
+                        </div>
+                        <div    id="init-modal-insertar-documento" 
+                                data-title="Insertar Documento" 
+                                data-modal="1" 
+                                data-draggable="0"
+                                data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento" 
+                                data-position_h="center"
+                                data-position_v="center" 
+                                class="buttonbar--btn simbutton hidden">
+                            <div>
+                                <p class="fld">
+                                    <label for="doc_fecha_incorp_expe_modal" class="required mf-field-doc" th:title="#{generarExpediente.indice.documento.tooltip.fecha_incorp_expe}"
+                                        th:text="#{generarExpediente.indice.documento.fecha_incorp_expe}"></label> 
+                                    <input
+                                        type="date" 
+                                        id="doc_fecha_incorp_expe_modal" 
+                                        name="doc_fecha_incorp_expe_modal" 
+                                        th:value="${fechaModal}"
+                                        size="14" 
+                                        class="mf-datepicker mf-field-doc js-fecha-documento" title="dd/mm/aaaa" 
+                                        onclick="superponer_datepicker();"/>                
+                                </p>                                        
+                            </div>                                  
+                            <ul class="error-list"></ul>
+                            <div class="js-timer-veil mf-veil hidden">
+                            </div>
+                        </div>   
+                        
+                        <!-- Crear documento online  -->
+                        <div id="js-gallery-createDocument" class="gallery_visor hidden new-document">
+                        	<div class="right">
+				            	<button class="mf-icon mf-icon-cancel" style="margin:4px;" onclick="closeDialogDocument()"></button> 
+				            </div>    
+							<input type="hidden" id="data-create-doc"/>
+							<div class="fld" >
+					       		<div  th:replace="documento/generarDocumento :: contenidoDocumento" ></div>
+					       	</div>
+				       	</div> 
+				       	<!-- Fin crear documento online -->  
+                         
+                    </div>
+                </fieldset>
+
+                    
+                <fieldset class="fsubmit" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                    <button class="primary" type="button" name="button" id="button_genEditar" th:value="#{generarExpediente.actualizar}" 
+                    		th:onclick="'updateExpedient(&quot;' + #{generarExpediente.guardar.mensaje} + '&quot;)'">   
+                            <span class="mf-icon mf-icon-circle-wheel"></span>
+                            <span th:utext="#{generarExpediente.actualizar}"></span> 
+                    </button>
+                </fieldset>
+ 
+ 
+ 
+ 
+ 
+
+				<!-- tabla de remisiones a justicia de este expediente -->
+				<fieldset id="remisionJusticia">
+				    <legend th:text="#{remisionJusticia.remisiones.justicia}"></legend>
+					<table id="remisionList" class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
+						<thead>
+							<tr>
+							<!-- 
+								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbaplicacion.title}" th:text="#{remisionJusticia.AuditoriaEsbaplicacion}"></th>
+								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbmodulo.title}" th:text="#{remisionJusticia.AuditoriaEsbmodulo}"></th>
+								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbservicio.title}" th:text="#{remisionJusticia.AuditoriaEsbservicio}"></th>
+							 -->	
+								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.AuditoriaEsbmarcaTiempo.title}" th:text="#{remisionJusticia.AuditoriaEsbmarcaTiempo}"></th>
+								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.ack.title}" th:text="#{remisionJusticia.ack}"></th>
+								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.codigoEnvio.title}" th:text="#{remisionJusticia.codigoEnvio}"></th>
+								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.accion.title}" th:text="#{remisionJusticia.mensaje.accion}"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="registro, iterationStatus  : ${listaRespuestaEnvioJusticiaLista}">
+							<!-- 
+								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_aplicacion}"></td>					
+								<td class="grid-column-creador"	th:text="${registro.AuditoriaEsb_modulo}"></td>
+								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.AuditoriaEsb_servicio}"></td>
+							 -->
+								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_marcaTiempo}"></td>	
+												
+								<td class="grid-column-creador"	 th:if="${registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.correcto}"></td>
+								<td class="grid-column-creador"	 th:if="${not registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.incorrecto}"></td>
+								
+								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.codigoEnvio}"></td>												
+								<td class="grid-column-__actions last-column">
+									<ul class="grid-row-actions">
+										<li class="grid-row-action">
+											<a class="mf-table-data--row-action  mf-action  mf-action__revisar "
+												th:if="${not registro.AuditoriaEsb_aplicacion.equals('Error') }" 
+												th:onclick="|javascript:consultaRemisionJusticia('${registro.AuditoriaEsb_aplicacion}','${registro.AuditoriaEsb_modulo}','${registro.AuditoriaEsb_servicio}','${registro.AuditoriaEsb_marcaTiempo}','${registro.codigoEnvio}')|"
+												target="_self"
+												th:title="#{remisionJusticia.accion.consultaEstadoRemision}"> <span
+												class="mf-icon mf-icon-globes-info"></span>
+											</a>
+										</li>
+									</ul>
+
+								</td>
+							</tr>
+						</tbody>
+					</table>
+							
+				</fieldset>
+ 
+ 
+                
+                <script th:inline="javascript">
+                    /*<![CDATA[*/
+                        var metadatosAdded = [[${#arrays.length(expedienteMetadatos.metadatosAdicionales.metadatoAdicional)}]];
+                        var organosAdded = [[${#arrays.length(expedienteMetadatos.expediente.metadatosExp.organo)}]];          
+                        var organosAddedDoc = 0;
+                        var interesadosAdded = [[${#arrays.length(expedienteMetadatos.expediente.metadatosExp.interesado)}]];   
+                        $("#reportExpEni").hide();
+                        if (metadatosAdded > 0) {
+                        	$("#js-check-metadatos").prop('checked', true);
+                        	$("#js-div-metadatos").removeClass("hidden");			            				
+            			}
+                        $("#actionButtons").show();
+                    /*]]>*/
+                </script>
+            </div>
+
+            <div id="expedienteVeil" class="mf-veil hidden">
+            </div>
+
+        </form>
+        
+    </div>
+    
+    
+    
+    
+    	<!-- modal consulta remision a justicia de un expediente -->
+		<div id="init-modal-consultaRemisionMJU" data-title="Consulta Remisión Expediente MJU"
+			data-modal="1" data-width="800" data-draggable="0"
+			data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento"
+			data-position_h="center" data-position_v="center"
+			class="mf-buttonbar--btn simbutton">
+
+
+			<form id="visualizaDescargarResguardoJusticiaForm" th:fragment="visualizaDescargarResguardoJusticiaForm" th:action="@{/visualizaDescargarResguardoJusticia}" method="post">
+	         	<input type="hidden" name="dataResguardoDocBase64" id="dataResguardoDocBase64"/>
+	         	<input type="hidden" name="codigoEnvioResguardo" id="codigoEnvioResguardo"/>
+	       	</form>	
+	       	
+				<div class="fld">
+					<label  for="identificadorEstado" th:text="#{puntounicojusticia.identificadorEstado}"></label>
+					<div class="input-auxbtn">
+						<div>
+							<input type="text" class="sticked-input-right"	id="identificadorEstado" name="identificadorEstado" readonly="readonly"/>
+						</div>
+					</div>
+				</div>
+
+				<div class="fld">
+					<label  for="descripcionEstado" th:text="#{puntounicojusticia.descripcionEstado}"></label>
+					<div class="input-auxbtn">
+						<div>
+							<input type="text" class="sticked-input-right" id="descripcionEstado"	name="descripcionEstado"  readonly="readonly"/>
+						</div>
+					</div>
+				</div>
+				
+<!-- 				<fieldset class="mf-form__stack" id="fieldsetComentario"> -->
+<!-- 					<div class="fld"> -->
+<!-- 						<label  for="comentario" th:text="#{puntounicojusticia.comentario}"></label> -->
+<!-- 						<textarea id="comentario" name="comentario" class="large" rows="2" cols="100"  readonly="readonly"></textarea> -->
+<!-- 					</div>				 -->
+<!--   				</fieldset> -->
+  				
+  				<fieldset class="mf-form__stack">
+  					<a href="#"  onclick="conmutaVisibilidad();" id="enlaceOnOff">
+						<span class="mf-icon mf-icon-circle-wheel"></span>
+                    	<span th:text="#{puntounicojusticia.resguardo.datosenvio}"></span>
+                	</a>
+  				</fieldset>
+  				
+  				  				
+  				
+  				<!-- datos del envio a justicia -->
+                 <fieldset id="fieldsetDatosEnvio">
+                   <legend>
+						<span th:text="#{puntounicojusticia.resguardo.datosenvioLegend}"></span>
+				   </legend>				   
+				   
+						<div class="fld">
+							<label class="required" for="provinciasModalConsulta" th:text="#{puntounicojusticia.codigo.provincia}"></label>
+							<div class="input-auxbtn">
+								<div>
+									<input type="text" class="sticked-input-right"	id="provinciasModalConsulta" name="provinciasModalConsulta" readonly="readonly"/>
+								</div>
+							</div>
+						</div>
+		
+						<div class="fld">
+							<label class="required" for="organosConsulta" th:text="#{puntounicojusticia.codigo.organo}"></label>
+							<div class="input-auxbtn">
+								<div>
+									<input type="text" class="sticked-input-right" id="organosConsulta"	name="organosConsulta"  readonly="readonly"/>
+								</div>
+							</div>
+						</div>
+		
+						<div class="fld">
+							<label class="required" for="ordenModalConsulta" th:text="#{puntounicojusticia.codigo.orden}"></label>
+							<div class="input-auxbtn">
+								<div>
+									<input type="text" class="sticked-input-right" id="ordenModalConsulta" name="ordenModalConsulta"  readonly="readonly"/>
+								</div>
+							</div>
+						</div>
+		
+		
+		
+						<fieldset class="mf-form__stack">
+							<legend>
+								<span th:text="#{puntounicojusticia.labelProcedimiento}"></span>
+							</legend>
+							<div class="fld">
+								<label class="required" for="claseProcedimientoConsulta"
+									th:text="#{puntounicojusticia.codigo.claseProcedimiento}"></label>
+								<div class="input-auxbtn">
+									<div>
+										<input type="text" class="sticked-input-right" id="claseProcedimientoConsulta" name="claseProcedimientoConsulta"  readonly="readonly"/>
+									</div>
+								</div>
+							</div>
+		
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="procedimientoanioConsulta"	th:text="#{puntounicojusticia.procedimientoanio}"></label> 
+									<input type="text" id="procedimientoanioConsulta" name="procedimientoanioConsulta" value="" readonly="readonly"/>
+								</div>
+		
+								<div class="fld">
+									<label class="required" for="procedimientonumeroConsulta" th:text="#{puntounicojusticia.procedimientonumero}"></label> 
+									<input type="text" id="procedimientonumeroConsulta" name="procedimientonumeroConsulta" value="" readonly="readonly"/>
+								</div>
+							</div>
+						</fieldset>
+		
+		
+						<fieldset class="mf-form__stack">
+							<legend>
+								<span th:text="#{puntounicojusticia.labelNIG}"></span>
+							</legend>
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="niganioAsuntoConsulta" th:text="#{puntounicojusticia.niganioAsunto}"></label> 
+									<input type="text" id="niganioAsuntoConsulta" name="niganioAsuntoConsulta" value="" readonly="readonly"/>
+								</div>
+		
+								<div class="fld">
+									<label class="required" for="nigcodigoOrdenConsulta" th:text="#{puntounicojusticia.nigcodigoOrden}"></label> 
+									<input type="text" id="nigcodigoOrdenConsulta" name="nigcodigoOrdenConsulta" value="" readonly="readonly"/>
+								</div>
+							</div>
+		
+							<div class="block">
+								<div class="fld"></div>
+							</div>
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="nigcodigoPoblacionConsulta" th:text="#{puntounicojusticia.nigcodigoPoblacion}"></label> 
+									<input type="text" id="nigcodigoPoblacionConsulta" name="nigcodigoPoblacionConsulta" value="" readonly="readonly"/>
+								</div>
+		
+								<div class="fld">
+									<label class="required" for="nignumeroAsuntoConsulta" th:text="#{puntounicojusticia.nignumeroAsunto}"></label> 
+									<input type="text" id="nignumeroAsuntoConsulta" name="nignumeroAsuntoConsulta" value="" readonly="readonly"/>
+								</div>
+							</div>
+							<div class="block">
+								<div class="fld"></div>
+							</div>
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="nigtipoOrganoConsulta" th:text="#{puntounicojusticia.nigtipoOrgano}"></label> 
+									<input type="text" id="nigtipoOrganoConsulta" name="nigtipoOrganoConsulta" value="" readonly="readonly"/>
+								</div>
+								<div class="fld"></div>
+							</div>
+						</fieldset>
+		
+						<fieldset class="mf-form__stack">
+							<legend>
+								<span th:text="#{puntounicojusticia.labelPieza}"></span>
+							</legend>
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="piezaclaseProcedimientoConsulta" th:text="#{puntounicojusticia.piezaclaseProcedimiento}"></label>
+									<input type="text" id="piezaclaseProcedimientoConsulta" name="piezaclaseProcedimientoConsulta" value="" readonly="readonly"/>
+								</div>
+		
+								<div class="fld">
+									<label class="required" for="piezaanioProcedimientoConsulta" th:text="#{puntounicojusticia.piezaanioProcedimiento}"></label>
+									<input type="text" id="piezaanioProcedimientoConsulta" name="piezaanioProcedimientoConsulta" value="" readonly="readonly"/>
+								</div>
+							</div>
+		
+							<div class="block">
+								<div class="fld"></div>
+							</div>
+							<div class="block">
+								<div class="fld">
+									<label class="required" for="piezanumeroPiezaConsulta" th:text="#{puntounicojusticia.piezanumeroPieza}"></label> 
+									<input type="text" id="piezanumeroPiezaConsulta" name="piezanumeroPiezaConsulta" value="" readonly="readonly"/>
+								</div>
+		
+								<div class="fld">
+									<label class="required" for="piezanumeroProcedimientoConsulta" th:text="#{puntounicojusticia.piezanumeroProcedimiento}"></label>
+									<input type="text" id="piezanumeroProcedimientoConsulta" name="piezanumeroProcedimientoConsulta" value="" readonly="readonly"/>
+								</div>
+							</div>
+						</fieldset>
+		
+		
+						<fieldset class="mf-form__stack">
+							<legend>
+								<span th:text="#{puntounicojusticia.labelpresentador}"></span>
+							</legend>
+		
+		
+							<div class="fld">
+								<label class="required" for="presentadorcodigoOrganoRemitenteConsulta" th:text="#{puntounicojusticia.presentadorcodigoOrganoRemitente}"></label>
+								<div class="input-auxbtn">
+									<div>
+										<input type="text" class="sticked-input-right" id="presentadorcodigoOrganoRemitenteConsulta" name="presentadorcodigoOrganoRemitenteConsulta" readonly="readonly"/>
+									</div>
+								</div>
+							</div>
+		
+		
+		
+							<div class="fld">
+								<label class="required" for="presentadordescripcionPresentadorExpedienteConsulta" th:text="#{puntounicojusticia.presentadordescripcionPresentadorExpediente}"></label>
+								<input class="large" type="text" id="presentadordescripcionPresentadorExpedienteConsulta" name="presentadordescripcionPresentadorExpedienteConsulta" value="" readonly="readonly"/>
+							</div>
+						</fieldset>				   
+				   
+				   
+				   
+               	</fieldset>			
+  				
+  				
+                 <fieldset id="bloqueResguardoEnvio">
+                 
+                   <legend id="recepcion1">
+						<span th:text="#{puntounicojusticia.resguardoRecepcion}">:</span>
+				   </legend>
+				   <legend id="recepcion2">
+						<font size="2"><span th:text="#{puntounicojusticia.textoRecepcion}"></span></font>
+				   </legend>
+				   
+				   <legend id="envio1">
+						<span th:text="#{puntounicojusticia.resguardoEnvio}">:</span>
+				   </legend>
+				   <legend id="envio2">
+						<font size="2"><span th:text="#{puntounicojusticia.textoEnvio}"></span></font>
+				   </legend>
+				   
+				   
+				   
+                   <div class="block" th:if="${!navegador}">
+                      <div class="fld">
+                            <iframe id="visorResguardo" class="js-gallery-ver--visor" style="width:750px; height:300px;"></iframe>
+                       </div>
+                       <div class="js-timer-veil mf-veil hidden">
+                       </div>
+                    </div>
+                    
+                   <div class="block" th:if="${navegador}">
+                      <span>                    	                
+                	    <a href="#!" onclick="visualizaDescargarResguardoJusticia()"  th:title="#{generarDocumento.descargarArchivo.title}">
+	                        <span class="mf-icon mf-icon-doc-download"></span>
+	                        <span th:text="#{generarDocumento.descargarArchivo}"></span>
+	                    </a>
+                    	</span>
+                    </div>
+                    
+                 </fieldset>
+                 
+                
+			<div id="modalConsultaRemisionVeil" class="mf-veil hidden"></div>
+		</div>
+		
+		<div id="init-modal-importar-subExpediente" data-title="Adjuntar Expediente a Indice" 
+                      data-modal="1" 
+                      data-width="450"
+                      data-draggable="0"
+                      data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-expediente" 
+                      data-position_h="center"
+                      data-position_v="center" 
+                      class="buttonbar--btn simbutton hidden">
+                  <div>
+                  	<p class="fld">
+                          <label for="doc_fecha_incorp_expe_modal" class="required mf-field-exp" th:title="#{generarDocumento.importar.expediente}"
+                              th:text="#{generarDocumento.importar.expediente}"></label> 
+                    <div class="input-auxbtn">
+   						<div>
+                            <input
+                                type="text" 
+                                id="identifier_subExpedient" 
+                                name="identifier_subExpedient" 
+                                maxlength="50" 
+                                class="sticked-input-right" />
+                        	</div>
+					</div>                
+                      </p>                                        
+                  </div>                                  
+                  <ul class="error-list"></ul>
+                  <div class="js-timer-veil mf-veil hidden">
+                  </div>
+       	</div> 
+       	
+       	<div id="init-modal-importar-documentoInside" data-title="Adjuntar Documento de Inside a Indice" 
+                      data-modal="1" 
+                      data-width="450"
+                      data-draggable="0"
+                      data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-expediente" 
+                      data-position_h="center"
+                      data-position_v="center" 
+                      class="buttonbar--btn simbutton hidden">
+                  <div>
+                  	<p class="fld">
+                          <label for="doc_fecha_incorp_expe_modal" class="required mf-field-exp" th:title="#{generarDocumento.importar.expediente}"
+                              th:text="#{generarDocumento.importar.documento}"></label> 
+                    <div class="input-auxbtn">
+   						<div>
+                            <input
+                                type="text" 
+                                id="identifier_document" 
+                                name="identifier_document" 
+                                maxlength="50" 
+                                class="sticked-input-right" />
+                        	</div>
+					</div>                
+                      </p>                                        
+                  </div>                                  
+                  <ul class="error-list"></ul>
+                  <div class="js-timer-veil mf-veil hidden">
+                  </div>
+       	</div>   
+       	
+       	<div id="init-modal-importar-subExpedienteToken" data-title="Adjuntar Expediente con Token" 
+                      data-modal="1" 
+                      data-width="450"
+                      data-draggable="0"
+                      data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-expediente" 
+                      data-position_h="center"
+                      data-position_v="center" 
+                      class="buttonbar--btn simbutton hidden">
+                  <div>
+                  		<div th:replace="busquedaDEsdeEditExpediente :: puestaDisposicionDesdeEditExpediente"></div>                                      
+                  </div>                                  
+                  <ul class="error-list"></ul>
+                  <div class="js-timer-veil mf-veil hidden">
+                  </div>
+       </div> 
+    
+    	<div id="init-modal-avisoIdentificador-documento" data-title="Aviso identificador documento"
+			data-modal="1" data-width="500" data-draggable="0"
+			data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento"
+			data-position_h="center" data-position_v="center"
+			class="mf-buttonbar--btn simbutton hidden">
+			<div>
+				<p>
+					<label sec:authorize="!hasRole('USER_ROLE')" id="labelBorrarDocumento" class="mf-field-doc" th:text="#{generarDocumento.aviso.identificadorExiste}"></label>
+					
+					<label sec:authorize="hasRole('USER_ROLE')"  id="labelBorrarDocumento" class="mf-field-doc" th:text="#{generarDocumento.aviso.identificadorExisteExisteDesdeGenerarExpInside}"></label>
+				</p>
+			</div>
+			<ul class="error-list"></ul>
+			<div class="js-timer-veil mf-veil hidden"></div>
+		</div>
+    
+    
+</div>
+	<script>
+		var tableRemisiones;
+	</script>
+</body>
+</html>

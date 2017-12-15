@@ -1,0 +1,32 @@
+//
+/* Environment Message */
+
+body.dev .#{$ns}-container:before,
+body.pre .#{$ns}-container:before {
+
+	@include breakpoint($break-desktop, $no-query: $noquery) {
+		content: ' ';
+	    position: fixed;
+	    top: $envmsg-pos-top;
+	    width: 50px;
+	    height: 163px;
+		
+		background-color: transparent;
+	    background-repeat: no-repeat;
+	    background-position: 0 0;
+	}
+}
+
+body.dev .#{$ns}-container:before {
+	
+	@include breakpoint($break-desktop, $no-query: $noquery) {
+		background-image: $envmsg-dev-bg-image;
+	}
+}
+    
+body.pre .#{$ns}-container:before {
+	
+	@include breakpoint($break-desktop, $no-query: $noquery) {
+		background-image: $envmsg-pre-bg-image;
+	}
+}

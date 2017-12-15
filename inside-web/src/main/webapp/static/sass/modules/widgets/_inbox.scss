@@ -1,0 +1,86 @@
+// Inbox
+
+.inbox {
+    @include pie-clearfix();
+}
+
+.inbox-menu {
+    @extend %menu;
+    
+    a,
+    a:link,
+    a:visited {
+        color: $inbox-menu-item-color;
+        padding: $inbox-menu-item-padding;
+    }
+}
+
+.inbox-menu-item {
+    @include border($inbox-menu-item-border-width, $inbox-menu-item-border-style, $inbox-menu-item-border-color);
+    
+    @include background($inbox-menu-item-bg);
+
+    &.is-selected {
+        color: $inbox-menu-item-selected-color;
+        
+        @include border($inbox-menu-item-selected-border-width, $inbox-menu-item-selected-border-style, $inbox-menu-item-selected-border-color);
+
+        @include background($inbox-menu-item-selected-bg);
+
+        a, 
+        a:link,
+        a:visited {
+            color: $inbox-menu-item-selected-color;
+            font-weight: $inbox-menu-item-selected-font-weight;
+        }
+    }
+}
+
+.inbox-submenu {
+    @extend %menu;
+}
+
+.inbox-submenu-item {
+    @include border($inbox-menu-item-border-width, $inbox-menu-item-border-style, $inbox-menu-item-border-color);
+    
+    @include background($inbox-menu-item-bg);
+}
+
+.inbox-menu-section-title {
+    padding: $inbox-menu-item-padding;
+
+    @include border($inbox-menu-title-border-width, $inbox-menu-title-border-style, $inbox-menu-title-border-color);
+    
+    @include background($inbox-menu-title-bg);
+}
+
+.inbox-nav {
+    float: left;
+    width: 20%;
+
+    @include background($inbox-nav-bg);
+}
+
+.inbox-content {
+    width: 80%;
+    padding: $inbox-content-padding;
+    overflow: hidden;
+
+    @include background($inbox-content-bg);
+
+    @include pie-clearfix;
+}
+
+.inbox-num {
+    float: right;
+    min-width: $inbox-num-minwidth;
+    padding: $inbox-num-padding;
+    
+    text-align: center;
+    @include fontSize(10px);
+    line-height: $inbox-num-line-height;
+
+    @include border-radius(2em);
+
+    @include background($inbox-num-bg);
+}

@@ -1,0 +1,24 @@
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e/documentoEniFile/mtom"
+xmlns:insidedocenifileMtom="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e/documentoEniFile/mtom"
+xmlns:xmime="http://www.w3.org/2005/05/xmlmime" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD PARA TIPO DOCUMENTO ENI EN BYTES</xsd:documentation>
+	</xsd:annotation>		
+	<xsd:element name="documentoEniFileMtom" type="insidedocenifileMtom:TipoDocumentoEniFileInsideMtom">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">Tipo de datos para contener los bytes del XML de un documento ENI</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="TipoDocumentoEniFileInsideMtom">
+		<xsd:sequence>
+			<xsd:element name="documentoEniBytes" type="xsd:base64Binary" xmime:expectedContentTypes="application/octet-stream">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">El contenido en Datahandler del XML del documento ENI.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>	
+</xsd:schema>

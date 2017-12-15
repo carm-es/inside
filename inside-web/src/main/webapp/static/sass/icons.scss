@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+// Icons
+$embed-morfont: true;
+$morfos-fonts-folder: "../public/fonts";
+
+@import "icons/morfont";
+
+//hack para firefox, cuando metemos un icono y texto en una misma etiqueta esto hace que el texto se vea con arial y no con tipografía con serifa. @crispinh2o
+
+.mf-icon {
+	font-family:"morfont", arial;
+}

@@ -1,0 +1,316 @@
+/**********************/
+/*     USER BOXES     */
+
+%msg {
+    position: static;
+    padding: $msg-padding;
+    margin: $msg-margin;
+    min-height: $msg-min-height;
+
+    border-width: 3px;
+    border-style: solid;
+    @include border-radius(5px);
+
+    @include background($msg-info-bg);
+
+    // @include box-shadow(0 1px 1px rgba(255,255,255,0.5) inset);
+
+    a, 
+    a:link {
+        // color: $msg-link-color;
+    }
+
+    a:hover {
+        // text-decoration: underline;
+    }
+
+    div { 
+        // margin-bottom: 5px; 
+    }
+}
+
+.msg-success, 
+.msg-info, 
+.msg-warning, 
+.msg-error {
+    @extend %msg;
+}
+    
+.msg-info {
+    border-color: $msg-info-color;
+    
+    @include morfont-icon($msg-info-icon, $margin: 0 8px 0 -42px, $size: $msg-icon-size, $color: $msg-info-color, $line-height: 1, $float: left);
+}
+ 
+.msg-success {
+    border-color: $msg-success-color;
+    
+    @include morfont-icon($msg-success-icon, $margin: 0 8px 0 -42px, $size: $msg-icon-size, $color: $msg-success-color, $line-height: 1, $float: left);
+} 
+
+.msg-warning { 
+    border-color: $msg-warning-color;
+    
+    @include morfont-icon($msg-warning-icon, $margin: 0 8px 0 -42px, $size: $msg-icon-size, $color: $msg-warning-color, $line-height: 1, $float: left);
+}
+
+.msg-error {
+    border-color: $msg-error-color;
+    
+    @include morfont-icon($msg-error-icon, $margin: 0 8px 0 -42px, $size: $msg-icon-size, $color: $msg-error-color, $line-height: 1, $float: left);
+}
+
+/* Botón ocultar */
+
+.#{$ns}-msg--closebtn {
+    float: right;
+    width: 16px;
+    height: 16px;
+    padding-top: 16px;
+    margin: 0 -20px 0 0;
+    overflow: hidden;
+    
+    // text-indent: -99999em;
+    @include morfont-icon("\e64a", $margin: -16px 0 0 0, $line-height: 1, $float: left);
+}
+
+
+/* simbuttons en userBoxes */
+
+/* #userBoxes a.simbutton, 
+.userBoxes a.simbutton, 
+#userBoxes a.simbutton:link, 
+.userBoxes a.simbutton:link,
+#userBoxes a.btn_em, 
+.userBoxes a.btn_em, 
+#userBoxes a.btn_em:link, 
+.userBoxes a.btn_em:link {
+    color: #444;
+    font-weight: normal;
+}
+
+#userBoxes a.simbutton:hover, 
+.userBoxes a.simbutton:hover,
+#userBoxes a.btn_em:hover, 
+.userBoxes a.btn_em:hover {
+    text-decoration: none;
+}
+
+#userBoxes input[type=submit], 
+#userBoxes input[type=button], 
+#userBoxes button, 
+#userBoxes .simbutton, 
+#userBoxes .simbutton:link, 
+#userBoxes .simbutton:visited,
+#userBoxes input[type=submit].ui-state-default, 
+#userBoxes input[type=button].ui-state-default, 
+#userBoxes button.ui-state-default, 
+#userBoxes .simbutton.ui-state-default, 
+#userBoxes .simbutton.ui-state-default:link, 
+#userBoxes .simbutton.ui-state-default:visited,
+#userBoxes .ui-widget input[type=submit], 
+#userBoxes .ui-widget input[type=button], 
+#userBoxes .ui-widget button,
+.userBoxes input[type=submit], 
+.userBoxes input[type=button], 
+.userBoxes button, 
+.userBoxes .simbutton, 
+.userBoxes .simbutton:link, 
+.userBoxes .simbutton:visited,
+.userBoxes input[type=submit].ui-state-default, 
+.userBoxes input[type=button].ui-state-default, 
+.userBoxes button.ui-state-default, 
+.userBoxes .simbutton.ui-state-default, 
+.userBoxes .simbutton.ui-state-default:link, 
+.userBoxes .simbutton.ui-state-default:visited,
+.userBoxes .ui-widget input[type=submit], 
+.userBoxes .ui-widget input[type=button], 
+.userBoxes .ui-widget button {
+    font-weight: normal;
+    color: #FFF;
+    
+    -webkit-border-radius: 2px;
+    -moz-border-radius:    2px;
+    border-radius:         2px;
+    
+    -webkit-box-shadow: 0 0 1px rgba(0,0,0,0.85), 
+                        0 1px 1px rgba(255,255,255,0.3) inset;
+    -moz-box-shadow:    0 0 1px rgba(0,0,0,0.85), 
+                        0 1px 1px rgba(255,255,255,0.3) inset;
+    box-shadow:         0 0 1px rgba(0,0,0,0.85), 
+                        0 1px 1px rgba(255,255,255,0.3) inset;
+    
+    text-shadow: none;
+
+    background: -moz-linear-gradient(top, rgba(237,234,234,0.29) 0%, rgba(184,184,184,0.25) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(237,234,234,0.29)), color-stop(100%,rgba(184,184,184,0.25)));
+    background: -webkit-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: -o-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: -ms-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: linear-gradient(to bottom, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4aedeaea', endColorstr='#40b8b8b8',GradientType=0 );
+}
+
+#userBoxes input[type=submit]:hover, 
+#userBoxes input[type=button]:hover, 
+#userBoxes button:hover, 
+#userBoxes .simbutton:hover, 
+#userBoxes input[type=submit].ui-state-default:hover,
+#userBoxes input[type=button].ui-state-default:hover, 
+#userBoxes button.ui-state-default:hover, 
+#userBoxes .simbutton.ui-state-default:hover, 
+#userBoxes input[type=submit]:focus, 
+#userBoxes input[type=button]:focus, 
+#userBoxes button:focus, 
+#userBoxes .simbutton:focus, 
+#userBoxes input[type=submit].ui-state-default:focus,
+#userBoxes input[type=button].ui-state-default:focus, 
+#userBoxes button.ui-state-default:focus, 
+#userBoxes .simbutton.ui-state-default:focus,
+.userBoxes input[type=submit]:hover, 
+.userBoxes input[type=button]:hover, 
+.userBoxes button:hover, 
+.userBoxes .simbutton:hover, 
+.userBoxes input[type=submit].ui-state-default:hover,
+.userBoxes input[type=button].ui-state-default:hover, 
+.userBoxes button.ui-state-default:hover, 
+.userBoxes .simbutton.ui-state-default:hover, 
+.userBoxes input[type=submit]:focus, 
+.userBoxes input[type=button]:focus, 
+.userBoxes button:focus, 
+.userBoxes .simbutton:focus, 
+.userBoxes input[type=submit].ui-state-default:focus,
+.userBoxes input[type=button].ui-state-default:focus, 
+.userBoxes button.ui-state-default:focus, 
+.userBoxes .simbutton.ui-state-default:focus {
+    background: -moz-linear-gradient(top, rgba(237,234,234,0.47) 0%, rgba(184,184,184,0.25) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(237,234,234,0.47)), color-stop(100%,rgba(184,184,184,0.25)));
+    background: -webkit-linear-gradient(top, rgba(237,234,234,0.47) 0%,rgba(184,184,184,0.25) 100%);
+    background: -o-linear-gradient(top, rgba(237,234,234,0.47) 0%,rgba(184,184,184,0.25) 100%);
+    background: -ms-linear-gradient(top, rgba(237,234,234,0.47) 0%,rgba(184,184,184,0.25) 100%);
+    background: linear-gradient(to bottom, rgba(237,234,234,0.47) 0%,rgba(184,184,184,0.25) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#78edeaea', endColorstr='#40b8b8b8',GradientType=0 );
+}
+
+#userBoxes input[type=submit]:active, 
+#userBoxes input[type=button]:active, 
+#userBoxes button:active, 
+#userBoxes .simbutton:active, 
+#userBoxes input[type=submit].ui-state-default:active, 
+#userBoxes input[type=button].ui-state-default:active, 
+#userBoxes button.ui-state-default:active, 
+#userBoxes .simbutton.ui-state-default:active,
+#userBoxes input[type=submit]:active, 
+#userBoxes input[type=button]:active, 
+#userBoxes button:active, 
+#userBoxes .simbutton:active, 
+#userBoxes input[type=submit].ui-state-default:active, 
+#userBoxes input[type=button].ui-state-default:active, 
+#userBoxes button.ui-state-default:active, 
+#userBoxes .simbutton.ui-state-default:active,
+.userBoxes input[type=submit]:active, 
+.userBoxes input[type=button]:active, 
+.userBoxes button:active, 
+.userBoxes .simbutton:active, 
+.userBoxes input[type=submit].ui-state-default:active, 
+.userBoxes input[type=button].ui-state-default:active, 
+.userBoxes button.ui-state-default:active, 
+.userBoxes .simbutton.ui-state-default:active,
+.userBoxes input[type=submit]:active, 
+.userBoxes input[type=button]:active, 
+.userBoxes button:active, 
+.userBoxes .simbutton:active, 
+.userBoxes input[type=submit].ui-state-default:active, 
+.userBoxes input[type=button].ui-state-default:active, 
+.userBoxes button.ui-state-default:active, 
+.userBoxes .simbutton.ui-state-default:active {
+    background: -moz-linear-gradient(top, rgba(237,234,234,0.29) 0%, rgba(184,184,184,0.25) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(237,234,234,0.29)), color-stop(100%,rgba(184,184,184,0.25)));
+    background: -webkit-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: -o-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: -ms-linear-gradient(top, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    background: linear-gradient(to bottom, rgba(237,234,234,0.29) 0%,rgba(184,184,184,0.25) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4aedeaea', endColorstr='#40b8b8b8',GradientType=0 );
+    
+    -webkit-box-shadow: 0 0 1px rgba(0,0,0,0.85), 
+                        0 0 2px rgba(255,255,255,0.5),
+                        0 1px 1px rgba(255,255,255,0.0) inset;
+    -moz-box-shadow:    0 0 1px rgba(0,0,0,0.85), 
+                        0 0 2px rgba(255,255,255,0.5),
+                        0 1px 1px rgba(255,255,255,0.0) inset;
+    box-shadow:         0 0 1px rgba(0,0,0,0.85), 
+                        0 0 2px rgba(255,255,255,0.5),
+                        0 1px 1px rgba(255,255,255,0.0) inset;
+}
+ */
+/* Errores en userboxes */
+
+#userBoxes .error_list, 
+.userBoxes .error_list,
+.success-box .error_list, 
+.info-box .error_list, 
+.warning-box .error_list, 
+.error-box .error_list {
+    padding-top: 0;
+
+    color: #FFF;
+}
+
+#userBoxes .error_list li, 
+.userBoxes .error_list li,
+.success-box .error_list li, 
+.info-box .error_list li, 
+.warning-box .error_list li, 
+.error-box .error_list li {
+    margin-bottom: 0.5em;
+}
+
+/* userBoxes en modal de usuario */
+
+#userinfo {
+    padding:2px;
+    
+    font-size: 10px;
+    text-align: right;
+    
+    border-right:none;
+    border-left:none;
+}
+    
+#userinfo span {
+    padding: 2px 15px;
+}
+
+#userInfoModal .userBoxes .success-box, 
+#userInfoModal .userBoxes .info-box, 
+#userInfoModal .userBoxes .warning-box, 
+#userInfoModal .userBoxes .error-box {
+    padding: 5px 5px 1em 48px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    color: #444;
+    background: transparent no-repeat 10px top;
+    
+    font-size: 0.917em;
+
+    border: none;
+    border-bottom: 1px solid #CCC;
+
+    -webkit-border-radius: 0;
+    -moz-border-radius:    0;
+    border-radius:         0;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow:    none;
+    box-shadow:         none;
+}
+
+#userInfoModal .userBoxes .error-box {
+    background-image: url('images/boxes_error_24.png');
+}
+
+#userInfoModal .userBoxes .success-box {
+    background-image: url('images/boxes_success_24.png');
+}
+    

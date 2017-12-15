@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	
+	
+	<bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">  
+   		<property name="staticMethod" value="org.springframework.util.Log4jConfigurer.initLogging" />  
+   		<property name="arguments">  
+      		<list>  
+        		 <value>file:${config.path}/log4j.properties</value>  
+      		</list>  
+   		</property>  
+	</bean>
+	
+	<context:annotation-config />
+	<aop:aspectj-autoproxy />
+
+		
+	<context:property-placeholder location="file:${config.path}/server.cmis.properties" ignore-unresolvable="true"/>
+	
+
+	<bean id="sessionManager" class="es.mpt.dsic.integration.cmis.session.CmisSessionManagerImpl">
+		<property name="bindingType" value="${server.cmis.bindingType}" />
+		<property name="url" value="${server.cmis.url}" />
+		<property name="pathRootFolder" value="${server.cmis.pathRootFolder}"/>
+		<property name="username" value="${server.cmis.username}" />
+		<property name="password" value="${server.cmis.password}" />
+		<property name="connectTimeout" value="${server.cmis.connectTimeout}" />
+		<property name="sessionTimeout" value="${server.cmis.sessionTimeout}" />
+	</bean>
+	
+	<!-- bean id="sessionManager" class="es.mpt.dsic.integration.cmis.session.CmisSessionManagerImpl">
+		<property name="url" value="a" />
+		<property name="pathRootFolder" value="a"/>
+		<property name="username" value="a" />
+		<property name="password" value="a" />
+		<property name="connectTimeout" value="a" />
+		<property name="sessionTimeout" value="a" />
+	</bean-->
+
+	<bean id="repoDocIntegration"
+		class="es.mpt.dsic.integration.cmis.adapter.CmisAdapter">
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+
+	<bean id="cmisSessionInterceptor"
+		class="es.mpt.dsic.integration.cmis.adapter.interceptor.CmisSessionInterceptor">
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+</beans>

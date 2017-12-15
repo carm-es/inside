@@ -1,0 +1,25 @@
+{
+  "name": "Morfos",
+  "version": "2.2.0",
+  "description": "Framework de desarrollo front de la DTIC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab01.seap.minhap.es:maquetacion/morfos2.git"
+  },
+  "keywords": [
+    "css"
+  ],
+  "author": "Ignacio Calleja",
+  "license": "EUPL",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-watch": "~0.6.1",
+    "grunt-sass": "~0.18.0",
+    "grunt-contrib-compass": "~1.0.1",
+    "grunt-webfont": "~0.5.2"
+  }
+}

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="en"> <![endif]-->
+<!--[if IE 7 ]> <html class="ie ie7 no-js" lang="en"> <![endif]-->
+<!--[if IE 8 ]> <html class="ie ie8 no-js" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+
+<!--HEAD -->
+<head>
+	<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+	<title>Morfos - Framework front-end para aplicaciones</title>
+	<meta name="description" content="">
+	<meta name="keywords" content="Ministerio de Hacienda y Administraciones Públicas, Secretaría de Estado de Administraciones Públicas, MINHAP, Nombre de aplicación">
+	
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+	<!-- CSS -->
+	<link rel="stylesheet" media="all" href="css/morfos-min.css"/>
+
+	<!-- Cualquier modificacion adicional sobre los estilos debe hacerse en el custom.css -->
+	<link rel="stylesheet" media="all" href="css/custom.css"/>
+
+	<!--SCRIPTS -->
+	<script src="js/libs/modernizr/modernizr.custom.94470.js"></script>
+	<script src="js/libs/jquery/jquery-1.10.2.js"></script>
+	
+	<style type="text/css">/**
+ * Styles for AG grids & Container
+ */
+
+.container {
+  background-color: #fbeecb;
+}
+
+.ag1, .ag3 {
+  background-color: #71dad2;
+}
+
+.ag2 {
+  background-color: #fae7b3;
+}
+
+.ag4,.ag5,.ag8,.ag9 {
+  background-color: #ee9e9c;
+}
+
+.ag6 {
+  background-color: #f09671;
+}
+
+.ag7 {
+  background-color: #f6d784;
+}
+
+.ag10 {
+  background-color: #ea9fc3;
+}
+
+/**
+ * Text Styles
+ */
+h2 {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: normal;
+  padding-top: 1.8rem;
+  padding-bottom: 1.8rem;
+}</style>
+</head>
+
+<!--BODY -->
+<body class="app">
+	<div id="container" class="mf-container">
+		<div id="noComplWarning" style="display: none;">
+			<div id="noComplContainer">
+				<div id="notCBrowser">
+					<div class="browser-text">
+						<h2>¡Navegador no soportado!</h2>
+						<p>Está utilizando un navegador demasiado antiguo que no soporta las tecnologías utilizadas en este sitio. Desafortunadamente no podemos dar soporte a todos los navegadores. Por favor, <strong>actualícelo a uno más moderno</strong> como, por ejemplo, uno de los siguientes.</p>
+					</div>
+					<ul>
+						<li class="browser-ie">
+							<a href="http://windows.microsoft.com/es-ES/internet-explorer/products/ie/home">
+								Internet Explorer
+								<span>Versión 8+</span>
+							</a>
+						</li>
+						<li class="browser-chrome">
+							<a href="http://www.google.es/chrome/">
+								Google Chrome
+							</a>
+							
+						</li>
+						<li class="browser-ffox">
+							<a href="http://www.mozilla.org/es-ES/firefox/fx/">
+								Mozilla Firefox
+							</a>
+						</li>
+						<li class="browser-opera">
+							<a href="http://www.opera.com/browser/download/">
+								Opera
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div id="noJS">
+					<h2>JavaScript desactivado</h2>
+					<p>Es posible que JavaScript no esté activado en su navegador y es necesario para el funcionamiento de este sitio.</p>
+					<p>Por favor, <strong>actívelo</strong> para poder continuar y <strong>recargue la página</strong>.</p>
+				</div>
+			</div>
+		</div>
+		
+		<!-- HEADER -->
+		<header id="header" class="mf-header">
+			<div class="mf-header--container">
+				<div id="mainHeader" class="mf-header--logo">
+					<h1 class="mf-logo">
+						<a class="mf-logo--link" href="#!" title="Ministerio de Hacienda y Administraciones Públicas, Secretaría de Estado de Administraciones Públicas">
+							<img class="mf-logo--img" src="images/logoSEAP.gif" alt="Secretaría de Estado de Administraciones Públicas, Ministerio de Hacienda y Administraciones Públicas, Gobierno de España"/>
+						</a>
+					</h1>
+				</div>
+				<div id="topBar" class="mf-user-area">
+					<div>
+						<a href="#wrap" id="accGotoContent">Ir al contenido</a>
+						<time datetime="2013-06-12 16:43">
+					    	<span id="reloj_front_fecha">13/06/2013</span>
+					      	<span id="hora">13:39:57</span>
+					    </time>
+						<div id="lang">
+							<h6><span>Idioma: </span>Castellano</h6>
+							<ul id="langMenu">
+								<li class="mf-selected"><a href="#!">Castellano</a></li> 
+								<li><a href="#!">Català</a></li>
+								<li><a href="#!">Galego</a></li>
+								<li><a href="#!">Euskera</a></li>
+								<li><a href="#!">English</a></li>
+								<li><a href="#!">Français</a></li>
+							</ul>
+						</div>
+						<ul id="userMenu">
+							<li class="user-notifications">
+								<a id="notifLn" href="#!"><span>Notificaciones</span><span class="notif-counter">2</span></a>
+								<ul class="user-notif-list">
+									<li class="mf-new">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo deleznable
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo despreciable
+										</a>
+									</li>
+									<li class="mf-new">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+											tempor incididunt ut labore et dolore magna aliqua.
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo condenable
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo condenable
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo condenable
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo condenable
+										</a>
+									</li>
+									<li class="mf-read">
+										<a href="#!">
+											<time>jueves 24 de marzo de 2012</time>
+											<strong>Nombre Apellido Apellido</strong> hizo algo condenable
+										</a>
+									</li>
+								</ul>
+							</li>
+							<li class="user-profile">
+								<a id="userLn" href="#!">Usuario <span>Secretario</span></a>
+								<ul class="user-profile-list">
+									<li class="mf-selected">
+										<a href="#!">
+											Nombre Apellido Apellido
+											<span>Administración de Presupuesto en Secretaría General de Personal de la Administración Periférica</span>
+										</a>
+									</li>
+									<li>
+										<a href="#!">
+											Nombre Apellido Apellido
+											<span>Perfil 2</span>
+										</a>
+									</li>
+									<li>
+										<a href="#!">
+											Nombre Apellido Apellido
+											<span>Perfil 3</span>
+										</a>
+									</li>
+									<li>
+										<a href="#!">
+											Nombre Apellido Apellido
+											<span>Perfil 3</span>
+										</a>
+									</li>
+									<li class="mf-secondaryLinks"><a href="#!">Mostrar todos</a></li>
+								</ul>
+							</li>
+							<li><a id="settngsLn" href="#!">Configuración</a></li>
+							<li><a id="logoutLn" href="#!">Salir</a></li>
+						</ul>
+					</div>
+				</div>
+				<div id="headerContent" class="mf-header--content">
+					<a href="#!" id="showNav-btn">
+						<span class="nav-icon">
+							<span></span>
+							<span></span>
+							<span></span>
+						</span>
+						<span class="nav-text">Mostrar navegación</span>
+					</a>
+					<a href="#!" id="showUserMenu-btn">
+						<span class="nav-text">Mostrar menú de usuario</span>
+						<span class="nav-icon">
+							
+						</span>
+						<span class="notif-icon">
+							<span class="tip">2</span>
+							<span class="text"> notificaciones nuevas</span>
+						</span>
+					</a>
+					<h2 class="app-title">
+						Morfos 
+						<span class="app-subtitle">Framework front-end para aplicaciones</span>
+					</h2>
+					<nav id="appMenu">
+						<h4><a href="#!">Menu principal</a></h4>
+						<ul class="appmenu-menu" role="navigation">
+							<li class="appmenu-l1-item is-selected"><a href="#">Inicio</a></li> 
+							<li class="appmenu-l1-item has-submenu">
+								<span>Componentes</span>
+								<ul class="appmenu-l2-submenu">
+									<li class="appmenu-submenu-item"><a href="#tipografia">Tipografía</a></li>
+									<li class="appmenu-submenu-item"><a href="#formulario">Formulario</a></li>
+									<li class="appmenu-submenu-item"><a href="#inbox">Bandeja de mensajes</a></li>
+									<li class="appmenu-submenu-item"><a href="#report">Informe</a></li>
+									<li class="appmenu-submenu-item"><a href="#tabla">Tabla</a></li>
+									<li class="appmenu-submenu-item"><a href="#tabla-con-filtro">Tabla con filtro desplegable</a></li>
+									<li class="appmenu-submenu-item"><a href="#ventana-detalle">Ventana detalle con listado</a></li>
+									<li class="appmenu-submenu-item"><a href="#widgets">Widgets</a></li>
+									<li class="appmenu-submenu-item"><a href="#login">Login</a></li>
+									<li class="appmenu-submenu-item"><a href="#iconos">Iconos</a></li>
+								</ul>
+							</li>
+							<li class="appmenu-l1-item has-submenu">
+								<span>Menú de ejemplo</span>
+								<ul class="appmenu-l2-submenu">
+									<li class="appmenu-submenu-item has-submenu">
+										<span>Item 1</span>
+										<ul class="appmenu-l3-submenu">
+											<li class="appmenu-submenu-item"><a href="#!">Item 1.1</a></li>
+											<li class="appmenu-submenu-item"><a href="#!">Item 1.2</a></li>
+											<li class="appmenu-submenu-item"><a href="#!">Item 1.3</a></li>
+										</ul>
+									</li>
+									<li class="appmenu-submenu-item"><a href="#!">Item 2</a></li>
+									<li class="appmenu-submenu-item"><a href="#!">Item 3</a></li>
+									<li class="appmenu-submenu-item"><a href="#!">Item 4</a></li>
+									<li class="appmenu-submenu-item has-submenu">
+										<span>Item 5</span>
+										<ul class="appmenu-l3-submenu">
+											<li class="appmenu-submenu-item"><a href="#!">Item 5.1</a></li>
+											<li class="appmenu-submenu-item"><a href="#!">Item 5.2</a></li>
+											<li class="appmenu-submenu-item"><a href="#!">Item 5.3</a></li>
+										</ul>
+									</li>
+									<li class="appmenu-submenu-item"><a href="widgets.html">Item 6</a></li>
+								</ul>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				
+			</div>
+		</header>
+
+		<div class="container mf-wrapper">
+			<h1>The 10 column complex nested grid AG test</h1>
+
+			<div class="ag ag1">
+			  <h2>AG 1</h2>
+			</div>
+			<!-- /ag1 -->
+
+			<!-- ag3 to ag7 are nested within ag2.-->
+			<div class="ag ag2">
+			  <h2>AG 2</h2>
+			  <div class="ag ag4">
+			    <h2>AG 4</h2>
+			  </div>
+			  <div class="ag ag5">
+			    <h2>AG 5</h2>
+			  </div>
+			  <div class="ag ag6">
+			    <h2>AG 6</h2>
+			  </div>
+
+			  <!-- ag8, ag9 and ag10 are nested within ag7 -->
+			  <div class="ag ag7">
+			    <h2>AG 7</h2>
+			    <div class="ag ag8">
+			      <h2>AG 8</h2>
+			    </div>
+			    <div class="ag ag9">
+			      <h2>AG 9</h2>
+			    </div>
+			    <div class="ag ag10">
+			      <h2>AG 10</h2>
+			    </div>
+			  </div>
+			  <!-- /ag7 -->
+			</div>
+			<!-- /ag2 -->
+
+			<div class="ag ag3">
+			  <h2>AG 3</h2>
+			</div>
+			<!-- /ag3 -->
+
+		</div>
+<!-- /container -->
+
+		</div>
+    </div>		 
+	
+    <footer id="footer" class="mf-footer">
+    	<div class="mf-footer--content">
+    		<ul id="mf-footer--menu">
+				<li><a href="#!">Accesibilidad</a></li>
+				<li><a href="#!">Mapa web</a></li>
+				<li><a href="#!">Aviso legal</a></li>
+				<li><a href="#!">Contacto</a></li>
+			</ul>
+			<p class="mf-footer--copy"><strong>Morfos 2.0. Beta </strong> &copy; Ministerio de Hacienda y Administraciones Públicas</p>
+    	</div>
+    </footer>
+	
+	<div class="mf-dialog" style="display: none;">
+		<div class="mf-dialog--titlebar">
+			<span class="mf-dialog--title">Diálogo morfos</span>
+			<button class="mf-dialog--btn" title="Cerrar"><span class="mf-icon mf-icon-cancel"></span> Cerrar</button>
+			<button class="mf-dialog--btn" title="Cerrar"><span class="mf-icon mf-icon-batlog"></span> Minimizar</button>
+		</div>
+		<div class="mf-dialog--content">
+			<p>1 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti, ut, totam, minus, voluptatibus obcaecati cumque inventore nobis possimus laboriosam veniam molestias recusandae velit iusto repellendus eius quos voluptas aliquid quis.</p>
+			<p>2 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, quam, recusandae, fuga soluta officia pariatur corporis quo accusantium molestiae ex labore reprehenderit accusamus est maxime esse vero earum aliquid atque!</p>
+			<p>3 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, quam, recusandae, fuga soluta officia pariatur corporis quo accusantium molestiae ex labore reprehenderit accusamus est maxime esse vero earum aliquid atque!</p>
+			<p>4 Lorem ipsum dolor sit amet, consectetur adipisicing elit. Fugit, quam, recusandae, fuga soluta officia pariatur corporis quo accusantium molestiae ex labore reprehenderit accusamus est maxime esse vero earum aliquid atque!</p>
+		</div>
+		<div class="mf-dialog--buttonbar">
+			<button class="">Cancelar</button>
+			<button class="mf-btn-save primary">Guardar</button>
+		</div>
+	</div>
+	<div class="mf-veil" style="display: none;"></div>
+
+
+	<script src="js/main.js"></script>
+	<!-- <script src="js/morfosnano.js"></script> -->
+</body>
+</html>

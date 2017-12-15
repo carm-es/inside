@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 7 ]> <html class="ie ie7 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 8 ]> <html class="ie ie8 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> 
+<html class="no-js" lang="en" 
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"> <!--<![endif]-->
+
+<head>
+<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/jquery/jquery-1.10.2.js?v=${session.versionNumber}|"></script>
+</head>
+
+<!--BODY -->
+<body class="app">
+	<div id="container" class="mf-container">
+		<div class="mf-nocompl" style="display: none;" th:fragment="nocompl">
+			<div class="mf-nocompl--container">
+				<div class="mf-nocompl--nobrowser">
+					<div class="browser-text">
+						<h2 th:text="#{layout.explorer.noSoported.tittle}"></h2>
+						<p  th:utext="#{layout.explorer.noSoported.text}"></p>
+					</div>
+					<ul>
+						<li class="mf-nocompl--browser-ie">
+							<a href="http://windows.microsoft.com/es-ES/internet-explorer/products/ie/home" th:utext="#{layout.explorer.ie}">
+							</a>
+						</li>
+						<li class="mf-nocompl--browser-chrome">
+							<a href="http://www.google.es/chrome/" th:text="#{layout.explorer.chrome}">
+							</a>
+						</li>
+						<li class="mf-nocompl--browser-ffox">
+							<a href="http://www.mozilla.org/es-ES/firefox/fx/" th:text="#{layout.explorer.firefox}">
+							</a>
+						</li>
+						<li class="mf-nocompl--browser-opera">
+							<a href="http://www.opera.com/browser/download/"  th:text="#{layout.explorer.opera}">
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="mf-nocompl--nojs" >
+					<h2 th:text="#{layout.javascript.disabled}"></h2>
+					<p th:text="#{layout.javascript.disabled.text1}"></p>
+					<p th:utext="#{layout.javascript.disabled.text2}"></p>
+				</div> 
+			</div>
+		</div>
+		<header id="header" class="mf-header" th:fragment="header">
+			<input type="hidden" id="context" th:value="${#httpServletRequest.getContextPath()}"/>
+			<input type="hidden" id="ip_server" th:value="${#httpServletRequest.getServerName()}"/>
+			<input type="hidden" id="port_server" th:value="${#httpServletRequest.getServerPort()}"/>
+			<form id="updateUnidadActivaForm" th:fragment="updateUnidadActivaForm" th:action="@{/updateUnidadActiva}" method="post">
+	         	<input type="hidden" name="unidadProcedimiento" id="unidadProcedimiento"/>
+	       	</form>
+			<div class="mf-header--container">
+				<div id="mainHeader" class="mf-header--logo">
+					<h1 class="mf-logo">
+						<a class="mf-logo--link" href="#!" th:title="#{layout.logo.tittle}">
+							<img class="mf-logo--img" src="images/logoSEAP.gif" th:alt="#{layout.logo.alt}"/>
+						</a>
+					</h1>
+				</div>
+				<div class="mf-topbar">
+					<div class="mf-topbar--container">
+						<div class="mf-usermenu">	
+							<ul class="mf-usermenu--menu" sec:authorize="isAuthenticated()">
+
+	                            <li class="mf-usermenu--item mf-profiles">
+	                                <p id="profile_L01180227" class="mf-profiles--title">
+	                                    <span class="user-profile-name" sec:authentication="name"></span>
+	                                </p>
+	                            </li>
+								<li class="last mf-usermenu--item" th:if="${#authentication.unidadOrganicaActiva != null}">
+									<p id="profile_L01180227" class="mf-profiles--title">
+	                                	<a style="color:#008fdc" th:href="|javascript:${'loadUnidadesOrganicas(&quot;' + #authentication.name + '&quot;)'}|"><span id="unidadOrganicaActiva" class="user-profile-name" th:text="${#strings.abbreviate(#authentication.unidadOrganicaActiva,50)}" 
+	                                		th:value="${#authentication.unidadOrganicaActiva}" th:title="${#authentication.unidadOrganicaActiva}"></span></a>
+	                                </p>
+	                            </li>
+
+	                            <li class="last mf-usermenu--item">
+	                                <a class="mf-usermenu--logout" th:href="@{/logout}" th:text="#{layout.logout.label}">
+	                                </a>
+	                            </li>
+	                        </ul>	              
+						</div>
+						<div id="init-modal-lista-unidades"
+							data-title="Seleccionar Unidad Orgánica Activa" data-modal="1"
+							data-width="770" data-draggable="0"
+							data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-expediente"
+							data-position_h="center" data-position_v="center"
+							class="buttonbar--btn simbutton hidden">
+							<div>
+								<ul class="radio-list" id="lista_unidades"></ul>
+							</div>
+							<ul class="error-list"></ul>
+						</div>
+					</div>
+				</div>
+				<div id="headerContent" class="mf-header--content">
+
+					<h2 class="app-title" th:utext="#{layout.app.tittle}">
+					</h2>
+					<nav id="appMenu" class="mf-appmenu">
+						<h4 class="mf-appmenu--title"><a href="#!" th:text="#{layout.menu}"></a></h4>
+												<ul class="mf-appmenu--menu" role="navigation">
+						    <li class="mf-appmenu--item mf-appmenu--item__L1 hasnot-submenu"  sec:authorize="isAuthenticated()">
+						      <a th:href="@{/principal}" th:text="#{layout.menu.option.inicio}"></a>
+						    </li>
+							<li class="mf-appmenu--item mf-appmenu--item__L1 has-submenu"  sec:authorize="isAuthenticated()">
+								<span th:text="#{layout.menu.option.expedientes}"></span>
+								<ul class="mf-appmenu--submenu">
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasAnyRole('USER_ROLE','GUEST_ROLE')"><a th:href="@{/generarExpediente}" th:text="#{layout.menu.option.expedientes.generar}"></a></li>
+									
+									<li class="mf-appmenu--submenu-item"><a th:href="@{/validarExpediente}" th:text="#{layout.menu.option.expedientes.validar}"></a></li>
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasRole('USER_ROLE')"><a th:href="@{/importarExpediente}" th:text="#{layout.menu.option.expedientes.importar}"></a></li>
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"><a th:href="@{/expedientesAlmacenados}" th:text="#{layout.menu.option.expedientes.almacenados}"></a></li>
+								</ul>
+							</li>
+							<li class="mf-appmenu--item mf-appmenu--item__L1 has-submenu"  sec:authorize="isAuthenticated()">
+								<span th:text="#{layout.menu.option.documentos}"></span>
+								<ul class="mf-appmenu--submenu">
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasAnyRole('USER_ROLE','GUEST_ROLE')"><a th:href="@{/generarDocumento}" th:text="#{layout.menu.option.documentos.generar}"></a></li>
+									
+									<li class="mf-appmenu--submenu-item"><a th:href="@{/validarDocumento}" th:text="#{layout.menu.option.documentos.validar}"></a></li>
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasRole('USER_ROLE')"><a th:href="@{/importarDocumento}" th:text="#{layout.menu.option.documentos.importar}"></a></li>
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"><a th:href="@{/documentosAlmacenados}" th:text="#{layout.menu.option.documentos.almacenados}"></a></li>
+									<li class="mf-appmenu--submenu-item"><a th:href="@{/visualizarDocumento}" th:text="#{layout.menu.option.documentos.visualizar}"></a></li>
+								</ul>
+							</li>
+							<li class="mf-appmenu--item mf-appmenu--item__L1 has-submenu"  sec:authorize="isAuthenticated()">
+								<span th:text="#{layout.menu.option.puntoUnico.remision.nube}"></span>
+								<ul class="mf-appmenu--submenu">
+									<li class="mf-appmenu--submenu-item" sec:authorize="isAuthenticated()"><a th:href="@{/busqueda}" th:text="#{layout.menu.option.puestadisposicion}"></a></li>								
+								</ul>
+							</li>	
+	 						<li class="mf-appmenu--item mf-appmenu--item__L1 hasnot-submenu"  sec:authorize="hasAnyRole('USER_ROLE','CONSULTA_ROLE')">
+						      <a th:href="@{/busquedaElastic}" th:text="#{layout.menu.option.busquedaElastic}"></a>
+						    </li>	
+
+						    <li class="mf-appmenu--item mf-appmenu--item__L1 has-submenu"  sec:authorize="hasRole('ALTA_USUARIOS_ROLE')">
+								<span th:text="#{layout.menu.option.adminUruario}"></span>
+								<ul class="mf-appmenu--submenu">
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasRole('ALTA_USUARIOS_ROLE')"><a th:href="@{/altaUsuarioWebInside}" th:text="#{layout.menu.option.altaUruario}"></a></li>
+									<li class="mf-appmenu--submenu-item" sec:authorize="hasRole('ALTA_USUARIOS_ROLE')"><a th:href="@{/listaUsuariosEnUnidadOrganica}" th:text="#{layout.menu.option.listaUruario}"></a></li>								
+								</ul>
+							</li>	
+							
+							<li class="mf-appmenu--item mf-appmenu--item__L1 hasnot-submenu"  sec:authorize="hasRole('ADMIN_MENSAJE_ROLE')">
+								<a th:href="@{/adminMensajes/lista}" th:text="#{layout.menu.option.adminMensaje}"></a>
+							</li>
+						    														
+						</ul>
+					</nav>
+				</div>
+				
+			</div>
+		</header>
+		
+		<!-- WRAPPER -->
+		
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:insidedocvisualizacion="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/visualizacion/documento-e"
+xmlns:insidemeta="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"
+xmlns:enidoc="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/visualizacion/documento-e" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">DATOS PARA LA VISUALIZACIÓN DE UN DOCUMENTO ELECTRÓNICO EN FORMATO ENI (v1.0) CON METADATOS ADICIONALES</xsd:documentation>
+	</xsd:annotation>	
+	<xsd:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" schemaLocation="TipoMetadatosAdicionales.xsd"/>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e" schemaLocation="DocumentoEni.xsd"/>	
+	<xsd:element name="documentoVisualizacion" type="insidedocvisualizacion:TipoDocumentoVisualizacionInside">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">Tipo de datos para visualizar documentos en formato ENI v(1.0) mas metadatos adicionales</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
+	<xsd:complexType name="TipoDocumentoVisualizacionInside">
+		<xsd:sequence>
+			<xsd:element name="documentoEni" type="insidedocvisualizacion:TipoDocumentoEniBinarioOTipo"/>			
+			<xsd:element name="metadatosAdicionales" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0"/>
+			<xsd:element name="opcionesVisualizacionDocumento" type="insidedocvisualizacion:TipoOpcionesVisualizacionDocumento"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TipoDocumentoEniBinarioOTipo">
+		<xsd:choice>
+			<xsd:element name="documentoEniBinario" type="xsd:base64Binary">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">El contenido en base64 del XML del documento ENI</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="documentoEniTipo" type="enidoc:TipoDocumento">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Documento en formato ENI</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:complexType name="TipoOpcionesVisualizacionDocumento">
+		<xsd:sequence>
+			<xsd:element name="EstamparImagen" type="xsd:boolean"/>
+			<xsd:element name="EstamparNombreOrganismo" type="xsd:boolean"/>
+			<xsd:element name="EstamparPie" type="xsd:boolean"/>
+			<xsd:element name="TextoPie" type="xsd:string"/>
+			<xsd:element name="FilasNombreOrganismo" minOccurs="0">
+			<xsd:annotation>
+								<xsd:documentation xml:lang="es">El nombre del organismo deberá dividirse en varios elementos "Fila" dependiendo de cómo se desea que aparezca escrito.</xsd:documentation>
+			</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Fila" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>	
+	
+	<xsd:complexType name="TipoResultadoVisualizacionDocumentoInside">
+		<xsd:sequence>
+			<xsd:element name="contenido" type="xsd:base64Binary">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">El contenido en base64 del documento de visualización.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="mime" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Mime del documento de visualización.</xsd:documentation>
+				</xsd:annotation>						
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
