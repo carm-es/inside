@@ -1,0 +1,90 @@
+// Not optimized!
+/* Multiple filter */
+
+.multipleFilter {
+
+    & > a {
+        display: block;
+        float: right;
+        padding: 4px 12px;
+        
+        cursor: pointer;
+        
+        border: 1px solid #CCC;
+        border-bottom: none;
+        background-color: #DDD;
+        
+        @include border-radius(2px 2px 0 0);
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    & > form {
+        clear: both;
+        border-top: 1px solid #DDD;
+
+        & > fieldset {
+            padding: 0;
+        }
+    }
+
+    .fsubmit {
+        padding: 5px 20px;
+
+        background-color: #DDD;
+        
+        @include border-radius(0 0 5px 5px);
+        
+        @include box-shadow(0 1px 1px rgba(0,0,0,0.3),
+                            0 1px 1px rgba(255,255,255,1) inset);
+    }
+
+    .filterForm label {
+        display: inline;
+    }
+}
+
+.mfilterItem {
+    overflow: hidden;
+    padding: 6px 20px 5px 20px;
+    
+    border-bottom: 1px solid #CCC;
+    
+    @include border-radius(2px);
+
+    @include background(linear-gradient(top, rgba(238,238,238,1) 0%,rgba(234,234,234,1) 100%));
+    
+    @include box-shadow(0 1px 1px rgba(0,0,0,0.3),
+                        0 1px 1px rgba(255,255,255,1) inset);
+
+    & > ul {
+        float: right;
+        padding: 5px 0 3px 0;
+
+        & > li {
+            display: inline-block;
+
+            & > a {
+                display: block;
+                width: 16px;
+                height: 16px;
+                overflow: hidden;
+
+                border: 1px solid #AAA;
+                border: 1px solid rgba(0,0,0,0.15);
+
+                @include border-radius(12px);
+                
+                @include box-shadow(0 0 1px rgba(0,0,0,0.3),
+                                    0 1px 0 rgba(255,255,255,1) inset,
+                                    0 1px 0 rgba(255,255,255,1));
+            }
+        }
+    }
+
+    a > span {
+        margin-top: -1px;
+    }
+}

@@ -1,0 +1,77 @@
+// Not optimized!
+/* Simbutton primary */
+
+%btn-primary {
+    @extend %button; 
+
+    min-width: $btnprimary-min-width;
+    padding: $btnprimary-padding;
+    
+    color: $btnprimary-font-color;
+    @include fontSize($btnprimary-font-size);
+    font-weight: $btnprimary-font-weight;
+    line-height: emCalc($btnprimary-line-height);
+    text-shadow: $btnprimary-text-shadow;
+    
+    border-style: $btnprimary-border-style;
+    border-width: $btnprimary-border-width;
+    border-color: $btnprimary-border-color-leg;
+    border-color: $btnprimary-border-color;
+    
+    @include background($btnprimary-bg);
+    
+    @include border-radius($btnprimary-border-radius);
+
+    @include box-shadow($btnprimary-box-shadow);
+
+    &:visited {
+        color: $btnprimary-font-color;
+    }
+
+    &:hover,
+    &:focus {
+        color: $btnprimary-hover-font-color;
+        text-shadow: $btnprimary-hover-text-shadow;
+        
+        border-style: $btnprimary-hover-border-style;
+        border-width: $btnprimary-hover-border-width;
+        border-color: $btnprimary-hover-border-color-leg;
+        border-color: $btnprimary-hover-border-color;
+        
+        @include box-shadow($btnprimary-hover-box-shadow);
+        
+        @include background($btnprimary-hover-bg);
+    }
+
+    &:active {
+        border-style: $btnprimary-active-border-style;
+        border-width: $btnprimary-active-border-width;
+        border-color: $btnprimary-active-border-color-leg;
+        border-color: $btnprimary-active-border-color;
+        
+        color: $btnprimary-active-font-color;
+        text-shadow: $btnprimary-active-text-shadow;
+        
+        @include box-shadow($btnprimary-active-box-shadow);
+        @include background($btnprimary-active-bg);
+    }
+
+    &[disabled],
+    &.disabled,
+    &.disabled:hover,
+    &.disabled:active {
+        color: $btnprimary-disabled-font-color-leg;
+        color: $btnprimary-disabled-font-color;
+
+        @include background($btnprimary-disabled-bg);
+    }
+}
+
+.primary,
+.#{$ns}-button__primary,
+input[type="button"].primary,
+input[type="submit"].primary,
+input[type="button"].#{$ns}-button__primary,
+input[type="submit"].#{$ns}-button__primary {
+    @extend %btn-primary;
+}

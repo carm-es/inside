@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+			  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<import resource="classpath:es/mpt/dsic/inside/context/quartz.xml" />
+
+	<context:component-scan base-package="es.mpt.dsic.loadTables" />
+
+	<context:property-placeholder
+		location="file:${config.path}/loadTables-config.properties"
+		ignore-unresolvable="true" />
+
+	<bean id="unidadOrganicaController"
+		class="es.mpt.dsic.loadTables.controller.UnidadOrganicaController">
+		<property name="unidadOrganicaService" ref="unidadOrganicaService" />
+		<property name="consumer" ref="clientUnidadesOrganicas"/>
+		<property name="rutaTemp" value="${Path.temp}"></property>
+		<property name="ficheroTxtTemporal" value="Organismo_temp.txt"></property>
+		<property name="ficheroZipTemporal" value="Organismo_temp.zip"></property>
+		<property name="pathDescompresion" value="organismo"></property>
+	</bean>
+
+	<bean id="clientUnidadesOrganicas" class="es.mpt.dsic.loadTables.service.impl.ConsumidorDir">
+		<property name="user" value="${ws.unidadesOrganicas.login}"></property>
+		<property name="password" value="${ws.unidadesOrganicas.password}"></property>
+		<property name="url" value="${ws.unidadesOrganicas.url}"></property>
+	</bean>
+
+	<!-- DAO -->
+	<bean id="unidadOrganicaDAO"
+		class="es.mpt.dsic.loadTables.hibernate.dao.impl.UnidadOrganicaDAOImpl" />
+
+	<!-- Service -->
+	<bean id="unidadOrganicaService"
+		class="es.mpt.dsic.loadTables.hibernate.service.impl.UnidadOrganicaServiceImpl">
+		<property name="genericDao" ref="unidadOrganicaDAO" />
+		<property name="sessionFactory" ref="InsideServiceHibernateSessionFactory" />
+	</bean>
+</beans>
+           

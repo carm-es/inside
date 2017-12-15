@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:insidever="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/version"
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/version" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">INFORMACIÓN DE VERSIÓN PARA EL EXPEDIENTE Y DOCUMENTO ELECTRÓNICO INSIDE (v1.0)</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="TipoVersionInside">
+		<xsd:sequence>
+			<xsd:element name="version" type="xsd:int" />
+			<xsd:element name="fechaVersion" type="xsd:dateTime" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

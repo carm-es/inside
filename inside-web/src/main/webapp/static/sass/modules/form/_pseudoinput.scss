@@ -1,0 +1,32 @@
+//
+// pseudoinput
+//
+
+.#{$ns}-psdinput,
+.#{$ns}-psd-input {
+    display: $psdinput-display;
+    width: $psdinput-mobile-width;
+    padding: $psdinput-padding;
+    overflow: hidden;
+    
+    font-size: $psdinput-font-size;
+    line-height: $psdinput-line-height;
+    vertical-align: $psdinput-valign;
+    
+    border: $psdinput-border-width $psdinput-border-style $psdinput-border-color;
+    outline: $psdinput-outline;
+    
+    @include border-radius($psdinput-border-radius);
+
+    background-color: $psdinput-bg;
+    
+    @include box-shadow($psdinput-shadow);
+
+    cursor: auto;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        width: $psdinput-desktop-width;
+    }
+}
+
+

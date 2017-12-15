@@ -1,0 +1,99 @@
+.#{$ns}-table-fixheads {
+    position: relative;
+    overflow: auto;
+
+    th,
+    td {
+        white-space: nowrap;
+    }
+}
+
+.header-fixed {
+  position: absolute;
+  top: 0;
+}
+
+.#{$ns}-table-fixheads-wrapper {
+    
+}
+
+.#{$ns}-table-fixheads--main-table {
+    position: absolute;
+
+    thead th {
+      border-bottom-width: 0;
+    }
+}
+
+.#{$ns}-table-fixheads--corner-container {
+  position: absolute;
+  z-index: 2;
+
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  border-color: #DDD #BCBCBC #BCBCBC #DDD;
+}
+
+.#{$ns}-table-fixheads--left-container {
+  position: relative;
+  float: left;
+  overflow: hidden;
+
+  border-style: solid;
+  border-width: 0 1px;
+  border-color: #DDD #BCBCBC #DDD #DDD;
+}
+
+.#{$ns}-table-fixheads--top-container {
+  position: relative;
+  overflow: hidden;
+
+  border-style: solid;
+  border-width: 1px 1px 1px 0;
+  border-color: #DDD #DDD #BCBCBC #DDD;
+
+  @include mf-background(#EEE);
+}
+
+.#{$ns}-table-fixheads--corner {
+  width: 100%;
+  
+  th {
+    padding: 8px 12px;
+    //height: 28px;
+    
+    outline: none;
+  }
+}
+
+.#{$ns}-table-fixheads--left {
+  position: relative;
+
+  th {
+    position: relative;
+
+    outline: none;
+    border-bottom: 1px solid #DDD;
+  }
+
+  label {
+    vertical-align: baseline;
+    line-height: inherit;
+  }
+}
+
+.#{$ns}-table-fixheads--top {
+  position: relative;
+
+  th {
+    outline: none;
+    border-style: solid;
+    border-width: 0 1px;
+    border-color: #DDD;
+  }
+}
+
+.#{$ns}-table-fixheads--corner {
+  /* position: relative;
+  z-index: 1; */
+}

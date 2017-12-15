@@ -1,0 +1,11 @@
+/* buscar un lugar mejor */
+
+.note {
+	display: block;
+    margin: $note-margin;
+    padding: $note-padding;
+
+    color: $note-font-color;
+	
+    @include border($note-border-width, $note-border-style, $note-border-color);
+}

@@ -1,0 +1,40 @@
+%media {
+    @include clearfix();
+}
+
+%media-img {
+    float: left;
+    margin-right: 1em;
+
+    > img, 
+    > span {
+        display: block;
+    }
+}
+
+%media-content {
+    @include clearfix();
+}
+
+%media-ext {
+    @extend %toolbar;
+    
+    float: right;
+    margin-left: 10px;
+}
+
+.#{$ns}-media {
+    @extend %media;
+
+    > .#{$ns}-media--img {
+        @extend %media-img;
+    }
+    
+    > .#{$ns}-media--content {
+        @extend %media-content;
+    }
+
+    > .#{$ns}-media--ext {
+        @extend %media-ext;
+    }
+}

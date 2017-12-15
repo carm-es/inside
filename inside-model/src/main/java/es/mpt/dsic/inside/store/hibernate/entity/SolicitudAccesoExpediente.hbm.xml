@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="es.mpt.dsic.inside.store.hibernate.entity.SolicitudAccesoExpediente" table="SolicitudAccesoExpediente">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <!-- generator class="identity" /-->
+            <generator class="org.hibernate.id.enhanced.TableGenerator">
+            	<param name="table_name">GeneradorClaves</param>
+            	<param name="initial_value">1</param>
+            	<param name="value_column_name">GenValue</param>
+            	<param name="segment_column_name">GenName</param>
+            	<param name="segment_value">GEN_SolicitudAccesoExpediente</param>
+            </generator>
+        </id>  
+        
+        <property name="Dir3Peticionario" type="string">
+            <column name="DIR3_Peticionario" not-null="true" />
+        </property>
+        <property name="IdPeticion" type="string">
+            <column name="Id_Peticion" not-null="true" />
+        </property>
+        <property name="UsuarioPeticionario" type="string">
+            <column name="Usuario_Peticionario" />
+        </property>        
+        <property name="Asunto" type="string">
+            <column name="Asunto" not-null="true"/>
+        </property>      
+        <property name="FechaPeticion" type="timestamp">
+            <column name="FechaPeticion" not-null="true"/>
+        </property>    
+        <property name="Resultado" type="string">
+            <column name="Resultado"/>
+        </property>  	
+        <property name="EndpointRemitente" type="string">
+            <column name="EndpointRemitente" not-null="true" />
+        </property>  	
+        <property name="CodigoSia" type="int">
+            <column name="CodigoSia" not-null="true" />
+        </property>         
+        <property name="IdExpedienteSolicitado" type="string">
+            <column name="IdExpedienteSolicitado" />
+        </property>
+        <property name="Dir3ExpedienteSolicitado" type="string">
+            <column name="Dir3ExpedienteSolicitado" />
+        </property>                   
+        <property name="EnvioCorrecto" type="string">
+            <column name="EnvioCorrecto" />
+        </property>         
+        <property name="SolicitudTokenDenegada" type="string">
+            <column name="SolicitudTokenDenegada" />
+        </property>
+        <property name="Metadatos" type="binary">
+            <column name="Metadatos" />
+        </property>  
+        <property name="NifUsuarioGeneraToken" type="string">
+            <column name="NifUsuarioGeneraToken" />
+        </property>
+    </class>
+</hibernate-mapping>

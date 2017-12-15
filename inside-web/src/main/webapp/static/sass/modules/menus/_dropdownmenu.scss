@@ -1,0 +1,122 @@
+
+
+// Dropdown button
+
+.mf-dropdown--btn { 
+    display: block;
+    margin: $dropdownbtn-margin;
+    
+    cursor: pointer;
+
+    @include morfont-icon($dropdown-icon-s, "after", 0 0 0 0.5em, 11px);
+
+    .is-open & {
+        @include morfont-icon($dropdown-icon-n, "after", 0 0 0 0.5em, 11px);        
+    }
+}
+
+.mf-dropdown--container {
+    /* overflow: hidden; */
+
+    /* @include border($dropdownbtn-border-width, $dropdownbtn-border-style, $dropdownbtn-border-color);
+    
+    @include border-radius($dropdownbtn-border-radius);
+    
+    @include box-shadow($dropdownbtn-shadow); */
+
+    .is-selected & {
+        /* @include box-shadow($dropdownbtn-selected-shadow); */
+    }
+
+    &.mf-dropdown__css:hover {
+        .mf-dropdown--content {
+            @include dropdown-menu-hover($overflow: auto);
+        }
+    }
+}
+
+.mf-dropdown--title {
+    vertical-align: baseline;
+
+    &.mf-dropdown__toggle {
+        cursor: pointer;
+        
+        @include morfont-icon("\e680", $size: 10px);
+
+        &.is-open {
+            @include morfont-icon("\e68e", $size: 10px);
+        }
+    }
+}
+
+.mf-dropdown--btn {
+    display: block;
+    margin: 0;
+
+    
+    /* padding: $dropdownbtn-padding; */
+    
+    
+    /* @include fontSize($dropdownbtn-font-size);
+    font-weight: $dropdownbtn-font-weight; */
+    
+    /* border: none;
+    text-align: $dropdownbtn-text-align; */
+    
+    // @include border-radius($dropdownbtn-border-radius);
+    
+    // text-shadow: $dropdownbtn-text-shadow;
+    
+    // @include background($dropdownbtn-bg);
+    
+    /* @include box-shadow(0 1px 2px rgba(0,0,0,0.65), 
+                        0 1px 1px rgba(255,255,255,0.6) inset); */
+    
+    /* .ie8 & {
+        background-position: right 3px;
+    } */
+    
+    &:link,
+    &:visited {
+        // color: $dropdownbtn-font-color;
+    }
+    
+    .is-selected & {
+        // @include background($dropdownbtn-selected-bg);
+    }
+
+    /* span.ui-icon, 
+    span.#{$ns}icon {
+        float: right;
+        margin-top: -1px;
+    }
+
+    span.#{$ns}icon {
+        margin-right: -4px;
+        margin-left: 2px;
+    } */
+}
+
+.mf-dropdown--content {
+    @include dropdown-menu;
+    z-index: 5;
+
+    /* float: left; */
+    /* min-width: 80px; */
+    /* clear: both;
+    margin: 0; */
+    // max-height: 200px;
+    overflow: auto;
+    overflow-y: auto;
+
+    .is-open & {
+        clip: auto;
+       @include dropdown-menu-hover($overflow: auto);
+    }
+
+    /* @include background($dropdownbtn-menu-bg);
+    
+    @include border-radius($dropdownbtn-menu-border-radius);
+    
+    @include box-shadow($dropdownbtn-menu-shadow); */
+}

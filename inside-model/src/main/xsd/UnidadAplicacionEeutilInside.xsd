@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/unidadAplicacionEeutil" 
+xmlns:app="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/unidadAplicacionEeutil" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD Unidad Aplicacion Eeutil Inside</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="UnidadAplicacionEeutil">
+		<xsd:sequence>
+			<xsd:element name="codigoUnidad" type="xsd:string" />
+			<xsd:element name="aplicacion" type="xsd:string" />
+			<xsd:element name="password" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

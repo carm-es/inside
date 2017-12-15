@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 7 ]> <html class="ie ie7 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 8 ]> <html class="ie ie8 no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
+
+<head></head>
+
+<body>		
+	<footer id="footer" class="mf-footer" th:fragment="footer">
+    	<div class="mf-footer--content">
+
+			<p class="mf-footer--copy" th:utext="#{layout.footer.tittle}"></p>
+			<p th:text="#{layout.footer.version} + ${session.versionNumber}"></p>
+    	</div>
+    </footer>
+    
+    <div th:fragment="js">
+        <div class="mf-dialog" style="display: none">
+	        <div class="mf-dialog--titlebar">
+	            <span class="mf-dialog--title"></span>
+	            <button class="mf-dialog--closebtn" title="Cerrar">Cerrar</button>
+	        </div>
+	        <div class="mf-dialog--content"></div>
+	        <div class="mf-dialog--buttonbar"></div>  
+        </div>
+              
+     	<script th:src="|${#httpServletRequest.getContextPath()}/js/main.js?v=${session.versionNumber}|"></script>
+	 	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/datepicker.js?v=${session.versionNumber}|"></script> 
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/datepicker.js?v=${session.versionNumber}|"></script>		 
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/position.js?v=${session.versionNumber}|"></script> 
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/dialog.js?v=${session.versionNumber}|"></script> 
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/timer.js?v=${session.versionNumber}|"></script> 
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/ajax.js?v=${session.versionNumber}|"></script> 
+	 	<script th:src="|${#httpServletRequest.getContextPath()}/js/widgets/init.js?v=${session.versionNumber}|"></script> 
+ 		<!-- <div class="mf-dialog is-hidden"></div>--> 
+ 		
+ 		<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/jquery-datatables/jquery.dataTables.js?v=${session.versionNumber}|"></script>
+
+	</div>
+</body>
+</html>

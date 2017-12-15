@@ -1,0 +1,172 @@
+// Not optimized!
+/* Button w/multiple secondary actions */
+
+.multisimbutton {
+    display: inline-block;
+    margin: 0 2px;
+
+    & > div {
+        overflow: hidden;
+
+        @include border-radius(2px);
+        
+        @include background(linear-gradient(top, #eae7e7 0%,#b8b8b8 100%));
+        
+        @include box-shadow(0 1px 2px rgba(0,0,0,0.65), 
+                            0 1px 1px rgba(255,255,255,0.6) inset);
+
+        .ie8 & {
+            border-top: 1px solid #CCC;
+            border-right: 1px solid #999;
+            border-bottom: 1px solid #999;
+            border-left: 1px solid #999;
+        }
+    }
+
+    .multiPrimary {
+        display: inline-block;
+        float: left;
+        padding: 7px 12px;
+        // height: 17px;
+        min-width: 70px;
+        margin: 0;
+        
+        font-size: 0.917em;
+        font-weight: normal;
+        color: #444;
+        border: none;
+        text-align: center;
+        white-space: nowrap;
+
+        @include border-radius(0);
+        
+        border-right: 1px solid #999;
+        
+        text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+
+        background: transparent;
+        filter: progid:DXImageTransform.Microsoft.gradient( enabled=0 );
+
+        @include box-shadow(1px 0 0 rgba(255,255,255,0.05) inset, 
+                            -1px 0 0 rgba(255,255,255,0.15) inset);
+
+        .ie8 & {
+            // border-top: 1px solid #CCC;
+            // border-bottom: 1px solid #999;
+            // border-left: 1px solid #999;
+
+            border: none;
+
+            border-right: 1px solid #999;
+        }
+    }
+
+    input.multiPrimary[type="submit"], 
+    input.multiPrimary[type="button"] {
+        // height: 31px;
+        padding: 7px 12px;
+    }
+        
+    .ie8 .multisimbutton input.multiPrimary[type="submit"] {
+        // height: 33px;
+    }
+
+    .multiDropdown {
+        display: block;
+        float: left;
+        overflow: hidden;
+        padding: 6px;
+        width: 14px;
+        min-height: 16px;
+        // height: 23px;
+        margin-bottom: 0;
+        
+        cursor: pointer;
+        
+        text-indent: -99999em;
+        font-size: 0.917em;
+        font-weight: normal;
+        color: #444;
+        border: none;
+        
+        text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+
+        // background: #eae7e7;
+        // background: -moz-linear-gradient(top, #eae7e7 0%, #b8b8b8 100%);
+        // background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eae7e7), color-stop(100%,#b8b8b8));
+        // background: -webkit-linear-gradient(top, #eae7e7 0%,#b8b8b8 100%);
+        // background: -o-linear-gradient(top, #eae7e7 0%,#b8b8b8 100%);
+        // background: -ms-linear-gradient(top, #eae7e7 0%,#b8b8b8 100%);
+        // filter:     progid:DXImageTransform.Microsoft.gradient( startColorstr='#eae7e7', endColorstr='#b8b8b8',GradientType=0 );
+        // background: linear-gradient(top, #eae7e7 0%,#b8b8b8 100%);
+        
+        @include box-shadow(1px 0 0 rgba(255,255,255,0.15) inset);
+
+        .ie8 & {
+            // border-top: 1px solid #CCC;
+            // border-bottom: 1px solid #999;
+            // border-left: 1px solid #999;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        span {
+            display: none;
+
+            &.#{$ns}-icon {
+                display: block;
+            }
+        }
+    }
+
+    .selected {
+        @include background(linear-gradient(top, rgba(0,0,0,0.23) 0%,rgba(255,255,255,0.28) 100%));
+
+        @include box-shadow(1px 0 1px rgba(0,0,0,0.05) inset, 
+                            0 1px 0px rgba(255,255,255,0.3) inset);
+    }
+
+    ul {
+        float: left;
+        min-width: 80px;
+        clear: both;
+        margin: 0;
+        display: none;
+        position: absolute;
+        overflow: hidden;
+        
+        background-color: #CCC;
+        
+        @include border-radius(2px 0 3px 3px);
+        
+        @include box-shadow(0 1px 2px rgba(0,0,0,0.65));
+
+        li {
+            display: block;
+            padding: 0;
+            
+            border-bottom: 1px solid #999;
+            
+            color: #444;
+            text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+            
+            @include box-shadow(0 1px 1px rgba(255,255,255,0.4) inset);
+
+            &:hover {
+                background-color: #DDD;
+            }
+
+            a {
+                display: block;
+                padding: 9px 18px;
+                
+                font-size: 0.917em;
+                
+                color: #444;
+                text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+            }
+        }
+    }
+}

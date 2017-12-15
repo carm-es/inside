@@ -1,0 +1,40 @@
+progress {
+    -webkit-appearance: none;
+       -moz-appearance: none;
+            appearance: none;
+
+    border: none;
+
+    padding: $progress-padding;
+    overflow: hidden;
+    
+    @include border($progress-border-width, $progress-border-style, $progress-border-color);
+    @include border-radius($progress-border-radius);
+    
+    @include background($progress-bg);
+
+    @include box-shadow($progress-shadow);
+
+    .ie & {
+        display: inline-block;
+        min-width: 100px;
+
+        .#{$ns}-progress-value {
+            
+        }
+    }
+}
+
+progress::-webkit-progress-bar {
+    @include background($progress-bg);
+
+    @include box-shadow($progress-shadow);
+}
+
+progress::-webkit-progress-value {
+    @include background($progress-value-bg);
+}
+
+progress::-moz-progress-bar {
+    @include background($progress-value-bg);
+}

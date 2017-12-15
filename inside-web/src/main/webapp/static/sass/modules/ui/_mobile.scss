@@ -1,0 +1,300 @@
+.showNav {
+	overflow: hidden;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        overflow: visible;
+    }
+    
+    #header {
+        width: 100%;
+        left: 85%;
+    }
+
+	#header {
+        display: block;
+        
+		@include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin-left: 0;
+
+            @include transition(none);
+        }
+
+        h1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+	}
+
+    #headerContent {
+        // padding-top: $header-mobile-height;
+    }
+
+    #container {
+        overflow: hidden;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            overflow: visible;
+        }
+    }
+
+    #wrap {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 85%;
+        width: 100%;
+        overflow: hidden;
+
+        @include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            width: auto;
+            // margin: $wrap-desktop-margin;
+
+            @include transition(none);
+        }
+    }
+    
+    // Componentes
+
+    #navigation {
+        
+    }
+
+    #appMenu {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 85%;
+        overflow: scroll;
+        -webkit-overflow-scrolling: touch;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            overflow: visible;
+        }
+    }
+
+    .windowToolbar {
+    	left: 85%;
+
+    	@include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin: 0;
+
+            @include transition(none);
+        }
+    }
+}
+
+.showUserMenu {
+    overflow: hidden;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        overflow: visible;
+    }
+    
+    #header {
+        display: block;
+        width: 100%;
+        right: 85%;
+        
+        @include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin-left: 0;
+
+            @include transition(none);
+        }
+
+        h1 {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+    }
+
+    #headerContent {
+        // padding-top: $header-mobile-height;
+    }
+
+    #container {
+        overflow: hidden;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            overflow: visible;
+        }
+    }
+
+    #wrap {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 85%;
+        width: 100%;
+        overflow: hidden;
+
+        @include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            width: auto;
+            // margin: $wrap-desktop-margin;
+
+            @include transition(none);
+        }
+    }
+
+    #topBar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 15%;
+        width: 85%;
+        overflow: scroll;
+        -webkit-overflow-scrolling: touch;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            overflow: visible;
+        }
+    }
+
+    .windowToolbar {
+        left: -85%;
+
+        @include transition(all 0.25s linear);
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin: 0;
+
+            @include transition(none);
+        }
+    }
+}
+
+#showNav-btn {
+    float: left;
+    margin: 0 5px;
+    width: 31px;
+    height: 29px;
+    overflow: hidden;
+    padding: 2px;
+
+    text-indent: -99999em;
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: none;
+    }
+
+    &:focus {
+        outline: none;
+    }
+
+    .nav-text {
+        float: left;
+    }
+
+    .nav-icon {
+        float: left;
+        width: 30px;
+        height: 26px;
+        overflow: hidden;
+        padding: 6px;
+
+        // @include border-radius(2px);
+
+        // @include box-shadow(0 0 1px rgba(0,0,0,0.5),
+         //                   0 0 1px rgba(255,255,255,0.5) inset);
+
+        & > span {
+            float: left;
+            clear: both;
+            width: 18px;
+            height: 3px;
+            margin-bottom: 2px;
+            
+            @include border-radius(4px);
+
+            background: white;
+        }
+    }
+}
+
+#showUserMenu-btn {
+    float: right;
+    margin: 2px 5px;
+    // width: 31px;
+    // height: 29px;
+    overflow: hidden;
+    padding: 0;
+    
+    // text-indent: -99999em;
+    
+    /* @include border-radius(2px);
+
+    @include box-shadow(0 0 1px rgba(0,0,0,0.5),
+                        0 0 1px rgba(255,255,255,0.5) inset); */
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: none;
+    }
+    
+    &:focus {
+        outline: none;
+    }
+    
+    .nav-icon {
+        float: left;
+        width: 28px;
+        height: 26px;
+        overflow: hidden;
+        padding: 6px;
+        
+        // background: #CCC;
+
+        text-indent: -99999em;
+    }
+
+    .notif-icon {
+        float: left;
+        min-width: 24px;
+        overflow: hidden;
+        
+        font-size: 0;
+        text-indent: -9999em;
+            
+        .tip {
+            display: block;
+            margin: 0;
+            padding: 0 7px;
+
+            color: white;
+            font-size: 17px;
+            line-height: 23px;
+            text-indent: 0;
+            text-align: center;
+            vertical-align: middle;
+
+            border: 1px solid rgba(0,0,0,0.2);
+
+            background: #DA5151;
+
+            @include border-radius(13px);
+        }
+
+        .text {
+            float: left;
+        }
+    }
+
+    .nav-text {
+        display: none;
+        visibility: hidden;
+    }
+}

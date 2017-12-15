@@ -1,0 +1,238 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>inside-model</artifactId>
+	<description>
+  	En este proyecto se generaran todas las entidades comunes al resto de proyectos. Es importante recalcar que este proyecto no tiene lógica programada sino que se compone de objetos planos, (POJOs), y de interfaces.
+    * Objetos POJO de intercambio: Objeto Documento, objeto Expediente, etc.
+    * Interface de acceso a repositorio decumental.
+    * Interfaces de lógica de servicios externa a InSide: Interfaces de Firma, de Registro Electrónico, etc. 
+  </description>
+
+<properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+</properties>
+	<parent>
+		<groupId>es.mpt.dsic</groupId>
+		<artifactId>inside-mvn-base</artifactId>
+		<version>1.1-SNAPSHOT</version>
+		<!-- CARM ### v2.0.7.1 -->
+		<relativePath>../inside-mvn-base</relativePath>
+		<!-- CARM 2.0.7.1 ### -->
+	</parent>
+
+	<scm>
+		<connection>scm:svn:svn://dev.map.es/repo/svn/InSide/trunk/Desarrollo/inside-model</connection>
+		<developerConnection>scm:svn:svn+ssh://{mpt.username}@dev.map.es/repo/svn/InSide/trunk/Desarrollo/inside-model</developerConnection>
+		<url>http://dev.map.es/trac/InSide/browser/trunk/Desarrollo/inside-model/</url>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<!-- CARM ### v2.0.7.1 -->
+			<!-- <scope>provided</scope> -->
+			<!-- CARM 2.0.7.1 ### -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<!-- CARM ### v2.0.7.1 -->
+			<!-- <scope>provided</scope> -->
+			<!-- CARM 2.0.7.1 ### -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-commons</artifactId>
+			<version>1.8.4.RELEASE</version>
+		</dependency>
+		<!-- dependency> <groupId>javax.xml.bind</groupId> <artifactId>jaxb-api</artifactId> 
+			<version>2.0</version> </dependency> <dependency> <groupId>com.sun.xml.bind</groupId> 
+			<artifactId>jaxb-impl</artifactId> <version>2.0.3</version> </dependency -->
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>eu.medsea.mimeutil</groupId>
+			<artifactId>mime-util</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.jmimemagic</groupId>
+		    <artifactId>jmimemagic</artifactId>
+		    <version>0.1.4</version>
+		</dependency>
+    
+		<dependency>
+			<groupId>es.mpt.dsic</groupId>
+			<artifactId>infofirma-service</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.8.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-api</artifactId>
+			<version>1.2.5</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate.java-persistence</groupId>
+			<artifactId>jpa-api</artifactId>
+			<version>2.0-cr-1</version>
+			<exclusions>
+            	<exclusion>
+                	<groupId>org.slf4j</groupId>
+                	<artifactId>slf4j-api</artifactId>
+            	</exclusion>
+        	</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>3.5.6-Final</version>
+			<exclusions>
+            	<exclusion>
+                	<groupId>org.slf4j</groupId>
+                	<artifactId>slf4j-api</artifactId>
+            	</exclusion>
+        	</exclusions>
+		</dependency>
+	
+	</dependencies>
+
+
+
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/xsd</directory>
+				<includes>
+					<include>**/*.xsd</include>
+				</includes>
+				<targetPath>src/main/resources/es/mpt/dsic/inside/xsd</targetPath>
+			</resource>
+			<resource>
+				<directory>src/main/java/es/mpt/dsic/inside/store/hibernate/entity</directory>
+				<includes>
+					<include>**/*.xml</include>
+				</includes>
+				<targetPath>es/mpt/dsic/inside/store/hibernate/entity</targetPath>
+			</resource>
+		</resources>
+		<plugins>
+<!-- 			<plugin> -->
+<!-- 				<artifactId>maven-resources-plugin</artifactId> -->
+<!-- 				<version>2.5</version> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>copy-resources</id> -->
+<!-- 						<phase>install</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>copy-resources</goal> -->
+<!-- 						</goals> -->
+<!-- 						<configuration> -->
+<!-- 							<outputDirectory>${basedir}/target/xsd/</outputDirectory> -->
+<!-- 							<resources> -->
+<!-- 								<resource> -->
+<!-- 									<directory>src/main/xsd</directory> -->
+<!-- 									<filtering>true</filtering> -->
+<!-- 								</resource> -->
+<!-- 							</resources> -->
+<!-- 						</configuration> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>jaxb2-maven-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>src/main/java</outputDirectory>
+							<schemaDirectory>src/main/xsd</schemaDirectory>
+							<bindingFiles>schema-bindings.xml</bindingFiles>
+							<clearOutputDir>false</clearOutputDir>
+							<!-- <arguments>"-Xfluent-api"</arguments> -->
+							<arguments>-no-header</arguments>
+							<!-- puesto para que el clean no lo borre porque va a ruta por defecto /jaxb2 a borrarlo -->
+							<staleFile>${project.basedir}/.schema2XjcStaleFlag</staleFile>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		<!-- CARM ### v2.0.7.1 -->			
+			<plugin>
+				<!-- Compilación usando Java 1.5 -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<!-- Codificación UTF-8 de recursos -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+                    <encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		<!-- CARM 2.0.7.1 ### -->				
+		</plugins>
+	</build>
+</project>

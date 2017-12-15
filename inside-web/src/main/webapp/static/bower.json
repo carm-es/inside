@@ -1,0 +1,27 @@
+{
+  "name": "Morfos",
+  "version": "2.1.0",
+  "authors": [
+    "Ignacio Calleja <ignacio.calleja@externos.seap.minhap.es>"
+  ],
+  "description": "Framework de desarrollo front de la DTIC",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "css"
+  ],
+  "license": "EUPL",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "susy": "~2.2.2",
+    "breakpoint-sass": "~2.5.0"
+  }
+}

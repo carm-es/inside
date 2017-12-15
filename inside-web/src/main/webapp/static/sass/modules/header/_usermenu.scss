@@ -1,0 +1,254 @@
+/**
+* @desc         User menu
+* @name         usermenu
+* @author       Ignacio Calleja
+* @tested       
+* @requires     topbar
+*/
+
+/* 
+
+<div class="mf-usermenu">
+    <ul class="mf-usermenu--menu">
+
+        <!-- Notifications menu -->
+        <li class="mf-usermenu--item mf-notif">
+            <p class="mf-notif--title"><span>Notificaciones</span><span class="mf-notif--counter">2</span></p>
+            <ul class="mf-notif--menu">
+                <li class="mf-notif--item is-new">
+                    <a href="#!">
+                        <time class="mf-profiles--subtitle">jueves 24 de marzo de 2012</time>
+                        <strong>Nombre Apellido Apellido</strong> hizo algo deleznable
+                    </a>
+                </li>
+                <li class="mf-notif--item is-unread">
+                    <a href="#!">
+                        <time class="mf-profiles--subtitle">jueves 24 de marzo de 2012</time>
+                        <strong>Nombre Apellido Apellido</strong> hizo algo despreciable
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Profiles menu -->
+        <li class="mf-usermenu--item mf-profiles">
+            <p class="mf-profiles--title has-submenu"><span class="user-profile-name">ANF Usuario Activo</span> / <span class="user-profile-name">Ayuntamiento de Atarfe</span></p>
+            <ul class="mf-profiles--menu">
+                <li class="mf-profiles--item is-selected">
+                    <a id="profile_L01010014" href="#">Ayuntamiento de Alegría-Dulantzi
+                        <span class="mf-profiles--subtitle">L01010014</span>
+                    </a>
+                </li>
+                <li class="mf-profiles--item">
+                    <a id="profile_L01310109" href="#">Ayuntamiento de Altsasu/Alsasua
+                        <span class="mf-profiles--subtitle">L01310109</span>
+                    </a>
+                </li>
+
+                <li class="mf-secondaryLinks" title="Mostra todas">
+                    <a id="profile_show_all" href="#">
+                        Mostra todas
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Settings -->
+        <li class="mf-usermenu--item">
+            <a class="mf-usermenu--settings" href="#">
+                Configuración
+            </a>
+        </li>
+        
+        <!-- Logout -->
+        <li class="mf-usermenu--item">
+            <a class="mf-usermenu--logout" href="#">
+                Salir
+            </a>
+        </li>
+    </ul>
+</div>
+
+*/
+
+.#{$ns}-usermenu {
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+
+        line-height: $topbar-item-desktop-line-height;
+        
+        @include pie-clearfix();
+        
+        .portal &,
+        .sede & {
+            float: none;
+            display: inline-block;
+        }
+
+        .#{$ns}-header__compact & {
+            float: right;
+            display: block;
+        }
+    }
+}
+
+.#{$ns}-usermenu--menu {
+    @extend %menu;
+    
+    /* @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+
+        line-height: $topbar-item-desktop-line-height;
+        
+        @include pie-clearfix();
+        
+        .portal &,
+        .sede & {
+            float: none;
+            display: inline-block;
+        }
+    } */
+}
+
+.#{$ns}-usermenu--item {
+    float: left;
+}
+
+// Menú de perfiles de usuario
+
+.#{$ns}-profiles {
+
+    &:hover .mf-profiles--menu {
+        @include dropdown-menu-hover();
+    }
+}
+
+.#{$ns}-profiles--title {
+    @extend %topbar--item;
+
+    margin: 0;
+
+    font-size: inherit;
+    // line-height: inherit;
+
+    .#{$ns}-profiles.has-submenu & {
+        @include morfont-icon($dropdown-icon-s, "after", $size: 10px);
+    }
+}
+
+.#{$ns}-profiles--menu {
+    @extend %topbar--menu;
+}
+
+.#{$ns}-profiles--item {
+    @extend %topbar--menu-item;
+}
+
+// Menú de notificaciones
+
+.#{$ns}-notif {
+
+    &:hover .mf-notif--menu {
+        @include dropdown-menu-hover();
+    }
+}
+
+.#{$ns}-notif--title {
+    @extend %topbar--item;
+    
+    margin: 0;
+    
+    font-size: inherit;
+    line-height: inherit;
+
+    @include morfont-icon(  $usermenu-notif-icon, 
+                            $size: 12px,
+                            $margin: 0 1px 0 0);
+
+    & > span {
+        float: left;
+        width: 1px;
+        overflow: hidden;
+    }
+
+    .#{$ns}-notif--counter {
+        width: auto;
+        float: none;
+    }
+}
+
+.#{$ns}-notif--menu {
+    @extend %topbar--menu;
+}
+
+.#{$ns}-notif--item {
+    @extend %topbar--menu-item;
+}
+
+.mf-profiles--subtitle {
+    @extend %topbar--menu-item-subtitle;
+}
+
+.#{$ns}-notif--counter {
+    margin: $topbar-badge-mobile-margin;
+    padding: $topbar-badge-mobile-padding;
+    
+    color: $topbar-badge-mobile-color;
+    font-size: $topbar-badge-mobile-font-size;
+    text-align: $topbar-badge-mobile-text-align;
+    text-shadow: $topbar-badge-mobile-text-shadow;
+    white-space: nowrap;
+    
+    @include mf-background($topbar-badge-mobile-bg);
+
+    @include border-radius($topbar-badge-mobile-border-radius);
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        margin: $topbar-badge-desktop-margin;
+        padding: $topbar-badge-desktop-padding;
+        
+        color: $topbar-badge-desktop-color;
+        font-size: $topbar-badge-desktop-font-size;
+        text-align: $topbar-badge-desktop-text-align;
+        text-shadow: $topbar-badge-desktop-text-shadow;
+
+        @include mf-background($topbar-badge-desktop-bg);
+        
+        @include border-radius($topbar-badge-desktop-border-radius);
+    }
+}
+
+.#{$ns}-usermenu--settings {
+    @extend %topbar--item;
+    
+    @include morfont-icon($usermenu-settings-icon, $margin: 0);
+}
+
+.#{$ns}-usermenu--logout {
+    @extend %topbar--item;
+}
+
+/* User Menu - Profile selector */
+
+/* .user-profile {
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        width: auto;
+    }
+} */
+
+/* Contenedor ajax */
+
+.#{$ns}-usermenu--ajax-container {
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+
+        @include pie-clearfix();
+        
+        .portal &,
+        .sede & {
+            float: none;
+            display: inline-block;
+        }
+    }
+}

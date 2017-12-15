@@ -1,0 +1,44 @@
+// UI Dialog
+
+@if ($jqueryui-support) {
+	
+	.ui-dialog {
+		overflow: hidden;
+		padding: $uidialog-padding;
+
+		@include background($uidialog-bg);
+		
+		@include border($uidialog-border-width,
+						$uidialog-border-style,
+						$uidialog-border-color);
+		
+		@include border-radius($uidialog-border-radius);
+		
+		@include box-shadow($uidialog-shadow);
+
+		.ui-dialog-titlebar {
+			@include background($uidialog-titlebar-bg);
+
+			color: $uidialog-titlebar-color;
+			
+			@include border($uidialog-titlebar-border-width,
+							$uidialog-titlebar-border-style,
+							$uidialog-titlebar-border-color);
+
+			@include border-radius($uidialog-titlebar-border-radius);
+
+			@include box-shadow($uidialog-titlebar-shadow);
+		}
+
+		.ui-dialog-content {
+			margin: $uidialog-content-margin;
+			padding: $uidialog-content-padding;
+
+			@include background($uidialog-content-bg);
+
+			@include border($uidialog-content-border-width,
+							$uidialog-content-border-style,
+							$uidialog-content-border-color);
+		}
+	}
+}

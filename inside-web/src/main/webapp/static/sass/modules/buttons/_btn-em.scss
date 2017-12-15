@@ -1,0 +1,20 @@
+// Not optimized!
+/* Button: embossed */
+
+.#{$ns}-button-em,
+.#{$ns}-button__em {
+    display: $button-display;
+    margin: $btnem-margin;
+    padding: $btnem-padding;
+    
+    cursor: $button-cursor;
+    
+    @include fontSize($button-font-size);
+    @include mf-background($btnem-bg);
+    
+    @include border($btnem-border-width, $btnem-border-style, $btnem-border-color);
+    @include border-radius($btnem-border-radius);
+    
+    @include box-shadow($btnem-shadow);
+    @include ie-shadow();
+}
