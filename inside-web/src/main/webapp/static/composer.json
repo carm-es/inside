@@ -1,0 +1,15 @@
+{
+    "name": "dsic/morfos2",
+    "license": "proprietary",
+    "type": "library",
+    "description": "Morfos2 el conjunto de estilos definitivo",
+    "autoload": {
+        "psr-0": { "Dsic\\Morfos2\\": "" }
+    },
+    "target-dir": "Dsic/Morfos2",  
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

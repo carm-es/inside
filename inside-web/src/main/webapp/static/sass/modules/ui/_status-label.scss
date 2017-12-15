@@ -1,0 +1,63 @@
+.#{$ns}-status {
+    display: inline-block;
+    
+	padding: $statuslabel-padding;
+    
+	@include fontSize($statuslabel-font-size);
+    
+	@include border-radius($statuslabel-border-radius);
+    
+	@include background($statuslabel-bg);
+}
+
+.#{$ns}-status__error {
+    color: $statuslabel-info-color;
+
+    @include background($statuslabel-error-bg)
+}
+
+.#{$ns}-status__success {
+    color: $statuslabel-success-color;
+
+    @include background($statuslabel-success-bg);
+
+    a,
+    a:link,
+    a:visited {
+        color: $statuslabel-success-color;
+    }
+}
+
+.#{$ns}-status__info {
+    color: $statuslabel-info-color;
+
+    @include background($statuslabel-info-bg);
+
+    a,
+    a:link,
+    a:visited {
+        color: $statuslabel-success-color;
+    }
+}
+
+.#{$ns}-status__warning {
+    color: $statuslabel-warning-color;
+
+    @include background($statuslabel-warning-bg);
+
+    a,
+    a:link,
+    a:visited {
+        color: $statuslabel-success-color;
+    }
+}
+
+.#{$ns}-status--action {
+    color: inherit;
+    font-weight: $statuslabelaction-font-weight;
+
+    &:link,
+    &:visited {
+        color: $statuslabel-success-color;
+    }
+}

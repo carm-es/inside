@@ -1,0 +1,220 @@
+.grid-header {
+    @include clearfix;
+}
+
+.grid-row-actions {
+    @extend %toolbar-ib;
+
+    white-space: nowrap;
+}
+
+.#{$ns}-datagrid {
+    @include pie-clearfix;
+    clear: both;
+}
+
+// Header
+
+.#{$ns}-datagrid--header-content {
+    @include breakpoint($break-wide) {
+        // @debug "TODO: Reparar datagrid columns en nuevo susy!";
+        /* @include span-columns(4);
+        @include omega; */
+        @include span(4 of 24 last);
+        @include omega;
+
+        margin-bottom: 0;
+    }
+}
+
+.#{$ns}-datagrid--header-tools {
+    @include breakpoint($break-wide) {
+        // @debug "TODO: Reparar datagrid columns en nuevo susy!";
+        /* @include span-columns(4);
+        @include pre(16);
+        @include omega; */
+        @include span(4 of 24 last);
+        // @include pre(16);
+        @include omega;
+    }
+}
+
+// Filter
+
+.#{$ns}-datagrid--filter {
+    float: left;
+    // display: block;
+    position: relative;
+    z-index: 3;
+    
+    @include breakpoint($break-wide) {
+        // float: right;
+
+        @include span(4 of 24 last);
+
+        margin-bottom: 0;
+    }
+}
+
+.#{$ns}-datagrid--filter__right {
+    float: right;
+}
+
+.#{$ns}-datagrid--filter-title {
+    display: inline-block;
+    padding: $datagrid-filter-title-padding;
+    
+    cursor: pointer;
+    
+    @include mf-background($datagrid-filter-title-bg);
+
+    @include breakpoint($break-wide) {
+        cursor: default;
+    }
+}
+
+.#{$ns}-datagrid--filter-container {
+    display: none;
+    position: absolute;
+    
+    top: 5px;
+    right: 5px;
+    bottom: 5px;
+    left: 5px;
+
+    @include background($datagrid-filter-container-mobile-bg);
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        top: auto;
+        right: auto;
+        bottom: auto;
+        left: auto;
+
+        min-width: 240px;
+        margin: 0 0 0 5px;
+
+        @include border($datagrid-filter-container-mobile-border-width, 
+                        $datagrid-filter-container-mobile-border-style, 
+                        $datagrid-filter-container-mobile-border-color);
+        @include border-radius(2px);
+        
+        @include box-shadow(0 1px 5px rgba(0,0,0,0.6));
+    }
+    
+    @include breakpoint($break-wide) {
+        display: block;
+        position: static;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+
+        @include border($datagrid-filter-container-desktop-border-width, 
+                        $datagrid-filter-container-desktop-border-style, 
+                        $datagrid-filter-container-desktop-border-color);
+        @include border-radius(0);
+        
+        @include mf-background($datagrid-filter-container-desktop-bg);
+
+        @include box-shadow(none);
+    }
+}
+
+.#{$ns}-datagrid--filter-content {
+    margin: 0;
+    padding: 1em 1.5em;
+    overflow: auto;
+    
+    @include mf-background(#FFFFCC);
+
+    @include breakpoint($break-wide) {
+        padding: 1em 1.5em 1em 1em;
+
+        @include mf-background(transparent);
+    }
+}
+
+.#{$ns}-filter--fld {
+    %form-control {
+        width: 100%;
+    }
+
+    label {
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            width: auto;
+            max-width: $label-desktop-width;
+        }
+    }
+
+    %form-control-list {
+        
+        label {
+            // margin-bottom: 0;
+        }
+    }
+}
+
+.#{$ns}-datagrid--filter-submitbar {
+    display: block;
+    margin: 0;
+    
+    @include mf-background($datagrid-filter-submitbar-bg);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        @include border($datagrid-filter-submitbar-border-width,
+                        $datagrid-filter-submitbar-border-style,
+                        $datagrid-filter-submitbar-border-color);
+    }
+}
+
+.#{$ns}-datagrid--exports {
+    display: inline-block;
+}
+
+.#{$ns}-datagrid--exports-title {
+    padding: 6px 12px;
+}
+
+.#{$ns}-datagrid--exports-list {
+    @include border(2px, solid, #DDD);
+    @include mf-background(#FFF);
+    @include box-shadow(0 1px 5px rgba(0, 0, 0, 0.6));
+}
+
+.#{$ns}-datagrid--exports-item {
+    padding: 4px 12px;
+}
+
+// Datagrid
+
+.#{$ns}-datagrid--content {
+
+    .#{$ns}-wrapper__wide &.#{$ns}-datagrid--content__wfilter {
+        @include breakpoint($break-wide) {
+            @include clearfix();
+            float: left;
+
+            @include span(20 of 24);
+        }
+    }
+}
+
+.#{$ns}-datagrid--table-container {
+    
+    @include border($datagrid-table-container-border-width, 
+                    $datagrid-table-container-border-style,
+                    $datagrid-table-container-border-color);
+
+    @include mf-background($datagrid-table-container-bg);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        min-height: 400px;
+    }
+}
+
+.#{$ns}-datagrid--empty-msg {
+    color: #CCC;
+    color: rgba(0,0,0,0.5);
+    
+    height: 200px;
+    text-align: center;
+}

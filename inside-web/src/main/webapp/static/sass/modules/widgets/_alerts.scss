@@ -1,0 +1,117 @@
+// Contenedor
+
+.#{$ns}-alert-container {
+    position: fixed;
+    z-index: 9999;
+    top: $alert-spacing; 
+    right: $alert-spacing;
+    width: $alert-width;
+}
+
+// Notifications
+
+.#{$ns}-alert-log {
+    margin-bottom: $alert-spacing;
+    right: -$alert-width;
+
+    padding: $alert-padding;    
+}
+
+// States
+
+.is-alertify-log-showing {
+    right: 0;
+}
+.is-alertify-log-hidden {
+    right: -$alert-width;
+}
+
+.#{$ns}-alerts-hidden {
+    display: block;
+    visibility: hidden;    
+    opacity: 0;
+
+    @include transform(translate(0, -150px));
+
+    .ie & {
+        display: none;
+    }
+}
+
+.#{$ns}-alert-logs-hidden {
+    display: none;
+}
+
+.#{$ns}-alert-log {
+    display: block;
+    margin-top: 10px;
+    position: relative;
+    right: -300px;
+    opacity: 0;
+}
+
+.#{$ns}-alert-show {
+    right: 0;
+    opacity: 1;
+}
+
+.#{$ns}-alert-log-hide {
+    @include transform(translate( $alert-width + $alert-spacing, 0));
+    opacity: 0;
+}
+
+// Notification transitions
+
+.#{$ns}-alert-log,
+.#{$ns}-alert-show {
+    @include transition(all 500ms cubic-bezier(0.175, 0.885, 0.320, 1.275));
+}
+
+.#{$ns}-alert-hide {
+    @include transition(all 250ms cubic-bezier(0.600, -0.280, 0.735, 0.045));
+}
+
+.#{$ns}-alert-log-hide {
+    @include transition(all 500ms cubic-bezier(0.600, -0.280, 0.735, 0.045));
+}
+
+// Look&feel
+
+.#{$ns}-alert-log {
+    background: #FFF;
+    
+    @include border($alert-border-width, $alert-border-style, $alert-border-color);
+    @include border-radius($alert-border-radius);
+    
+    @include box-shadow($alert-shadow);
+
+    @include background($alert-bg);
+}
+
+// Notification types
+
+.#{$ns}-alert-error {
+    border-color: $msg-error-color;
+    
+    @include morfont-icon(  $msg-error-icon, 
+                            $margin: 0 12px 0 0, 
+                            $size: 18px, 
+                            $color: $msg-error-color, 
+                            $line-height: 1, 
+                            $float: left, 
+                            $shadow: 0 -1px 0 rgba(255,255,255,0.9)
+                            );
+}
+
+.#{$ns}-alert-success {
+    border-color: $msg-success-color;
+    
+    @include morfont-icon(  $msg-success-icon, 
+                            $margin: 0 12px 0 0, 
+                            $size: 18px, 
+                            $color: $msg-success-color, 
+                            $line-height: 1, 
+                            $float: left, 
+                            $shadow: 0 -1px 0 rgba(255,255,255,0.9)
+                            );
+}

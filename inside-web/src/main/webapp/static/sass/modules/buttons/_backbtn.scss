@@ -1,0 +1,31 @@
+.#{$ns}-backbtn {
+    @extend %button;
+
+    /* float: left;
+    padding: $wheader-backbtn-padding;
+    margin: $wheader-backbtn-margin; 
+    
+    @include fontSize($wheader-backbtn-font-size);
+
+    @include border($wheader-backbtn-border-width, $wheader-backbtn-border-style, $wheader-backbtn-border-color);
+    
+    @include background($wheader-backbtn-bg);
+    @include box-shadow($wheader-backbtn-shadow);
+ */
+    @include morfont-icon($backbtn-icon);
+
+    &:link, 
+    &:visited {
+        // color: $wheader-backbtn-color;
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+        // color: $wheader-backbtn-hover-color;
+    }
+
+    &:focus {
+        
+    }
+}

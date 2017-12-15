@@ -1,0 +1,222 @@
+.#{$ns}-requirements {
+    // text-align: center;
+}
+
+.#{$ns}-requirements--title {
+    @include visuallyhidden();
+}
+
+
+// Requirements tools 
+
+.mf-requirements--header {
+    @include clearfix();
+}
+
+.#{$ns}-requirements--tools {
+    @extend %toolbar;
+
+    float: right;
+}
+
+// Requirement item
+
+.#{$ns}-requirement {
+    margin: 26px 0 0 0;
+    
+    text-align: left;
+
+    @include border(1px 1px 2px 1px, solid, #D8D8D8);
+    
+    @include mf-background(#FFF);
+
+    &.is-unread {
+        
+        border-left-color: #3399CC;
+
+        &:before {
+            content: " ";
+            float: left;
+            width: 0;
+            height: 0;
+            margin-top: -1px;
+            margin-left: -1px;
+
+            border-style: solid;
+            border-width: 6px;
+            border-color: #3399CC transparent transparent #3399CC;
+        }
+    }
+}
+
+.#{$ns}-requirement__question + .#{$ns}-requirement__answer {
+    margin-bottom: 2em;
+
+    &:first-child {
+        margin-top: 0;
+    }
+}
+
+.#{$ns}-requirement__answer {
+    position: relative;
+    margin-top: -1px;
+    margin-left: 3em;
+
+    &:before {
+        position: absolute;
+        float: left;
+        height: 20px;
+        width: 20px;
+        right: 100%;
+        top: -1px;
+
+        @include border(0 0 2px 2px, solid, #D8D8D8);
+        content: " ";
+    }
+
+    .mf-requirement--form-header .mf-report--label {
+        width: auto;
+    }
+}
+
+.#{$ns}-requirement--header {
+    @include clearfix;
+
+    margin: 1em 1em 0;
+    padding: 0 0 0.5em 0;
+
+    .fld {
+        margin-bottom: 0;
+    }
+
+    label,
+    .label {
+        width: 18%;
+        max-width: 80px;
+        margin-right: 2%;
+
+        text-align: right;
+    }
+
+    .fld-help {
+        margin: 2px 0 0 20.5%;
+    }
+}
+
+.#{$ns}-requirement--title {
+    float: left;
+    margin-bottom: 0.5em;
+    
+    color: $base-color;
+    @include fontSize(16px);
+    font-weight: normal;
+
+    .is-unread & {
+        font-weight: bold;
+    }
+}
+
+.#{$ns}-requirement--time {
+    color: #999;
+    @include fontSize(11px);
+}
+
+.#{$ns}-requirement--time__sent {
+    float: right;
+}
+
+.#{$ns}-requirement--sender {
+    float: left;
+    clear: left;
+    margin: 0 1em 0 0;
+
+    color: #666;
+}
+
+.#{$ns}-requirement--content {
+    margin: 0 1em;
+    padding: 1em 0;
+
+    @include border(1px 0 0, solid, #CCC);
+}
+
+.#{$ns}-requirement--footer {
+    @include clearfix;
+
+    // padding: 0.5em 1em;
+    
+
+    @include mf-background(#DDD);
+}
+
+.#{$ns}-requirement--tools {
+    @extend %toolbar;
+
+    margin: 0.3em 1em;
+}
+
+.#{$ns}-requirement--filelist {
+    @extend %media-list;
+}
+
+// Status
+
+.#{$ns}-requirement--status {
+    margin: 0.3em 1em;
+    
+    color: #888;
+    @include fontSize(11px);
+    font-style: italic;
+}
+
+// New requirement
+
+.mf-requirement__new {
+    margin-top: 0;
+}
+
+.#{$ns}-requirement--form {
+    @include clearfix();
+
+    @include mf-background(#FAFAE0);
+
+    .#{$ns}-report--label,
+    label {
+
+        color: #999;
+    }
+}
+
+.#{$ns}-requirement--form-header {
+
+}
+
+.#{$ns}-requirement--form-content {
+    label,
+    .label {
+        @include visuallyhidden();
+    }
+
+    .fld {
+        margin-bottom: 0.5em;
+    }
+}
+
+.#{$ns}-requirement--form-fsubmit {
+    padding: 0.3em 1em;
+    
+    text-align: right;
+}
+
+.#{$ns}-requirement--textarea {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+
+    @include mf-background(#FFF);
+}
+
+input.#{$ns}-requirement--subject-input {
+    width: 80%;
+    @include mf-background(#FFF);
+}

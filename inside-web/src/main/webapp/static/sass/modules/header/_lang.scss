@@ -1,0 +1,76 @@
+/**
+* @desc         Language menu
+* @name         lang
+* @author       Ignacio Calleja
+* @tested       
+* @requires     topbar
+*/
+
+/* 
+
+<div class="mf-topbar--lang mf-lang">
+    <p class="mf-lang--selected-title"><span>Idioma: </span>Castellano</p>
+
+    <ul class="mf-lang--menu">
+        <li class="mf-lang--item mf-selected"><a href="#">Castellano</a></li>
+        <li class="mf-lang--item"><a href="#">Català</a></li>
+        <li class="mf-lang--item"><a href="#">English</a></li>
+    </ul>
+</div>
+
+ */
+
+.#{$ns}-lang {
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+
+        .portal &,
+        .sede & {
+            float: none;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .#{$ns}-header__compact & {
+            float: left;
+            display: block;
+        }
+    }
+
+    &:hover .#{$ns}-lang--menu {
+        @include dropdown-menu-hover();
+    }
+}
+
+.#{$ns}-lang--selected-title {
+    @extend %topbar--item;
+
+    text-transform: $lang-selected-mobile-text-transform;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+    
+        text-transform: $lang-selected-desktop-text-transform;
+        
+        @include morfont-icon($dropdown-icon-s, "after", 0 0 0 0.5em, 11px);
+    }
+    
+    .ie & {
+        border-width: 0 1px;
+    }
+
+    span {
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            @include visuallyhidden;
+        }
+    }
+}
+
+.#{$ns}-lang--menu {
+    @extend %topbar--menu;
+}
+
+.#{$ns}-lang--item {
+    @extend %topbar--menu-item;
+}
+    

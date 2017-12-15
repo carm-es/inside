@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/aplicacion" 
+xmlns:app="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/aplicacion" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD Aplicacion Inside</xsd:documentation>
+	</xsd:annotation>
+	<xsd:complexType name="Aplicacion">
+		<xsd:sequence>
+			<xsd:element name="nombre" type="xsd:string" />
+			<xsd:element name="password" type="xsd:string" />
+			<xsd:element name="activo" type="xsd:boolean" />
+			<xsd:element name="roles" type="app:Roles"/>
+			<xsd:element name="email" type="xsd:string" />
+			<xsd:element name="telefono" type="xsd:string" />
+			<xsd:element name="responsable" type="xsd:string" />
+			<xsd:element name="codigoUnidadOrganica" type="xsd:string" />
+			<xsd:element name="numeroProcedimiento" type="xsd:string" />
+			<xsd:element name="credencialEeutil" type="app:CredencialEeutil" />
+			<xsd:element name="serialNumberCertificado" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="Roles">
+		<xsd:sequence>
+			<xsd:element name="altaExpediente" type="xsd:boolean" />
+			<xsd:element name="modificarExpediente" type="xsd:boolean" />
+			<xsd:element name="leerExpediente" type="xsd:boolean" />
+			<xsd:element name="altaDocumento" type="xsd:boolean" />
+			<xsd:element name="modificarDocumento" type="xsd:boolean" />
+			<xsd:element name="leerDocumento" type="xsd:boolean" />
+			<xsd:element name="administrarPermisos" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="InfAdicional"> 
+		<xsd:sequence>
+			<xsd:element name="key" type="xsd:string" />
+			<xsd:element name="value" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="CredencialEeutil"> 
+		<xsd:sequence>
+			<xsd:element name="aplicacion" type="xsd:string" />
+			<xsd:element name="password" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

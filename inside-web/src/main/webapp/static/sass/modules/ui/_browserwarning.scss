@@ -1,0 +1,121 @@
+//
+/* Non-compliant browser warning */
+
+.#{$ns}-nocompl, 
+.#{$ns}-nocompl--nobrowser, 
+.#{$ns}-nocompl--nojs {
+    display: none;
+}
+
+.#{$ns}-nocompl {
+    margin: $nocomplw-margin;
+    padding: $nocomplw-padding;
+    
+    background-color: $nocomplw-bg;
+    
+    h2 {
+        margin: $nocomplw-title-margin;
+        
+        font-size: emCalc($nocomplw-title-font-size);
+        font-style: $nocomplw-title-font-style;
+        font-weight: $nocomplw-title-font-weight;
+    }
+
+    .ie6 &,
+    .ie7 & {
+        display: block !important;
+    }
+}
+
+.#{$ns}-nocompl--container {
+    padding: $browserw-padding;
+    
+    background: $browserw-bg;
+
+    @include border($browserw-border-width, $browserw-border-style, $browserw-border-color);
+}
+
+/* Noncompliant browser */
+
+.#{$ns}-nocompl--nobrowser {
+    @include clearfix();
+    
+    .browser-text {
+        float: left;
+        width: 49%;
+        padding: 1em;
+    }
+
+    ul {
+        float: left;
+        width: 50%;
+        margin: 0.5em 0 0 0;
+        
+        @include clearfix();
+
+        list-style: none;
+
+        li {
+            float: left;
+            margin: 0 1%;
+            width: 20%;
+
+            text-align: center;
+
+            background-image: $browserw-bg-image;
+            background-repeat: no-repeat;
+
+            a {
+                display: block;
+                padding: $browserw-item-padding;
+            }
+        }
+    }
+
+    a {
+        color: $browserw-link-color;
+        font-weight: $browserw-link-font-weight;
+    }
+
+    span {
+        display: block;
+
+        color: $browserw-version-color;
+        font-weight: $browserw-version-font-weight;
+    }
+
+    .ie6 &,
+    .ie7 & {
+        display: block !important;
+    }
+}
+
+
+.#{$ns}-nocompl--browser-ie {
+    background-position: $browserw-bg-pos-ie;
+}
+
+.#{$ns}-nocompl--browser-chrome {
+    background-position: $browserw-bg-pos-chrome;
+}
+
+.#{$ns}-nocompl--browser-ffox {
+    background-position: $browserw-bg-pos-ffox;
+}
+
+.#{$ns}-nocompl--browser-opera {
+    background-position: $browserw-bg-pos-opera;
+}
+
+
+// No JavaScript
+
+.#{$ns}-nocompl .#{$ns}-nocompl--nojs {
+    padding: 1em;
+    clear: both;
+}
+
+.no-js .#{$ns}-nocompl, 
+.no-js .#{$ns}-nocompl .#{$ns}-nocompl--nojs {
+    display: block !important;
+}

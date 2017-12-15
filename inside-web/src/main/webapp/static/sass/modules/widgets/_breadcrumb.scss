@@ -1,0 +1,64 @@
+/* Breadcrumbs */
+
+.#{$ns}-breadcrumb,
+.breadC {
+    clear: left;
+    
+    @include pie-clearfix;
+}
+
+.#{$ns}-breadcrumb--menu {
+    @extend %menu;
+
+    float: left;
+}
+
+.#{$ns}-breadcrumb--item {
+    float: left;
+    clear: none;
+    margin: $breadc-item-margin;
+
+    & > a {
+        display: inline-block !important;
+
+        color: $breadc-link-color;
+    }
+
+    &:after {
+        content: $breadc-separator;
+        color: $breadc-separator-color;
+    }
+
+    &:hover ul {
+        @include dropdown-menu-hover();
+        
+        @include transition(opacity 0.25s linear);
+    }
+}
+           
+.#{$ns}-breadcrumb--submenu {
+    @extend %menu;
+    
+    @include dropdown-menu();
+    
+    padding: $breadc-dropdown-padding;
+    min-width: $breadc-dropdown-minwidth;
+    max-width: $breadc-dropdown-maxwidth;
+    
+    background: $breadc-dropdown-bg;
+    
+    @include box-shadow($breadc-dropdown-shadow);
+    
+    & > li {
+        margin: $breadc-dropdown-item-margin;
+        
+        &:hover {
+            background-color: $breadc-dropdown-item-bg-hover;
+        }
+    }
+
+    a {
+        display: block;
+        padding: $breadc-dropdown-item-padding;
+    }
+}

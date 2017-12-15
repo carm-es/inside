@@ -1,0 +1,34 @@
+.shake,
+.error_shake {
+    -moz-animation-name: shake;
+    -moz-animation-duration: .35s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+    -moz-animation-direction: alternate;
+    -moz-animation-delay: 0.7s;
+    
+    -webkit-animation-name: shake;
+    -webkit-animation-duration: .35s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-direction: alternate;
+    -webkit-animation-delay: 0.7s;
+}
+    
+@-moz-keyframes shake {
+    0%   { -moz-transform: translate(3px); }
+    20%  { -moz-transform: translate(-3px); }
+    40%  { -moz-transform: translate(6px); }
+    60%  { -moz-transform: translate(-6px); }
+    80%  { -moz-transform: translate(3px); }
+    100% { -moz-transform: translate(-3px); }
+}
+    
+@-webkit-keyframes shake {
+    0%   { -webkit-transform: translate(3px); }
+    20%  { -webkit-transform: translate(-3px); }
+    40%  { -webkit-transform: translate(6px); }
+    60%  { -webkit-transform: translate(-6px); }
+    80%  { -webkit-transform: translate(3px); }
+    100% { -webkit-transform: translate(-3px); }
+}

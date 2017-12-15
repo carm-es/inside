@@ -1,0 +1,140 @@
+// Replaced object
+
+.#{$ns}-scroll-replaced {
+    @include visuallyhidden;
+}
+
+// Wrapper
+
+.#{$ns}-scroll--wrapper {
+    position: relative;
+    // width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+// Container
+
+.#{$ns}-scroll--container {
+    position: relative;
+
+//    padding: 1px;
+//    overflow: auto;
+    overflow: hidden;
+
+    text-align: center;
+
+    .is-scrolling & {
+        text-align: left;
+    }
+}
+
+.#{$ns}-scroll-list {
+    display: inline-block;
+    //overflow: hidden;
+    margin: 0;
+    
+    white-space: nowrap;
+    list-style: none;
+    
+    .is-scrolling & {
+        position: absolute;
+        left: 0;
+    }
+
+    &.is-animating {
+        @include transition(left 0.5s ease-in-out);
+    }
+}
+
+.#{$ns}-scroll-list--item {
+    display: inline-block;
+
+    &:hover {
+
+    }
+
+    &:first-child {
+        margin-left: 0;
+    }
+
+    & > a {
+        display: block;
+        padding: 1px 0.5em;
+
+        &:link,
+        &:visited {
+        }
+    }
+
+    &.is-selected {
+        padding: 2px;
+
+        & > a {
+    
+        }
+    }
+}
+
+// Nav bar
+
+.#{$ns}-scroll--nav {
+    @extend %toolbar;
+
+    float: left;
+    margin: 0;
+}
+
+.#{$ns}-scroll-nav--btn {
+    display: block;
+    overflow: hidden;
+    position: absolute;
+    width: 24px;
+    top: 0;
+    bottom: 0;
+    
+    opacity: 1;
+    
+    border-width: 0;
+    border-style: solid;
+    border-color: #DDD;
+    
+    outline: none;
+    
+    text-indent: -99999em;
+    
+    @include background(#FFF);
+
+    .#{$ns}-icon {
+        float: left;
+        width: 16px;
+        height: 16px;
+        margin: 6px 4px;
+
+        text-indent: 0;
+    }
+
+    &.visuallyhidden {
+        opacity: 0;
+    }
+
+    @include transition(opacity 0.25s linear);
+}
+
+// botones de navegación
+
+.nav-btn-next {
+    right: 0;
+    
+    border-width: 0 0 0 1px;
+    
+    @include box-shadow(-1px 0 2px rgba(0,0,0,0.4));
+}
+
+.nav-btn-prev {
+    left: 0;
+    
+    border-width: 0 1px 0 0;
+    
+    @include box-shadow(1px 0 2px rgba(0,0,0,0.4));
+}

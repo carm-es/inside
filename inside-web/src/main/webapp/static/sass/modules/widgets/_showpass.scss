@@ -1,0 +1,26 @@
+
+
+.#{$ns}-showpass {
+    // @extend .input-auxbtn;
+    position: relative;
+    
+}
+
+input.#{$ns}-showpass--input {
+    // @extend .sticked-input-right;
+    padding-right: 24px;
+}
+
+.#{$ns}-showpass--btn {
+    // @extend .stick-btn-right;
+    position: absolute;
+    right: 0;
+    
+    padding: 0 5px;
+    
+    @include clearView;
+    @include ir();
+    @include morfont-icon("\e66a", $size: 16px, $color: $showpass-btn-icon-color, $line-height: normal);
+
+    // @include border($showpass-btn-border-width, $showpass-btn-border-style, $showpass-btn-border-color);
+}

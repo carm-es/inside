@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 14.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 43363)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="64px" height="64px" viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+<g id="building">
+	<g>
+		<rect x="34.734" y="11" width="7" height="7"/>
+		<rect x="46.109" y="32" width="7" height="7"/>
+		<rect x="34.734" y="32" width="7" height="7"/>
+		<rect x="34.734" y="21.5" width="7" height="7"/>
+		<rect x="46.109" y="11" width="7" height="7"/>
+		<rect x="46.109" y="21.5" width="7" height="7"/>
+		<rect x="10.973" y="31.973" width="7" height="7"/>
+		<rect x="23.25" y="11" width="7" height="7"/>
+		<rect x="10.973" y="21.473" width="7" height="7"/>
+		<path d="M4,4v56h56V4H4z M56.5,56.391H38.891V42.646H25v13.744H7.391v-49H56.5V56.391z"/>
+		<rect x="10.973" y="10.973" width="7" height="7"/>
+		<rect x="23.25" y="32" width="7" height="7"/>
+		<rect x="23.25" y="21.5" width="7" height="7"/>
+	</g>
+</g>
+</svg>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="common/inside_layout">
+    <head>
+
+		<script th:src="|${#httpServletRequest.getContextPath()}/js/documentosAlmacenados.js?v=${session.versionNumber}|"></script>
+       
+    </head>
+
+<body>
+
+    <div layout:fragment="content">
+
+        <div class="mf-window-header">
+            <div class="mf-window-header--hgroup">
+            	<nav class="mf-breadcrumb" role="navigation">
+	                <ol class="mf-breadcrumb--menu">
+	                    <li class="mf-breadcrumb--item"><a href="principal" th:text="#{layout.menu.option.inicio}"></a></li>
+	                </ol>
+	            </nav>
+                <h3 class="mf-window-header--title" th:utext="#{documentosAlmacenados.title} + ${#strings.abbreviate(#authentication.unidadOrganicaActiva,50)}"></h3>
+            </div>
+             <ul class="mf-window-toolbar" th:fragment="actionButtons" id="actionButtons" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                <li class="mf-window-toolbar--tool">
+                    <a href="generarDocumento">
+                        <span class="mf-icon mf-icon-doc-new"></span>
+                        <span th:text="#{generadorDocumentos.nuevo}"></span>
+                    </a>
+                </li>
+                <li class="mf-window-toolbar--tool" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                    <a href="importarDocumento">
+                        <span class="mf-icon mf-icon-doc-download"></span>
+                        <span th:text="#{generadorDocumentos.importar}"></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+                
+        <div id="contentData">
+            <form id="editarDocumentoForm" th:action="@{/editarDocumento}" method="post">
+            	<input type="hidden" name="identificador" id="identificador"/>
+            	<input type="hidden" name="navegador" id="navegador"/>
+        	</form> 
+            <form id="borrarDocumentoForm" th:action="@{/borrarDocumento}" method="post">
+                <input type="hidden" name="identificador" id="identificador"/>
+            </form>
+            <table id="documentList" class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
+            	<thead>
+                    <tr>
+                        <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaIdentificador.title}" th:text="#{documentosAlmacenados.tablaIdentificador}"></th>
+                        <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaFecha.title}" th:text="#{documentosAlmacenados.tablaFecha}"></th>
+                        <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaAcciones.title}" th:text="#{documentosAlmacenados.tablaAcciones}"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                	<tr th:each="documento,iterationStatus : *{documentos}" th:id="'documento_'+${iterationStatus.count - 1}">
+						<td class="grid-column-creador" th:text="${documento.identificador}"></td>
+						<td class="grid-column-articulo_tipo.codigo" th:text="${#calendars.format(documento.fechaVersion, 'dd-MM-yyyy')}"></td>
+						<td class="grid-column-actions last-column">
+                            <ul class="grid-row-actions">  
+                                <li class="grid-row-action">
+                                    <a class="mf-table-data--row-action  mf-action  mf-action__revisar " th:href="|javascript:${'editarDocumento(&quot;' + documento.identificador + '&quot;)'}|" target="_self" title="Revisar">
+                                        <span class="mf-icon mf-icon-pencil"></span>
+                                    </a>
+                                </li>
+                                <li class="grid-row-action" sec:authorize="!hasRole('CONSULTA_ROLE')">
+                                    <a id="btn_delete_documento" title="Borrar" href="#!" class="mf-table-data--row-action  mf-action  mf-action__borrar" 
+										th:onclick="|javascript:mostrarDialogDeleteDocumento('${documento.identificador}')|"
+										th:attr="data-modal-title=#{documentosAlmacenados.eliminar}" >
+										<span class="mf-icon mf-icon-trash"></span>
+									</a>
+                                </li>
+                            </ul>
+                        </td>    
+                	</tr>
+                </tbody>
+            </table>
+            <div    id="init-modal-borrar-documento" 
+	            data-title="Borrar documento" 
+	            data-modal="1" 
+	            data-draggable="0"
+	            data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento" 
+	            data-position_h="center"
+	            data-position_v="center" 
+	            class="buttonbar--btn simbutton hidden">
+	        <div>
+                <p class="fld">
+                    <label id="labelBorrar" for="doc_fecha_incorp_expe_modal" class="mf-field-doc" th:text="#{documentosAlmacenados.eliminar.mensaje}"></label>                
+                </p>                                        
+            </div>                                      
+	        <ul class="error-list"></ul>
+	        <div class="js-timer-veil mf-veil hidden">
+	        </div>
+	    </div>
+            
+        </div>
+        
+        <div class="mf-veil" style="display:none"></div>
+    </div>
+    <script>
+		var tableDocumentos;
+	</script>
+	
+	
+</body>
+</html>

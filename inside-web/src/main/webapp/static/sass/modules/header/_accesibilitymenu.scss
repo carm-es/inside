@@ -1,0 +1,35 @@
+/**
+* @desc         Accesibility items 
+* @name         accesibility menu
+* @author       Ignacio Calleja
+* @tested       
+* @requires     mf-sass-lib
+*/
+
+/* 
+
+<a href="#wrap" class="mf-accesibility-item">Ir al contenido</a>
+
+*/
+
+ .#{$ns}-accesibility-menu {
+    
+}
+
+.#{$ns}-accesibility-item {
+    @include visuallyhidden();
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+
+        .portal &,
+        .sede & {
+            @include visible;
+            float: left;
+            margin-right: 1em;
+        }
+    }
+
+    .#{$ns}-header__compact & {
+        @include visuallyhidden;
+    }
+}
