@@ -15,7 +15,10 @@ package es.mpt.dsic.inside.service.impl;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,15 @@ public class LoginBusinessServiceImpl implements LoginBusinessService {
 
 	@Autowired
 	private Environment env;
+
+	// CARM ### v2.0.7.1
+	@Bean //To resolve ${} in @Value
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
+	@Value("${sp.return}")
+	private String spReturn;
+    // CARM 2.0.7.1 ###	
 	
 	@Override
 	public byte[] generaTokenClave(String url) throws ServiceException {
@@ -64,7 +76,10 @@ public class LoginBusinessServiceImpl implements LoginBusinessService {
 		authnRequest.setProviderName(env.getProperty("provider.name"));
 		authnRequest.setQaa(Integer.parseInt(env.getProperty("sp.qaalevel")));
 		authnRequest.setPersonalAttributeList(pAttList);
-		authnRequest.setAssertionConsumerServiceURL(env.getProperty("sp.return"));
+		/* CARM ### v2.0.7.1
+		authnRequest.setAssertionConsumerServiceURL(env.getProperty("sp.return")); */
+		authnRequest.setAssertionConsumerServiceURL(spReturn);
+		// CARM 2.0.7.1 ###	
 
 		// new parameters
 		authnRequest.setSpSector(env.getProperty("sp.sector"));
