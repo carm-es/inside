@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>es.clave</groupId>
+  <artifactId>SamlEngine</artifactId>
+  <versioning>
+    <release>1.1.1-custom</release>
+    <versions>
+      <version>1.1.1-custom</version>
+    </versions>
+    <lastUpdated>20171219131954</lastUpdated>
+  </versioning>
+</metadata>
