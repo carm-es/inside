@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>es.mpt.dsic</groupId>
+  <artifactId>puntounicojusticia-client</artifactId>
+  <versioning>
+    <versions>
+      <version>0.0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20171219124419</lastUpdated>
+  </versioning>
+</metadata>
