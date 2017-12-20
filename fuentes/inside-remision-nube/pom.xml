@@ -92,7 +92,8 @@
 		
 	</dependencies>
 
-	<!-- CARM ### v2.0.7.1 -->	
+	<!-- CARM ### v2.0.7.1 -->
+	<!--	
 	<build>
 		<plugins>
 			<plugin>
@@ -120,6 +121,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	-->
 	<!-- CARM 2.0.7.1 ### -->
 	
 </project>

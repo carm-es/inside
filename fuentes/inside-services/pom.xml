@@ -297,6 +297,7 @@
 				</configuration>
 			</plugin>
 			<!-- CARM ### v2.0.7.1 -->
+			<!--
 			<plugin>
     			<groupId>org.apache.maven.plugins</groupId>
     			<artifactId>maven-install-plugin</artifactId>
@@ -336,6 +337,7 @@
         			</execution>
     			</executions>
 			</plugin>
+			-->
 			<!-- CARM 2.0.7.1 ### -->
 		</plugins>
 	</build>
