@@ -49,6 +49,8 @@
 	</properties>
 	
 	<repositories>
+		<!-- CARM ### v2.0.7.1 -->
+		<!--
 		<repository>
 	      <releases>
 	        <enabled>true</enabled>
@@ -75,6 +77,21 @@
 	      <name>repo-mpt-remote-repos</name>
 		  <url>http://maven.mpt.es/artifactory/remote-repos</url>
 	    </repository>
+	    -->
+	    <repository>
+	      <releases>
+	        <enabled>true</enabled>
+	        <updatePolicy>never</updatePolicy>
+	      </releases>
+	      <snapshots>
+	        <enabled>true</enabled>
+	        <updatePolicy>never</updatePolicy>
+	      </snapshots>
+	      <id>maven-carm-es-inside-remote-repos</id>
+	      <name>repo-carm-es-inside-remote-repos</name>
+		  <url>https://raw.githubusercontent.com/carm-es/inside/mvn-repo</url>
+	    </repository>	    
+	    <!-- CARM 2.0.7.1 ### -->
 	    <repository>
 	      <snapshots>
 	        <enabled>false</enabled>
