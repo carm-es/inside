@@ -16,15 +16,25 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>es.mpt.dsic</groupId>
 	<artifactId>inside-mvn-base</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<!-- CARM ### v2.0.7.1 --> <!--
+	<version>1.1-SNAPSHOT</version> -->
+	<version>2.0.7.1-SNAPSHOT</version>
+	<!-- CARM 2.0.7.1 ### -->	
 	<packaging>pom</packaging>
 	<description>Librerias del proyecto Inside</description>
 
+	<!-- CARM ### v2.0.7.1 --> <!--
 	<scm>
 		<connection>scm:svn:svn://dev.map.es/repo/svn/InSide/trunk/Desarrollo/inside-mvn-base</connection>
 		<developerConnection>scm:svn:svn+ssh://{mpt.username}@dev.map.es/repo/svn/InSide/trunk/Desarrollo/inside-mvn-base</developerConnection>
 		<url>http://dev.map.es/trac/InSide/browser/trunk/Desarrollo/inside-mvn-base/</url>
 	</scm>
+	-->
+  	<scm>
+    	<connection>scm:git:https://github.com/carm-es/inside.git</connection>
+    	<developerConnection>scm:git:https://github.com/carm-es/inside.git</developerConnection>
+	</scm>	
+	<!-- CARM 2.0.7.1 ### -->
 
 	<organization>
 		<name>Ministerio de Politica Territorial y Administración Pública</name>
@@ -539,12 +549,17 @@
 			<dependency>
 				<groupId>es.mpt.dsic</groupId>
 				<artifactId>infofirma-service</artifactId>
-				<version>1.1-SNAPSHOT</version> 
+				<!-- CARM ### v2.0.7.1 --> <!--
+				<version>1.1-SNAPSHOT</version> -->
+				<version>${project.version}</version>
+				<!-- CARM 2.0.7.1 ### -->
 			</dependency>
 
 		</dependencies>
 	</dependencyManagement>
 
+	<!-- CARM ### v2.0.7.1 -->
+	<!--
 	<distributionManagement>
 	    <repository>
 	      <id>maven-mpt-es-libs-release</id>
@@ -557,7 +572,8 @@
 		  <url>http://maven.mpt.es/artifactory/libs-snapshot-local</url>
 	    </snapshotRepository>
     </distributionManagement>
-
+  	-->
+  	<!-- CARM 2.0.7.1 ### -->
 
   	
     <modules>

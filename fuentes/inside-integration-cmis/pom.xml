@@ -18,7 +18,10 @@
 
 	<groupId>es.mpt.dsic</groupId>
 	<artifactId>inside-integration-cmis</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<!-- CARM ### v2.0.7.1 --> <!--
+	<version>1.1-SNAPSHOT</version> -->
+	<version>2.0.7.1-SNAPSHOT</version>
+	<!-- CARM 2.0.7.1 ### -->
 	
 	<organization>
 		<name>DSIC - Ministerio de Hacienda y Administraciones Públicas</name>
