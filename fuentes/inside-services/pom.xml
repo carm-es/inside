@@ -19,12 +19,15 @@
 	<parent>
 		<groupId>es.mpt.dsic</groupId>
 		<artifactId>inside-mvn-base</artifactId>
-		<version>1.1-SNAPSHOT</version>
-		<!-- CARM ### v2.0.7.1 -->
+		<!-- CARM ### v2.0.7.1 --> <!--
+		<version>1.1-SNAPSHOT</version> -->
+		<version>2.0.7.1-SNAPSHOT</version>
 		<relativePath>../inside-mvn-base</relativePath>
 		<!-- CARM 2.0.7.1 ### -->
 	</parent>
 
+	<!-- CARM ### v2.0.7.1 -->
+	<!--
 	<scm>
 		<connection>scm:svn:svn://dev.map.es/repo/svn/InSide/trunk/Desarrollo/inside-services
 		</connection>
@@ -33,6 +36,8 @@
 		<url>http://dev.map.es/trac/InSide/browser/trunk/Desarrollo/inside-services/
 		</url>
 	</scm>
+	-->
+	<!-- CARM 2.0.7.1 ### -->
 
 	<dependencies>
 		<dependency>
@@ -212,13 +217,19 @@
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>inside-model</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<!-- CARM ### v2.0.7.1 --> <!--
+			<version>1.1-SNAPSHOT</version> -->
+			<version>${project.version}</version>
+			<!-- CARM 2.0.7.1 ### -->			
 		</dependency>
 		
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>inside-cliente-firma</artifactId>
-			<version>1.1-SNAPSHOT</version>			
+			<!-- CARM ### v2.0.7.1 --> <!--
+			<version>1.1-SNAPSHOT</version> -->
+			<version>${project.version}</version>
+			<!-- CARM 2.0.7.1 ### -->	
 		</dependency>
 					
 		<dependency>
@@ -236,7 +247,10 @@
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>eeutil-client</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<!-- CARM ### v2.0.7.1 --> <!--
+			<version>1.1-SNAPSHOT</version> -->
+			<version>${project.version}</version>
+			<!-- CARM 2.0.7.1 ### -->
 		</dependency>
 		
 		<dependency>
@@ -248,7 +262,10 @@
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>inside-integration-cmis</artifactId>
-			<version>1.1-SNAPSHOT</version>
+			<!-- CARM ### v2.0.7.1 --> <!--
+			<version>1.1-SNAPSHOT</version> -->
+			<version>${project.version}</version>
+			<!-- CARM 2.0.7.1 ### -->			
 		</dependency>
 		
 		<dependency>
