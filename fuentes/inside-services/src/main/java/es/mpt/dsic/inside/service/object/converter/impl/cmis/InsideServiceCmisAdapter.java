@@ -396,7 +396,11 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 				
 				for (FirmaInside firma : expediente.getIndice().getFirmas()) {
 					ContenidoFirmaInside contenidoFirma = firma.getContenidoFirma();
-					if( contenidoFirma != null && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside)
+					if( contenidoFirma != null && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside
+							// CARM ### v2.0.7.1
+							&& ((ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma).getIdentificadorRepositorio()!=null
+							// CARM 2.0.7.1 ###
+							)
 					{
 						ContenidoFirmaCertificadoAlmacenableInside contenidoFirmaAlmacenado = (ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma;
 						byte[] bytesFirma = cmisAdapter.getContenidoDoc(contenidoFirmaAlmacenado.getIdentificadorRepositorio()).getContenido();	
