@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -63,7 +64,10 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
 	private Boolean validateUser;
 	
 	private Boolean validarUsuarioEnPortales;
-
+	
+	@Value("${clave.auth.fail.fake.nif:}")
+	private String claveAuthFailFakeNif;
+	
 	@Autowired
 	private Environment env;
 
@@ -103,13 +107,13 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
 				/* Validamos el token SAML */
 
 				authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
-				/* CARM ### v2.0.7.1
-				if (authnResponse.isFail()) {
-					throw new BadCredentialsException("Error en la autenticacion");
-				*/
-				if (authnResponse.isFail()) { // falseamos autenticación clave para invitado
-					return validarUsuarioDatosTablas(request, null, "01234567L");
+				if (authnResponse.isFail()) { 
+  				// CARM ### v2.0.7.1
+				  if (claveAuthFailFakeNif!=null && !claveAuthFailFakeNif.isEmpty())  // falseamos autenticación clave para invitado
+					return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
+				  else
 				// CARM 2.0.7.1 ###	
+					throw new BadCredentialsException("Error en la autenticacion");
 				} else {
 					List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 					
