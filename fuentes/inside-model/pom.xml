@@ -26,7 +26,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 </properties>
 	<parent>
-		<groupId>es.mpt.dsic</groupId>
+		<!-- CARM ### v2.0.7.1 --> <!--
+		<groupId>es.mpt.dsic</groupId> -->
+		<groupId>es.carm.inside</groupId>
+		<!-- CARM 2.0.7.1 ### -->	
 		<artifactId>inside-mvn-base</artifactId>
 		<!-- CARM ### v2.0.7.1 --> <!--
 		<version>1.1-SNAPSHOT</version> -->
@@ -98,7 +101,10 @@
 		</dependency>
     
 		<dependency>
-			<groupId>es.mpt.dsic</groupId>
+			<!-- CARM ### v2.0.7.1 --> <!-- 
+			<groupId>es.mpt.dsic</groupId> -->
+			<groupId>es.carm.inside</groupId>
+			<!-- CARM 2.0.7.1 ### -->			
 			<artifactId>infofirma-service</artifactId>
 		</dependency>
 		
