@@ -18,7 +18,10 @@
 	<packaging>jar</packaging>
 
 	<parent>
-		<groupId>es.mpt.dsic</groupId>
+		<!-- CARM ### v2.0.7.1 --> <!--
+		<groupId>es.mpt.dsic</groupId> -->
+		<groupId>es.carm.inside</groupId>
+		<!-- CARM 2.0.7.1 ### -->
 		<artifactId>inside-mvn-base</artifactId>
 		<!-- CARM ### v2.0.7.1 --> <!--
 		<version>1.1-SNAPSHOT</version> -->
@@ -124,7 +127,10 @@
 		</dependency>
 
 		<dependency>
-			<groupId>es.mpt.dsic</groupId>
+			<!-- CARM ### v2.0.7.1 --> <!-- 
+			<groupId>es.mpt.dsic</groupId> -->
+			<groupId>es.carm.inside</groupId>
+			<!-- CARM 2.0.7.1 ### -->
 			<artifactId>inside-services</artifactId>
 			<!-- CARM ### v2.0.7.1 --> <!--
 			<version>1.1-SNAPSHOT</version> -->
@@ -133,7 +139,10 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>es.mpt.dsic</groupId>
+			<!-- CARM ### v2.0.7.1 --> <!-- 
+			<groupId>es.mpt.dsic</groupId> -->
+			<groupId>es.carm.inside</groupId>
+			<!-- CARM 2.0.7.1 ### -->
 			<artifactId>inside-load-tables</artifactId>
 			<!-- CARM ### v2.0.7.1 --> <!--
 			<version>1.1-SNAPSHOT</version> -->
