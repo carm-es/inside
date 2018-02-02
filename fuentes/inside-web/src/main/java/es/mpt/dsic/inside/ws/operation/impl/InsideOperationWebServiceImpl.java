@@ -47,6 +47,7 @@ import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsid
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacion;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
+import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatos;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatosEnumeracionEstados;
 import es.mpt.dsic.inside.service.InSideService;
@@ -57,6 +58,7 @@ import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectAlreadyExistsException;
 import es.mpt.dsic.inside.service.util.XMLUtils;
 import es.mpt.dsic.inside.service.visualizacion.ResultadoVisualizacionDocumento;
+import es.mpt.dsic.inside.ws.config.InsideEnhancedConf;
 import es.mpt.dsic.inside.ws.exception.InsideExceptionConverter;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
@@ -118,6 +120,9 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 	@Autowired
 	GInsideOperationWebService gInsideOperationWebService;
 
+	@Autowired
+	private InsideEnhancedConf wsEnhancedConf;	
+	
 	private Properties properties;
 
 	@Override
@@ -144,7 +149,24 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 				List<ObjetoDocumentoInside> listaDocumentos = new ArrayList<ObjetoDocumentoInside>();
 				ResultadoValidacion resultado = insideUtilService.comprobarDocumentosIndiceExpediente(expediente,
 						listaDocumentos);
+				// CARM ### v2.0.7.1
+				boolean flagAltaConDocuVacio=false;
+				if (wsEnhancedConf.isActivoAltaExpedientEniDocumentoIndizadoAceptaVacio() &&
+						expediente.getIndice()!=null && expediente.getIndice().getIndiceContenido()!=null &&
+						expediente.getIndice().getIndiceContenido().getElementosIndizados()!=null &&
+						expediente.getIndice().getIndiceContenido().getElementosIndizados().size()==1 &&
+						expediente.getIndice().getIndiceContenido().getElementosIndizados().get(0) instanceof ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado &&
+						((ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) expediente.getIndice().getIndiceContenido().getElementosIndizados().get(0)).getIdentificadorDocumento().isEmpty() &&
+						((ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) expediente.getIndice().getIndiceContenido().getElementosIndizados().get(0)).getValorHuella().isEmpty()				
+					) {
+					flagAltaConDocuVacio=true;
+					expediente.getIndice().getIndiceContenido().getElementosIndizados().clear();
+				}	
+				// CARM 2.0.7.1 ###	
 				if (!resultado.isValido())
+					// CARM ### v2.0.7.1
+					if (!flagAltaConDocuVacio)
+					// CARM 2.0.7.1 ###
 					throw new InsideWSException(InsideWsErrors.ERRORES_EN_EL_INDICE_EXPEDIENTE, null, resultado.getMensaje());
 
 				expediente = service.altaExpediente(expediente, aplicacion, false);
@@ -189,6 +211,15 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 			checkVersionNTI(expedienteEni.getMetadatosExp());
 
 			expediente = InsideConverterExpediente.expedienteEniToInside(expedienteEni, metadatosAdicionales);
+
+			// CARM ### v2.0.7.1			
+			if (wsEnhancedConf.isActivoAltaExpedientEniAutogenerarIdentificador() &&
+					expediente.getIdentificador()!=null && expediente.getIdentificador().isEmpty()) {
+				expediente.setNullIdentificador();	// Forzar id autogenerado si se pasa vacío
+				service.validateObjetoInsideIdentificador(expediente);
+			}
+			// CARM 2.0.7.1 ###
+			
 			if (CollectionUtils.isEmpty(expediente.getIndice().getFirmas())) {
 				service.firmarIndiceExpediente(expediente, null, aplicacion);
 				expAdic = InsideConverterExpediente.expedienteInsideToConMAdicionales(expediente, null);
@@ -861,6 +892,14 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 				documento = InsideConverterDocumento.documentoEniAndMetadatosToDocumentoInside(documentoEni,
 						metadatosAdicionales);
 			}
+			
+			// CARM ### v2.0.7.1 
+			if (wsEnhancedConf.isActivoAltaDocumentoEniAutogenerarIdentificador() && 
+					documento.getIdentificador()!=null && documento.getIdentificador().isEmpty()) {
+				documento.setNullIdentificador();	// Forzar id autogenerado si se pasa vacío
+				service.validateObjetoInsideIdentificador(documento);
+			}
+			// CARM 2.0.7.1 ###
 			
 			docAdic = InsideConverterDocumento.documentoInsideToConMAdicionales(documento, null);
 			documento = insideUtilService.validateDocumentImport(insideUtilService.generateDocXml(docAdic));
