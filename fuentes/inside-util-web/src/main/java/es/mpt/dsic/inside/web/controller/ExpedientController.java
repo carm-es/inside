@@ -2413,8 +2413,12 @@ public class ExpedientController {
 					: messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale);
 			msg = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, msgError);
 			retorno.addObject(MENSAJE_USU, msg);
+			/* CARM ### v2.0.7.1
 			retorno.setViewName("redirect:/expedientesAlmacenados?textoMensajeUsuario=" + msg.getMessage()
-					+ "&nivelMensajeUsuario=" + msg.getLevel());
+					+ "&nivelMensajeUsuario=" + msg.getLevel()); */
+			retorno.addObject("textoMensajeUsuario", msg.getMessage());
+			retorno.setViewName("redirect:/expedientesAlmacenados?nivelMensajeUsuario=" + msg.getLevel());
+			// CARM 2.0.7.1 ###
 		}
 		return retorno;
 	}

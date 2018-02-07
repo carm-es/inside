@@ -1102,16 +1102,24 @@ public class DocumentController {
 			logger.warn("DocumentController.editarDocumento.validacion: " + identificador);
 			mensaje = MessageUtils.contruirMensaje(locale, e, messageSource);
 			retorno.addObject(MENSAJE_USU, mensaje);
+			/* CARM ### v2.0.7.1			
 			retorno.setViewName("redirect:/documentosAlmacenados?textoMensajeUsuario=" + mensaje.getMessage()
-					+ "&nivelMensajeUsuario=" + mensaje.getLevel());
+					+ "&nivelMensajeUsuario=" + mensaje.getLevel()); */
+			retorno.addObject("textoMensajeUsuario", mensaje.getMessage());
+			retorno.setViewName("redirect:/documentosAlmacenados?nivelMensajeUsuario=" + mensaje.getLevel());			
+			// CARM 2.0.7.1 ###
 		} catch (Exception e) {
 			logger.error("DocumentController.editarDocumento: " + identificador, e);
 			String mensajeError = e.getMessage() != null ? e.getMessage()
 					: messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale);
 			mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, mensajeError);
 			retorno.addObject(MENSAJE_USU, mensaje);
+			/* CARM ### v2.0.7.1
 			retorno.setViewName("redirect:/documentosAlmacenados?textoMensajeUsuario=" + mensaje.getMessage()
-					+ "&nivelMensajeUsuario=" + mensaje.getLevel());
+					+ "&nivelMensajeUsuario=" + mensaje.getLevel()); */
+			retorno.addObject("textoMensajeUsuario", mensaje.getMessage());
+			retorno.setViewName("redirect:/documentosAlmacenados?nivelMensajeUsuario=" + mensaje.getLevel());
+			// CARM 2.0.7.1 ###
 		}
 
 		return retorno;
