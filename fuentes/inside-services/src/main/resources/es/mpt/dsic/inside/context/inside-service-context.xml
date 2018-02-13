@@ -117,7 +117,10 @@
  
 	<!--#Configuración de nuestro servicio:MailService -->
 	<bean id="mailService" class="es.mpt.dsic.inside.service.mail.impl.MailServiceImpl">
-	  <property name="active" value="true"/>
+	  <!-- CARM ### v2.0.7.1 -->	  
+	  <!-- <property name="active" value="true"/> -->
+	  <property name="active" value="${mail.token.active:true}"/>
+	  <!-- CARM 2.0.7.1 ### -->
 	  <property name="mailSender" ref="mailSender"/>
 	  <property name="from" value="${mail.token.From}"/>
 	  <property name="asunto" value="${mail.token.asunto}"/>
