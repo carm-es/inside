@@ -44,6 +44,9 @@
 		<property name="bindingType" value="${server.cmis.bindingType}" />
 		<property name="url" value="${server.cmis.url}" />
 		<property name="pathRootFolder" value="${server.cmis.pathRootFolder}"/>
+		<!-- CARM ### v2.0.7.1 -->
+		<property name="defaultUserHomeSpacesFolder" value="${server.cmis.complementary.root.defaultUserHomeSpacesFolder:}"/>
+		<!-- CARM 2.0.7.1 ### -->
 		<property name="username" value="${server.cmis.username}" />
 		<property name="password" value="${server.cmis.password}" />
 		<property name="connectTimeout" value="${server.cmis.connectTimeout}" />
