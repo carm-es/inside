@@ -13,11 +13,14 @@
 
 package es.mpt.dsic.inside.model.converter.mime;
 
+import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import es.mpt.dsic.inside.model.config.ModelEnhancedConf;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterUtilsException;
 import eu.medsea.mimeutil.detector.ExtensionMimeDetector;
 import eu.medsea.mimeutil.detector.MagicMimeMimeDetector;
@@ -106,6 +109,25 @@ public class InsideMimeUtils {
 		} catch (MagicParseException e) {
 			logger.debug ("MagicParseException", e);			
 		} catch (MagicMatchNotFoundException e) {
+			// CARM ### v2.0.7.1
+			if (ModelEnhancedConf.isActivoMagicMatchNotFoundExceptionTryAscii()) {
+				String utf8String=new String(data,Charset.defaultCharset());
+				String asciiString=Normalizer.normalize(utf8String, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+				Magic parserAux=new Magic();
+				try {
+					byte[] dataAscii=asciiString.getBytes();
+					@SuppressWarnings("static-access")
+					MagicMatch match = parserAux.getMagicMatch(dataAscii);
+					mime = match.getMimeType();
+				} catch (MagicException e1) {
+					logger.debug ("MagicException", e1);
+				} catch (MagicParseException e1) {
+					logger.debug ("MagicParseException", e1);			
+				} catch (MagicMatchNotFoundException e1) {
+					logger.debug ("MagicMatchNotFoundException", e);
+				}			
+			} else
+			// CARM 2.0.7.1 ###				
 			logger.debug ("MagicMatchNotFoundException", e);		}
 		return mime;
 	}
