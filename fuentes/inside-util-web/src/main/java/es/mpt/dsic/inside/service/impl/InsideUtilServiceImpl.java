@@ -599,9 +599,6 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 				throw new InsideServiceInternalException(
 						validarExp.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
 
-			// CARM ### v2.0.7.1	
-			if (validarActivo)
-			// CARM 2.0.7.1 ###
 			if (// CARM ### v2.0.7.1	
 				validarActivo? // CARM 2.0.7.1 ###
 				validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
