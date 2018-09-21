@@ -244,7 +244,10 @@
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>csvstorage-client</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<!-- CARM ### v2.0.7.1 --> <!--
+			<version>1.0-SNAPSHOT</version> -->
+			<version>1.0</version>
+			<!-- CARM 2.0.7.1 ### -->
 		</dependency>
 		
 		<dependency>
@@ -268,7 +271,10 @@
 		<dependency>
 		  	<groupId>es.mpt.dsic</groupId>
 		  	<artifactId>puntounicojusticia-client</artifactId>
-		  	<version>0.0.1-SNAPSHOT</version>
+		  	<!-- CARM ### v2.0.7.1 --> <!--
+		  	<version>0.0.1-SNAPSHOT</version> -->
+		  	<version>0.0.1</version>
+		  	<!-- CARM 2.0.7.1 ### -->
 		</dependency>
 		
 		<dependency>

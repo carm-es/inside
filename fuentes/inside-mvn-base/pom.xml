@@ -36,6 +36,7 @@
   	<scm>
     	<connection>scm:git:https://github.com/carm-es/inside.git</connection>
     	<developerConnection>scm:git:https://github.com/carm-es/inside.git</developerConnection>
+    	<tag>HEAD</tag>
 	</scm>	
 	<!-- CARM 2.0.7.1 ### -->
 
@@ -741,6 +742,13 @@
 					</formats>
 				</configuration>
 			</plugin>
+			<!-- CARM ### v2.0.7.1 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>                
+			</plugin>
+			<!-- CARM 2.0.7.1 ### -->
 		</plugins>
 	</reporting>
 </project>
