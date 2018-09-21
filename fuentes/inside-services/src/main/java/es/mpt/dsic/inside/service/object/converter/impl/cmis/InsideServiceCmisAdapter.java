@@ -83,6 +83,10 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 	
 	private Properties properties;
 	
+	// CARM ### v2.0.7.1
+	private String extendedBalancedFolderPathIntervalMinutes;
+	// CARM 2.0.7.1 ###		
+	
 	private String dir3default;
 	
 	private String almacenarFirma;
@@ -188,6 +192,17 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 						String.valueOf(today.get(Calendar.MONTH)),
 						String.valueOf(today.get(Calendar.DAY_OF_MONTH)),
 						dirusuario};
+				// CARM ### v2.0.7.1
+				if (!this.extendedBalancedFolderPathIntervalMinutes.isEmpty()) {
+					rutaFirma = new String[] { 
+						String.valueOf(today.get(Calendar.YEAR)),
+						String.valueOf(today.get(Calendar.MONTH)), 
+						String.valueOf(today.get(Calendar.DAY_OF_MONTH)),
+						String.valueOf(today.get(Calendar.HOUR_OF_DAY)), 
+						String.valueOf(today.get(Calendar.MINUTE)
+								/ Integer.valueOf(this.extendedBalancedFolderPathIntervalMinutes)) };
+				}
+				// CARM 2.0.7.1 ###						
 				
 				this.almacenaFirmasInside(expediente.getIndice().getFirmas(), rutaFirma, expediente.getIdentificador());
 			}
@@ -271,6 +286,17 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 						String.valueOf(today.get(Calendar.MONTH)),
 						String.valueOf(today.get(Calendar.DAY_OF_MONTH)),
 						dirusuario};
+				// CARM ### v2.0.7.1
+				if (!this.extendedBalancedFolderPathIntervalMinutes.isEmpty()) {
+					rutaDocumentoAlta = new String[] { 
+						String.valueOf(today.get(Calendar.YEAR)),
+						String.valueOf(today.get(Calendar.MONTH)), 
+						String.valueOf(today.get(Calendar.DAY_OF_MONTH)),
+						String.valueOf(today.get(Calendar.HOUR_OF_DAY)), 
+						String.valueOf(today.get(Calendar.MINUTE)
+								/ Integer.valueOf(this.extendedBalancedFolderPathIntervalMinutes)) };
+				}
+				// CARM 2.0.7.1 ###
 				
 				String docName = documento.getIdentificador() + "_" + System.currentTimeMillis();
 				
@@ -631,7 +657,25 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 		this.documentoCSV = documentoCSV;
 	}
 
+	// CARM ### v2.0.7.1
+	public String getExtendedBalancedFolderPathIntervalMinutes() {
+		return extendedBalancedFolderPathIntervalMinutes;
+	}
 
+	public void setExtendedBalancedFolderPathIntervalMinutes(String extendedBalancedFolderPathIntervalMinutes) {
+		Integer minutos;
+		try {
+			minutos = Integer.valueOf(extendedBalancedFolderPathIntervalMinutes);
+			if (minutos < 1)
+				minutos = 1;
+			if (minutos > 60)
+				minutos = 60;
+			this.extendedBalancedFolderPathIntervalMinutes=String.valueOf(minutos);
+		} catch (NumberFormatException nfe) {
+			this.extendedBalancedFolderPathIntervalMinutes = "";
+		}
+	}
+	// CARM 2.0.7.1 ###
 	
 	
 }
