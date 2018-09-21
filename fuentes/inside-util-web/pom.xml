@@ -34,7 +34,10 @@
 	<properties>	
 		<stork-commons.version>1.4.2</stork-commons.version>
 		<stork-saml.version>1.1.1-custom</stork-saml.version>
-		<afirma.version>3.3.2-SNAPSHOT</afirma.version>
+		<!-- CARM ### v2.0.7.1 --> <!--
+		<afirma.version>3.3.2-SNAPSHOT</afirma.version> -->
+		<afirma.version>3.3.2</afirma.version>
+		<!-- CARM 2.0.7.1 ### -->
 	</properties>		
 
 	
