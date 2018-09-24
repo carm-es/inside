@@ -35,7 +35,7 @@
   	<scm>
     	<connection>scm:git:https://github.com/carm-es/inside.git</connection>
     	<developerConnection>scm:git:https://github.com/carm-es/inside.git</developerConnection>
-    	<tag>HEAD/tag>
+	<tag>HEAD</tag>
   	</scm>
 	<!-- CARM 2.0.7.1 ### -->
 
