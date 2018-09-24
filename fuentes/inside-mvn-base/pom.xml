@@ -20,7 +20,7 @@
 	<artifactId>inside-mvn-base</artifactId>
 	<!-- CARM ### v2.0.7.1 --> <!--
 	<version>1.1-SNAPSHOT</version> -->
-	<version>2.0.7.1-SNAPSHOT</version>
+	<version>2.0.7.1</version>
 	<!-- CARM 2.0.7.1 ### -->	
 	<packaging>pom</packaging>
 	<description>Librerias del proyecto Inside</description>
@@ -35,7 +35,7 @@
   	<scm>
     	<connection>scm:git:https://github.com/carm-es/inside.git</connection>
     	<developerConnection>scm:git:https://github.com/carm-es/inside.git</developerConnection>
-    	<tag>HEAD</tag>
+    	<tag>inside-mvn-base-2.0.7.1</tag>
   	</scm>
 	<!-- CARM 2.0.7.1 ### -->
 
