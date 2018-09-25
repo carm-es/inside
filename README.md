@@ -25,7 +25,7 @@ O crea tu propio `Fork` a fin de reincorporar tus cambios al repositorio utiliza
 Para compilar el proyecto ejecuta los siguientes comandos en el directorio donde descargarte los fuentes:
 
 ```
-cd inside
+cd inside/fuentes/inside-mvn-base/
 mvn package 
 ```
 
