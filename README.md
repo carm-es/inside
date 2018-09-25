@@ -29,5 +29,5 @@ cd inside/inside-mvn-base/
 mvn package 
 ```
 
-La aplicación web final la encontrarás en `fuentes/inside-web/target/inside.war`
+La aplicación web final la encontrarás en `inside-web/target/inside.war`
 
