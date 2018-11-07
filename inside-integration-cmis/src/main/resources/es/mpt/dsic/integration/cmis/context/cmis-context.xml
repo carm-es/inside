@@ -65,6 +65,10 @@
 	<bean id="repoDocIntegration"
 		class="es.mpt.dsic.integration.cmis.adapter.CmisAdapter">
 		<property name="sessionManager" ref="sessionManager" />
+		<!-- CARM ### v2.0.7.2 -->
+		<property name="numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation" 
+			value="${server.cmis.extended.number.retries.get.folder.with.half.second.delay.to.avoid.concurrent.creation:0}"/>
+		<!-- CARM 2.0.7.2 ### -->		
 	</bean>
 
 	<bean id="cmisSessionInterceptor"

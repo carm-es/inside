@@ -45,6 +45,8 @@ import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsid
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatos;
 import es.mpt.dsic.inside.model.objetos.firmas.FirmaInside;
+import es.mpt.dsic.inside.model.objetos.firmas.FirmaInsideTipoFirmaEnum;
+import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCSVInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoAlmacenableInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaInside;
 import es.mpt.dsic.inside.service.InSideService;
@@ -249,6 +251,20 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 		if (StringUtils.isNotEmpty(documentoIdENI)) {
 			metadatosRepository.put(documentoIdENI, documento.getIdentificador());
 		}
+		// CARM ### v2.0.7.2 		
+		if (StringUtils.isNotEmpty(documentoCSV)) {
+			String valorCsv = null;
+			if (documento.getFirmas() != null) {
+				for (FirmaInside fi : documento.getFirmas()) {
+					if (fi.getTipoFirma() != null && fi.getTipoFirma().equals(FirmaInsideTipoFirmaEnum.TF_01)
+							&& fi.getContenidoFirma() instanceof ContenidoFirmaCSVInside)
+						valorCsv = ((ContenidoFirmaCSVInside) fi.getContenidoFirma()).getValorCSV();
+				}
+				if (StringUtils.isNotEmpty(valorCsv))
+					metadatosRepository.put(documentoCSV, valorCsv);
+			}
+		}
+		// CARM 2.0.7.2 ###		
 		
 		Document documentoCmis = null;
 		try {
