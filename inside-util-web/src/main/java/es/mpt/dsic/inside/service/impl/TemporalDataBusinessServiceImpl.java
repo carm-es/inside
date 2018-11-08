@@ -130,6 +130,10 @@ public class TemporalDataBusinessServiceImpl implements TemporalDataBusinessServ
 	}
 
 	private void deleteDir(File folder) {
+		// CARM ### v2.0.7.2
+		if (!folder.isDirectory())
+			return;
+		// CARM 2.0.7.2 ###	
 		for (final File fileEntry : folder.listFiles()) {
 			fileEntry.delete();
 		}
