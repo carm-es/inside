@@ -82,8 +82,8 @@
 	<!-- CARM ### v2.0.7.2 -->
 	<bean id="unidadOrganicaAlternativeCronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="jobDetailUnidadOrganica" />
-		<!-- Ejecución diaria -->
-		<property name="cronExpression" value="${ws.unidadesOrganicas.cronExpression}"/>
+		<!-- Ejecución configurable -->
+		<property name="cronExpression" value="${ws.unidadesOrganicas.cronExpression:59 59 23 31 12 ? 2099}"/>
 	</bean>
 	<!-- CARM 2.0.7.2 ### -->
 
