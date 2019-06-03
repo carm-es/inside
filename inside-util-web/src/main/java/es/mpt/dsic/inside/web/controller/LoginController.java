@@ -34,10 +34,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import com.mysql.jdbc.StringUtils;
 import es.mpt.dsic.inside.configuration.ConstantsClave;
 import es.mpt.dsic.inside.service.exception.ServiceException;
 import es.mpt.dsic.inside.service.impl.LoginBusinessServiceImpl;
+import es.mpt.dsic.inside.web.security.interceptor.ClaveLoginFilter;
 import es.mpt.dsic.inside.web.util.WebConstants;
 import eu.stork.peps.auth.commons.PEPSUtil;
 
@@ -66,6 +67,9 @@ public class LoginController {
 	
 	@Value("${puntounicojusticia}")
 	private boolean puntounicojusticia;
+	
+	@Autowired
+	ClaveLoginFilter claveLoginFilter;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ModelAndView init(HttpSession session) {
@@ -122,6 +126,9 @@ public class LoginController {
 		/* CARM ### v2.0.7.1
 		ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
 		*/
+        if (!StringUtils.isNullOrEmpty(claveLoginFilter.getClaveAuthFailFakeNif())) { // falseamos autenticación clave para invitado
+		  return "redirect:/accesoRedirectClave";
+		}
 		// CARM 2.0.7.1 ###
 		
 		try {
