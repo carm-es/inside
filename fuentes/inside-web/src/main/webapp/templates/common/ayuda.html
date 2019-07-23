@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorator="common/inside_layout">
+
+<head>
+
+</head>
+
+<body class="inicio">
+	
+    <div layout:fragment="content">
+    
+		<div id="init-modal-ayuda"  th:fragment="contenido" class="mf-buttonbar--btn simbutton hidden">
+            Meter contenido de ayuda
+        </div>
+        
+        <div th:fragment="js">
+			<script th:src="|${#httpServletRequest.getContextPath()}/js/ayuda.js?v=${session.versionNumber}|"></script>
+		</div>
+
+    </div>
+</body>
+</html>

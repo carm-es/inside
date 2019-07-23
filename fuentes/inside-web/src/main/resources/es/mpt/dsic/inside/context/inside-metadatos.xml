@@ -1,0 +1,176 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd 
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd 
+			  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+	<util:map id="inside_metadatos_expediente">
+		<entry key="versionNti">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Versión Nti" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="organo">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Órgano" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="fechaAperturaExpediente">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Fecha Apertura Expediente" />
+				<property name="tipo" value="Calendar" />
+			</bean>
+		</entry>
+		<entry key="clasificacion">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Clasificación" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="estado">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Estado" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="interesado">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Interesado" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		
+		
+		
+		<!-- Pendiente de ver con Rus son metadatos que no permite la busqueda
+		<entry key="identificador">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Identificador" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="tipo_firma">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Tipo Firma" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="valor_cvs">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Valor CSV" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="def_generacion_cvs">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Definición generación CSV" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		-->
+	</util:map>
+
+	<util:map id="inside_metadatos_documento">
+		<entry key="versionNti">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Versión Nti" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="organo">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Órgano" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="FechaCaptura">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Fecha de Captura" />
+				<property name="tipo" value="Calendar" />
+			</bean>
+		</entry>
+		<entry key="origenCiudadanoAdministracion">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Origen Ciudadano Administración" />
+				<property name="tipo" value="Boolean" />
+			</bean>
+		</entry>
+		<entry key="estadoElaboracion">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Estado de Elaboración" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="tipoDocumental">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Tipo Documental" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		
+		
+		<!-- Pendiente de ver con Rus son metadatos que no permite la busqueda -->
+		<!--
+		<entry key="identificador">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Identificador" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="nombre_formato">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Nombre de Formato" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		
+		<entry key="tipo_firma">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Tipo Firma" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="identificador_documento_origen">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Identificador de Documento Origen" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		
+		<entry key="valor_cvs">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Valor CSV" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		<entry key="def_generacion_cvs">
+			<bean class="es.mpt.dsic.inside.web.object.Metadato">
+				<property name="nombre" value="Definición generación CSV" />
+				<property name="tipo" value="String" />
+			</bean>
+		</entry>
+		-->
+	</util:map>
+</beans>

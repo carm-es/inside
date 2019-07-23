@@ -1,0 +1,58 @@
+/*
+Syntax error: Undefined variable: "$ns".
+        on line 636 of _morfont-old.scss
+
+631:     content: "\e0bc";
+632: }
+633: 
+634: /* Extensiones morfos *\/
+635: 
+636: .#{$ns}-icon-edit {
+637: 	@extend .mf-icon-pencil;
+638: }
+639: 
+640: .#{$ns}-icon-back {
+641: 	@extend .mf-icon-arrow2-left;
+
+Backtrace:
+_morfont-old.scss:636
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/script/variable.rb:49:in `_perform'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/script/node.rb:40:in `perform'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:398:in `block in run_interp_no_strip'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:396:in `map'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:396:in `run_interp_no_strip'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:406:in `run_interp'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:313:in `visit_rule'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:53:in `map'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:109:in `block in visit_children'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:121:in `with_environment'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:108:in `visit_children'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:128:in `visit_root'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/base.rb:37:in `visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:100:in `visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/tree/root_node.rb:20:in `render'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/engine.rb:315:in `_render'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/engine.rb:262:in `render'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/plugin/compiler.rb:362:in `update_stylesheet'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/plugin/compiler.rb:203:in `block in update_stylesheets'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/plugin/compiler.rb:201:in `each'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/plugin/compiler.rb:201:in `update_stylesheets'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/plugin.rb:81:in `update_stylesheets'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/exec.rb:443:in `watch_or_update'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/exec.rb:326:in `process_result'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/exec.rb:41:in `parse'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/lib/sass/exec.rb:21:in `parse!'
+/var/lib/gems/1.9.1/gems/sass-3.2.12/bin/scss:9:in `<top (required)>'
+/usr/local/bin/scss:23:in `load'
+/usr/local/bin/scss:23:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$ns\".\A         on line 636 of _morfont-old.scss\A \A 631:     content: \"\e0bc\";\A 632: }\A 633: \A 634: /* Extensiones morfos */\A 635: \A 636: .#{$ns}-icon-edit {\A 637: 	@extend .mf-icon-pencil;\A 638: }\A 639: \A 640: .#{$ns}-icon-back {\A 641: 	@extend .mf-icon-arrow2-left;"; }

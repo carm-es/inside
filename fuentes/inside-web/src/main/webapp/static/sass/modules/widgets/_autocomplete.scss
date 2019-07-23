@@ -1,0 +1,24 @@
+// Not optimized!
+/*  Autocomplete (widget helper) */
+
+.mfAutoCompWidgSelectedContainer {
+    margin: $autocomplete-margin;
+    padding: $autocomplete-padding;
+
+    white-space: normal;
+    
+    border: $autocomplete-border;
+    
+    @include border-radius($autocomplete-border-radius);
+    
+    background: $autocomplete-bg;
+
+    .filterForm & {
+	    margin: 0 10px 0 0;
+	}
+}
+
+.mf-autocompleter {
+    display: inline-block;
+    vertical-align: baseline;
+}

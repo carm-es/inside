@@ -1,0 +1,109 @@
+//
+/* windowheader toolbar */
+    
+.#{$ns}-window-toolbar {
+    display: table;
+    margin: 0;
+
+    // .mob-nav & {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        width: 100%;
+
+        text-align: center;
+        white-space: nowrap;
+        
+        background: $wtoolbar-bg;
+
+        @include box-shadow($wtoolbar-shadow);
+    // }
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: block;
+        position: static;
+        float: right;
+        clear: none;
+        width: auto;
+        margin: $wtoolbar-desktop-margin;
+        
+        text-align: right;
+        
+        white-space: normal;
+        
+        background: transparent;
+
+        @include box-shadow(none);
+    }
+}
+
+.#{$ns}-window-toolbar--tool {
+    display: table-cell;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: block;
+        float: left;
+        width: auto;
+    }
+
+    & > a {
+        display: block;
+        padding: $wtoolbar-item-padding;
+        margin: $wtoolbar-item-margin;
+        min-width: $wtoolbar-item-icon-size;
+        
+        @include font-dec( $wtoolbar-item-font-size,
+                           $wtoolbar-item-font-weight,
+                           $wtoolbar-item-font-color);
+        
+        text-align: $wtoolbar-item-text-align;
+        
+        @include border($wtoolbar-item-border-width, $wtoolbar-item-border-style, $wtoolbar-item-border-color);
+        
+        @include border-radius($wtoolbar-item-border-radius);
+        
+        @include mf-background($wtoolbar-item-bg);
+
+        background-position: $wtoolbar-item-bg-pos;
+        background-repeat: no-repeat;
+
+        &:hover {
+            @include border($wtoolbar-item-hover-border-width, $wtoolbar-item-hover-border-style, $wtoolbar-item-hover-border-color);
+        
+            @include mf-background($wtoolbar-item-hover-bg);
+
+            @include box-shadow($wtoolbar-item-hover-shadow);
+        }
+
+        &:active {
+            @include border($wtoolbar-item-active-border-width, 
+                            $wtoolbar-item-active-border-style, 
+                            $wtoolbar-item-active-border-color);
+        
+            @include mf-background($wtoolbar-item-active-bg);
+
+            @include box-shadow($wtoolbar-item-active-shadow);
+        }
+
+        &:before,
+        & > span[class*="mf-icon-"] {
+            display: block;
+            margin-bottom: $wtoolbar-item-padding;
+
+            font-size: $wtoolbar-item-icon-size;
+        }
+        
+    }
+
+    &.is-selected > a {
+        @include border($wtoolbar-item-selected-border-width, 
+                        $wtoolbar-item-selected-border-style, 
+                        $wtoolbar-item-selected-border-color);
+        
+        @include mf-background($wtoolbar-item-selected-bg);
+
+        @include box-shadow($wtoolbar-item-selected-shadow);
+    }
+}

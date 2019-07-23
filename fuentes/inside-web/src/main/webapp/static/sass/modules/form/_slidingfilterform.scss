@@ -1,0 +1,41 @@
+// Not optimized!
+/* Sliding filterForm */
+
+.slidingFilter {
+    overflow: hidden;
+    margin-bottom: 1px;
+
+    & > a {
+        display: block;
+        float: right;
+        padding: 4px 12px;
+        margin-bottom: -1px;
+        
+        cursor: pointer;
+        
+        border: 1px solid #CCC;
+        border-bottom: none;
+        background-color: #DDD;
+        
+        @include border-radius(3px 3px 0 0);
+        
+        &:focus {
+            outline: none;
+        }
+    }
+
+    & > form {
+        // display: none;
+        clear: both;
+        padding: 20px;
+        
+        background-color: #DDD;
+        border: 1px solid #CCC;
+        
+        @include border-radius(7px 0 7px 7px);
+    }
+
+    .filterForm legend {
+        font-size: 1em;
+    }
+}

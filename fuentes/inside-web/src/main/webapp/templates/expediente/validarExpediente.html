@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorator="common/inside_layout">
+
+<head>
+	<script th:src="|${#httpServletRequest.getContextPath()}/js/validarExpediente.js?v=${session.versionNumber}|"></script>
+
+	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/moxie.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/plupload.dev.js?v=${session.versionNumber}|"></script> 
+    <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/i18n/es.js?v=${session.versionNumber}|"></script>
+</head>
+
+<body>
+    <div layout:fragment="content">
+
+        <div class="mf-window-header">
+            <div class="mf-window-header--hgroup">
+            	<nav class="mf-breadcrumb" role="navigation">
+	                <ol class="mf-breadcrumb--menu">
+	                    <li class="mf-breadcrumb--item"><a href="principal" th:text="#{layout.menu.option.inicio}"></a></li>
+	                </ol>
+	            </nav>
+                <h3 class="mf-window-header--title" th:utext="#{validarExpediente.title}"></h3>
+            </div>
+            <ul class="mf-window-toolbar"  th:fragment="actionButtons" id="actionButtons">
+	           <li class="mf-window-toolbar--tool">
+	                <a style="cursor:pointer" onclick="showAyudaDialog()">
+	                    <span class="mf-icon mf-icon-globe-help"></span>
+	                    <span th:text="#{generarExpediente.ayuda}"></span>
+	                </a>
+	            </li>
+            </ul>
+        </div>
+
+        <div id="contentData">
+            <form id="validarExpedienteForm" th:action="@{/validarExpediente}" method="post">   
+            	<input type="hidden" name="expedientId" id="expedientId"/>   
+            	<input type="hidden" name="TOVE_01" id="TOVE_01" th:value="#{validarExpediente.validacion1}"/>   
+            	<input type="hidden" name="TOVE_02" id="TOVE_02" th:value="#{validarExpediente.validacion2}"/>
+            	<input type="hidden" name="TOVE_03" id="TOVE_03" th:value="#{validarExpediente.validacion3}"/>
+            	<input type="hidden" name="TOVE_04" id="TOVE_04" th:value="#{validarExpediente.validacion4}"/>
+                <fieldset>
+                    <legend>
+                        <span th:text="#{validarExpediente.xmlexpedienteeni}"></span>
+                    </legend>
+
+                    <div class="fld">
+	                        <label for="expediente" class="required" th:text="#{validarExpediente.adjuntar}">
+	                        </label>
+                        <div class="input-auxbtn">
+                            <button id="documento_button">Examinar...</button>
+                            <span id="documento_text">No se ha seleccionado ningún archivo.</span>
+                            <span class="fld-help" th:text="#{validarExpediente.formatos.admitidos}"></span> 
+                            <progress id="progressDocumento" class="hidden" max="100"></progress>
+                        </div>
+                    </div>
+
+                    <!-- div class="fld">
+                        <label for="opcionesValidacion" class="required" th:text="#{validarExpediente.validaciones}"></label>
+                        <select id="opcionesValidacion" name="opcionesValidacion" multiple="multiple">
+                            <option value="TOVE01" selected="selected" th:text="#{validarExpediente.validacion1}"></option>
+                            <option value="TOVE02" th:text="#{validarExpediente.validacion2}"></option>
+                            <option value="TOVE03" th:text="#{validarExpediente.validacion3}"></option>
+                        </select>
+                    </div> -->
+                </fieldset>
+
+                <div class="mf-report hidden" th:fragment="contenidoEni" id="contentValidation">
+                    <fieldset class="fld">
+                        <legend th:text="#{validarExpediente.resultado}"></legend>
+                        <div  id="contentValidationData">
+                        </div>
+                    </fieldset>
+                </div>
+
+                <fieldset class="fsubmit">
+                    <button class="validador primary" type="button" name="validar" id="button_validar" onclick="validarExpediente()"> 
+                        <span class="mf-icon mf-icon-circle-check"></span>
+                        <span th:text="#{validarExpediente.button.validar}"></span> 
+                    </button>
+                </fieldset>
+                 
+                <div id="importarVeil" class="mf-veil hidden">
+            	</div>   
+            </form>
+        </div>
+        
+    </div>
+</body>
+</html>

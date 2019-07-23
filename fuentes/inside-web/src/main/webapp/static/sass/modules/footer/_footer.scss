@@ -1,0 +1,86 @@
+/* PIE DE PAGINA */
+
+.#{$ns}-footer {
+    clear: both;
+    position: relative;
+    margin: -$footer-height auto 0;
+    height: $footer-height;
+    padding: $footer-padding;
+    overflow: hidden;
+    
+    color: $footer-font-color;
+    text-align: $footer-mobile-text-align;
+    
+    border-top: $footer-border-top;
+    
+    @include background($footer-bg);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        text-align: $footer-desktop-text-align;
+        
+        .portal & {
+            height: $footerportal-height;
+            margin: $footerportal-margin;
+            padding: $footerportal-padding;
+            
+            @include border($footerportal-border-width, $footerportal-border-style, $footerportal-border-color);
+            
+            @include background($footerportal-bg);
+        }
+        
+        .sede & {
+            height: $footersede-height;
+            margin: $footersede-margin;
+            padding: $footersede-padding;
+
+            @include border($footersede-border-width, $footersede-border-style, $footersede-border-color);
+            
+            @include background($footersede-bg);
+        }
+
+        &.#{$ns}-footer__compact {
+            height: $footercompact-height;
+            margin-top: -$footercompact-height;
+            padding: $footercompact-padding;
+
+            @include border($footercompact-border-width, $footercompact-border-style, $footercompact-border-color);
+
+            @include mf-background($footercompact-bg);
+        }
+    }
+
+    p {
+        color: $footer-font-color;
+    }
+}
+
+.#{$ns}-footer--container {
+
+    @include fontSize($footer-font-size);
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        
+        min-height: $footer-logo-height;
+        
+        @include background($footer-content-bg);
+
+        .portal &,
+        .sede & {
+            // width: 960px;
+            margin: 0 auto;
+        }
+
+        .#{$ns}-footer__compact & {
+            min-height: 0;
+
+            @include background(none);
+
+            @include morfont-icon("\e6c5", $location: "before", $size: 92px, $position: absolute, $pos-right: 10px, $line-height: 0.3);
+        }
+    }
+
+    .portal &,
+    .sede & {
+        @extend %adaptable-container !optional;
+    }
+}

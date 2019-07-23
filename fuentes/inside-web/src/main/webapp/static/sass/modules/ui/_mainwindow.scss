@@ -1,0 +1,34 @@
+.#{$ns}-main {
+    margin: $mainwindow-mobile-margin;
+    padding: $mainwindow-mobile-padding;
+    border: $mainwindow-mobile-border;
+
+    @include border-radius($mainwindow-mobile-border-radius);
+
+    @include background($mainwindow-mobile-bg);
+
+    @include box-shadow($mainwindow-mobile-shadow);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        margin: $mainwindow-desktop-margin;
+        padding: $mainwindow-desktop-padding;
+
+    	border: $mainwindow-desktop-border;
+
+	    @include border-radius($mainwindow-desktop-border-radius);
+
+	    @include background($mainwindow-desktop-bg);
+
+	    @include box-shadow($mainwindow-desktop-shadow);
+    }
+}
+
+.#{$ns}-main--content {
+    margin: $mainwindow-content-mobile-margin;
+    padding: $mainwindow-content-mobile-padding;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        margin: $mainwindow-content-desktop-margin;
+        padding: $mainwindow-content-desktop-padding;
+    }
+}

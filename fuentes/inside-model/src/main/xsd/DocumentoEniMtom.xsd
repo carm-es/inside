@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:enids="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" 
+xmlns:enidocmeta="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" 
+xmlns:enifileMtom="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" 
+xmlns:enidocMtom="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" 
+targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD DOCUMENTO ENI (v1.0)</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" schemaLocation="MetadatosDocumentoEni.xsd"/>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" schemaLocation="firmasEni.xsd"/>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" schemaLocation="ContenidoDocumentoEniMtom.xsd"/>
+	<xsd:element name="documentoMtom" type="enidocMtom:TipoDocumentoMtom">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">El elemento "documento" podrá aparecer como elemento raíz de un documento XML objeto de intercambio o como elemento no raíz (elemento hijo).</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="TipoDocumentoMtom">
+		<xsd:sequence>
+			<xsd:element ref="enifileMtom:contenidoMtom"/>
+			<xsd:element ref="enidocmeta:metadatos"/>
+			<xsd:element ref="enids:firmas" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">La firma es obligatoria para el documento administrativo electrónico y para todo aquel documento electrónico susceptible de ser incorporado en un expediente electrónico.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="Id" type="xsd:ID" use="optional"/>
+	</xsd:complexType>
+</xsd:schema>

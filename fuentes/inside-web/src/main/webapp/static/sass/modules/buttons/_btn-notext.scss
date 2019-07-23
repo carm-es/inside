@@ -1,0 +1,27 @@
+
+%btn__no-text {
+    display: inline-block;
+    
+    text-align: center;
+    text-indent: -9999em;
+    white-space: nowrap;
+
+    .#{$ns}-icon,
+    [class*="mf-icon-"] {
+        float: left;
+        margin-right: 0;
+
+        text-indent: 0;
+
+        /* &:before,
+        &:after {
+
+        } */
+    }
+}
+
+.#{$ns}-btn__no-text,
+.#{$ns}-button__no-text,
+.btn__no-text {
+    @extend %btn__no-text;
+}

@@ -1,0 +1,225 @@
+// UI Dialog Morfos 
+
+.#{$ns}-dialog {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: auto;
+	height: auto;
+	max-height: 95%;
+	margin: $dialog-margin;
+	z-index: 5001;
+	overflow: auto;
+	padding-top: 36px;
+	
+	@include border($dialog-border-width, $dialog-border-style, $dialog-border-color);
+	@include border-radius($dialog-border-radius);
+
+	@include background($dialog-bg);
+	@include box-shadow($dialog-shadow);
+
+	@if ($dialog-ieshadow-bol) {
+		@include ie-shadow;
+	}
+
+	@include breakpoint($break-mobile, $no-query: $noquery) {
+		max-width: 90%;
+		bottom: auto;
+		padding-top: 0;
+	}
+
+	@include breakpoint($break-tablet) {
+		max-width: 70%;
+	}
+
+	&.js-#{$ns}-dialog {
+		overflow: hidden;
+	}
+
+	&.#{$ns}-visualizer {
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		padding: $dialog-visualizer-padding;
+
+		@include background($dialog-visualizer-bg);
+		@include box-shadow(none);
+	}
+}
+
+.#{$ns}-dialog--titlebar {
+	position: fixed;
+	top: $dialog-position;
+	left: $dialog-position;
+	right: $dialog-position;
+	padding: $dialog-titlebar-padding;
+	
+	color: $dialog-titlebar-color;
+	text-align: $dialog-titlebar-text-align;
+
+	@include pie-clearfix;
+
+	@include background($dialog-titlebar-bg);
+
+	@include breakpoint($break-mobile, $no-query: $noquery) {
+		position: static;
+		top: auto;
+		left: auto;
+		right: auto;
+		width: 100%;
+	}
+
+	.#{$ns}-visualizer & {
+		@include mf-background($dialog-visualizer-titlebar-bg);
+	}
+}
+
+.#{$ns}-dialog--title {
+	float: left;
+	margin: $dialog-title-margin;
+	padding: $dialog-title-padding;
+	overflow: hidden;
+	max-width: 70%;
+	
+	color: $dialog-title-color;
+	@include fontSize($dialog-title-font-size);
+	font-weight: $dialog-title-font-weight; 
+	white-space: nowrap;
+
+	text-overflow: ellipsis;
+}
+
+.#{$ns}-dialog--btn {
+	float: right;
+	margin: 0 2px;
+	min-width: 16px;
+	min-height: 16px;
+	padding: $dialog-btn-padding;
+
+	color: $dialog-btn-color;
+
+	border-color: $dialog-btn-border-color;
+	
+	@include background($dialog-btn-bg);
+
+	@include box-shadow($dialog-btn-shadow);
+
+	@include breakpoint($break-mobile, $no-query: $noquery) {
+		padding: $dialog-btn-desktop-padding;
+		
+		font: 0/0 a; 
+		text-shadow: none; 
+	}
+
+	&:hover {
+		@include background(transparent);
+		@include box-shadow(none);
+		@include border-radius(2px);
+	}
+
+	.mf-icon {
+		color: inherit;
+		font-size: 12px;
+		line-height: 1;
+	}
+
+	.#{$ns}-visualizer & {
+		@include mf-background($dialog-visualizer-btn-bg);
+		
+		padding: 6px 7px;
+		
+		font: inherit; 
+		text-shadow: none; 
+		color: white;
+
+		border: none;
+	}
+}
+
+.#{$ns}-dialog--closebtn {
+	
+}
+
+.#{$ns}-dialog--content {
+	padding: $dialog-content-padding;	
+	overflow: auto;
+
+	.js-#{$ns}-dialog & {
+		max-height: 305px;
+		overflow: auto;
+	}
+
+	.#{$ns}-visualizer & {
+		padding: $dialog-visualizer-content-padding;
+
+		@include mf-background($dialog-visualizer-conteng-bg);
+	}
+}
+
+.#{$ns}-dialog--buttonbar {
+	@include pie-clearfix();
+	
+	padding: 6px 20px;
+
+	text-align: right;
+
+	border-top: 1px solid #CCC;
+	border-top: 1px solid rgba(0,0,0,0.2);
+
+	@include background($dialog-btnbar-bg);
+
+	
+
+	.#{$ns}-visualizer & {
+		text-align: left;
+		@include mf-background(rgba(0,0,0,0.5));
+
+		@include breakpoint($break-mobile, $no-query: $noquery) {
+			position: absolute;
+			top: auto;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+	}
+
+	.#{$ns}-visualizer--tool {
+		padding: 6px 7px;
+
+		color: white;
+
+		border: none;
+
+		@include mf-background($dialog-visualizer-btn-bg);
+		@include box-shadow(none);
+		
+		&:hover {
+			@include background($dialog-visualizer-btn-hover-bg);
+		}
+	}
+
+}
+
+// Visualizer
+
+.#{$ns}-visualizer {
+    
+}
+
+.#{$ns}-visualizer--container {
+    border: 1px solid #DDD;
+}
+
+.#{$ns}-visualizer--zoom {
+    @include transition(all 0.5s ease);
+}
+
+.#{$ns}-visualizer--toolbar {
+    @include mf-background(#DDD);
+}
+

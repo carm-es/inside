@@ -1,0 +1,145 @@
+/**************/
+/* PAGINATION */
+
+.pager {
+    margin: 1em 0;
+
+    @include fontSize($pager-font-size);
+
+    .ui-dialog & {
+        padding-bottom: 2.5em;
+    }
+}
+
+.pager--form {
+    text-align: right;
+}
+
+.pager--item {
+    display: inline-block;
+    padding: 2px 8px;
+    vertical-align: baseline;
+
+    color: $pager-font-color;
+    text-align: left;
+    
+    @include border($pager-border-width, $pager-border-style, $pager-border-color);
+
+    @include border-radius(2px);
+
+    @include background($pager-bg);
+
+    @include box-shadow(none);
+
+    label {
+        margin: 0;
+        
+        color: $pager-font-color;
+        @include fontSize($pager-font-size);
+    }
+
+    select {
+        width: auto;
+        padding: 2px 2px 2px 0;
+        
+        color: $pager-font-color;
+
+        border: none;
+
+        @include box-shadow(none);
+        @include background(transparent);
+    }
+}
+
+.pager--page {
+    & > label {
+        @include visuallyhidden;
+    }
+}
+
+.pager--btn {
+    @extend %button;
+
+    margin: 0;
+    padding: 6px 12px 5px 8px;
+    vertical-align: top;
+    
+    color: $pager-font-color;
+    
+    @include border($pager-border-width, $pager-border-style, $pager-border-color);
+
+    @include border-radius(2px);
+
+    @include background($pager-bg);
+
+    @include box-shadow(none);
+
+    &:link,
+    &:visited {
+        color: $pager-font-color;
+    }
+
+    &:hover {
+        color: $pager-hover-font-color;
+
+        @include background($pager-bg);
+    }
+
+    &:active {
+        @include clearView;
+    }
+
+    .ie8 & {
+        @include border($pager-border-width, $pager-border-style, $pager-border-color);
+    }
+}
+
+.pager--btn-prev {
+    @include morfont-icon($pager-prev-icon, $size: 10px, $position: relative, $pos-top: 0px, $pos-left: -2px, $valign: baseline);
+}
+
+.pager--btn-next {
+    font-weight: bold;
+    
+    @include morfont-icon($pager-next-icon, "after", $position: relative, $pos-top: 1px, $pos-left: 3px, $valign: baseline);
+}
+
+.pager--dropdown-btn {
+    padding: 5px 8px;
+}
+
+.pager--dropdown-menu {
+    min-width: 90px;
+    padding: 4px;
+    right: 5px;
+    
+    text-align: right;
+
+    @include background($pager-dropdown-bg);
+    @include box-shadow($pager-dropdown-shadow);
+    @include ie-shadow;
+}
+
+.pager--dropdown-item {
+    
+    &:nth-child(odd) {
+        background: #EEE;
+    }
+
+    &.is-selected a {
+        @include morfont-icon($pager-selected-icon, $margin: 0 6px 0 0, $size: 12px);
+    }
+    
+    a,
+    a:link,
+    a:visited {
+        padding: 4px 15px;
+        
+        color: $pager-font-color;
+        white-space: nowrap;
+
+        &:hover {
+            color: $pager-hover-font-color;
+        }
+    }
+}

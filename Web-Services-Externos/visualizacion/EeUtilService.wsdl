@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="EeUtilServiceImplService" targetNamespace="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:ns1="http://service.ws.inside.dsic.mpt.es/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="http://eeutil-vis-docexp.seap.minhap.es/eeutil-vis-docexp/ws/EeUtilService?wsdl=EeUtilService.wsdl" namespace="http://service.ws.inside.dsic.mpt.es/">
+    </wsdl:import>
+  <wsdl:binding name="EeUtilServiceImplServiceSoapBinding" type="ns1:EeUtilService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="eliminarPlantilla">
+      <soap:operation soapAction="urn:eliminarPlantilla" style="document"/>
+      <wsdl:input name="eliminarPlantilla">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="eliminarPlantillaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerPlantillas">
+      <soap:operation soapAction="urn:obtenerPlantillas" style="document"/>
+      <wsdl:input name="obtenerPlantillas">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="obtenerPlantillasResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="visualizarContenidoOriginal">
+      <soap:operation soapAction="urn:visualizarContenidoOriginal" style="document"/>
+      <wsdl:input name="visualizarContenidoOriginal">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="visualizarContenidoOriginalResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="asociarPlantilla">
+      <soap:operation soapAction="urn:asociarPlantilla" style="document"/>
+      <wsdl:input name="asociarPlantilla">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="asociarPlantillaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="visualizar">
+      <soap:operation soapAction="urn:visualizar" style="document"/>
+      <wsdl:input name="visualizar">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="visualizarResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="visualizarDocumentoConPlantilla">
+      <soap:operation soapAction="urn:visualizarDocumentoConPlantilla" style="document"/>
+      <wsdl:input name="visualizarDocumentoConPlantilla">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="visualizarDocumentoConPlantillaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EeUtilServiceImplService">
+    <wsdl:port binding="tns:EeUtilServiceImplServiceSoapBinding" name="EeUtilServiceImplPort">
+      <soap:address location="http://eeutil-vis-docexp.seap.minhap.es/eeutil-vis-docexp/ws/EeUtilService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

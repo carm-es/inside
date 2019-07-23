@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="common/inside_layout">
+<head>
+<script
+	th:src="|${#httpServletRequest.getContextPath()}/js/remisionNubeAuditoriaAccesoDocumento.js?v=${session.versionNumber}|"></script>
+
+</head>
+
+<body>
+
+	<div layout:fragment="content">
+
+		<div class="mf-window-header">
+			<div class="mf-window-header--hgroup">
+				<nav class="mf-breadcrumb" role="navigation">
+					<ol class="mf-breadcrumb--menu">
+						<li class="mf-breadcrumb--item"><a href="principal"
+							th:text="#{layout.menu.option.inicio}"></a></li>
+					</ol>
+				</nav>
+				<h3 class="mf-window-header--title"
+					th:utext="#{auditoria.acceso.documento.title}"></h3>
+			</div>
+		</div>
+
+		<div id="contentData">
+			<table id="auditoriaAccesoNubeTabla"
+				class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
+				<thead>
+					<tr>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoAuditoriaAccesoNube.tabla.title.dir3.peticionario}"
+							th:text="#{listadoAuditoriaAccesoNube.tabla.title.dir3.peticionario}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoAuditoriaAccesoNube.tabla.title.dir3.remitente}"
+							th:text="#{listadoAuditoriaAccesoNube.tabla.title.dir3.remitente}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoAuditoriaAccesoNube.tabla.title.dir3.usuarioAcceso}"
+							th:text="#{listadoAuditoriaAccesoNube.tabla.title.dir3.usuarioAcceso}"></th>							
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoAuditoriaAccesoNube.tabla.title.idExpedienteODocumento}"
+							th:text="#{listadoAuditoriaAccesoNube.tabla.title.idExpedienteODocumento}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoAuditoriaAccesoNube.tabla.title.fechaAcceso}"
+							th:text="#{listadoAuditoriaAccesoNube.tabla.title.fechaAcceso}"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						th:each="auditoriaAccesoNube,iterationStatus : *{listadoAuditoriaAccesoNube}"
+						th:id="'auditoriaAccesoNube_'+${iterationStatus.count - 1}">
+						<td class="grid-column-creador"
+							th:text="${auditoriaAccesoNube.nifPeticionario}"></td>
+						<td class="grid-column-creador"
+							th:text="${auditoriaAccesoNube.nifRemitente}"></td>
+						<td class="grid-column-articulo_tipo.codigo"
+							th:text="${auditoriaAccesoNube.nifUsuarioAcceso}"></td>
+						<td class="grid-column-articulo_tipo.codigo"
+							th:text="${auditoriaAccesoNube.identificador}"></td>							
+						<td class="grid-column-articulo_tipo.fecha"
+							th:text="${#dates.format(auditoriaAccesoNube.fechaAcceso, 'dd-MM-yyyy HH:mm:ss')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="mf-veil" style="display: none"></div>
+	</div>
+
+	<script>
+		var tablaAuditoriaAccesoNube;
+		showMessage();
+	</script>
+
+</body>
+</html>

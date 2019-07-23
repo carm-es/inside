@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="common/inside_layout">
+<head>
+<script
+	th:src="|${#httpServletRequest.getContextPath()}/js/remisionNube.js?v=${session.versionNumber}|"></script>
+
+</head>
+
+<body>
+
+	<div layout:fragment="content">
+
+		<div class="mf-window-header">
+			<div class="mf-window-header--hgroup">
+				<nav class="mf-breadcrumb" role="navigation">
+					<ol class="mf-breadcrumb--menu">
+						<li class="mf-breadcrumb--item"><a href="principal"
+							th:text="#{layout.menu.option.inicio}"></a></li>
+					</ol>
+				</nav>
+				<h3	class="mf-window-header--title" th:utext="#{solicitudesAccesoExpediente.title}"></h3>
+			</div>
+		</div>
+
+
+		<div id="contentData">
+		
+		<div id="incluyeEnviadas">
+			<table>
+				<tr>
+					<td class="grid-column-creador"><input type="checkbox"
+						id="verEnviadas" /> <label
+						th:text="#{solicitudesAccesoExpediente.tabla.vertratadas}"></label></td>
+				</tr>
+			</table>
+
+		</div>
+				
+			<table id="solicitudesAccesoExpedienteTabla"
+				class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
+				<thead>
+					<tr>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.idPeticion}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.idPeticion}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.idExpediente}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.idExpediente}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.fecha}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.fecha}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.remitente}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.remitente}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.estado}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.estado}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{solicitudesAccesoExpediente.tabla.title.rechazado}"
+							th:text="#{solicitudesAccesoExpediente.tabla.title.rechazado}"></th>							
+						<th></th>
+						<th></th>						
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						th:each="solicitudAccesoExpediente,iterationStatus : *{solicitudesAccesoExpediente}"
+						th:id="'solicitudAccesoExpediente_'+${iterationStatus.count - 1}">
+						<td class="grid-column-creador"
+							th:text="${solicitudAccesoExpediente.idPeticion}"></td>
+						<td class="grid-column-creador" th:if="${solicitudAccesoExpediente.isIdExpedienteSolicitadoVacio()}"
+							th:text="#{solicitudAccesoExpediente.contieneMetadatos}" th:title="${solicitudAccesoExpediente.pintarMetadatosTitle}"></td>
+						<td class="grid-column-creador" th:if="!${solicitudAccesoExpediente.isIdExpedienteSolicitadoVacio()}"
+							th:text="${solicitudAccesoExpediente.idExpedienteSolicitado}" th:title="${solicitudAccesoExpediente.pintarMetadatos}"></td>							
+						<td class="grid-column-articulo_tipo.codigo"
+							th:text="${solicitudAccesoExpediente.fechaPeticionCorta}" 
+							th:title="${#dates.format(solicitudAccesoExpediente.fechaPeticion, 'dd-MM-yyyy')}"></td>
+						<td class="grid-column-articulo_tipo.codigo"
+							th:text="${solicitudAccesoExpediente.dir3Peticionario}"></td>
+						<td class="grid-column-articulo_tipo.codigo" style="color: red;"
+							th:if="${solicitudAccesoExpediente.isPendienteEnviar()}">
+						<label style="color: red;" th:text="#{solicitudesAccesoExpediente.tabla.registro.pendienteEnviar}"></label></td>
+						<td class="grid-column-articulo_tipo.codigo"
+							th:if="!${solicitudAccesoExpediente.isPendienteEnviar()}"
+							th:text="${solicitudAccesoExpediente.resultadoCorto}"
+							th:title="${solicitudAccesoExpediente.resultado}"></td>
+						<td class="grid-column-__actions last-column"
+							th:text="${solicitudAccesoExpediente.solicitudTokenDenegada}"
+							th:title="${solicitudAccesoExpediente.solicitudTokenDenegada}"></td>							
+						<td class="grid-column-__actions last-column" th:if="${solicitudAccesoExpediente.isIdExpedienteSolicitadoVacio()}" >
+							<ul class="grid-row-actions">
+								<li class="grid-row-action"><a
+									class="mf-table-data--row-action  mf-action  mf-action__revisar "
+									th:onclick="|javascript:${'openModalRemitirTokenSolicitud(&quot;' + solicitudAccesoExpediente.id + '&quot;, true, &quot;' + solicitudAccesoExpediente.pintarMetadatos + '&quot;)'}|"
+									target="_self"
+									th:title="#{solicitudAccesoExpediente.remitirToken}"><span
+										class="mf-icon mf-icon-send"></span> </a></li>
+							</ul>
+						</td>
+						<td class="grid-column-__actions last-column" th:if="!${solicitudAccesoExpediente.isIdExpedienteSolicitadoVacio()}" >
+							<ul class="grid-row-actions">
+								<li class="grid-row-action"><a
+									class="mf-table-data--row-action  mf-action  mf-action__revisar "
+									th:onclick="|javascript:${'openModalRemitirTokenSolicitud(&quot;' + solicitudAccesoExpediente.id + '&quot;, false)'}|"
+									target="_self"
+									th:title="#{solicitudAccesoExpediente.remitirToken}"><span
+										class="mf-icon mf-icon-send"></span> </a></li>
+							</ul>
+						</td>						
+						<td class="grid-column-__actions last-column">
+							<ul class="grid-row-actions">
+								<li class="grid-row-action"><a
+									class="mf-table-data--row-action  mf-action  mf-action__revisar "
+									th:onclick="|javascript:${'rechazarToken(&quot;' + solicitudAccesoExpediente.id + '&quot;)'}|"
+									target="_self"
+									th:title="#{solicitudAccesoExpediente.remitirToken.rechazar}"><span
+										class="mf-icon mf-icon-sign_cancel"></span> </a></li>
+							</ul>
+						</td>						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+
+		<!-- modal de envio token solicitud acceso expediente-->
+		<div id="init-modal-solicitudesAccesoExpediente"
+			data-title="Generar credenciales de acceso" data-modal="1" data-width="600"
+			data-draggable="0"
+			data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento"
+			data-position_h="center" data-position_v="center"
+			class="mf-buttonbar--btn simbutton hidden">
+			<form id="remitirTokenForm" class="mf-form__stack"
+				th:action="@{/remitirTokenSolicitudAcceso}" method="post">
+				<input type="hidden" name="nifsDesdeModal" id="nifsDesdeModal" />
+				<input type="hidden" name="interesadosAdded" id="interesadosAdded" />
+				<input type="hidden" name="identificador" id="identificador" />
+				<div id="inputIdentificadorVacio" class="fld hidden">
+					<div class="fld">
+						<label th:text="#{solicitudAccesoExpediente.hayMetadatos}" class="mf-field-doc"></label>
+					    <label id="labelMetadatosAdicionales" class="mf-field-doc"></label> 
+					</div>				
+					<div class="fld">
+					    <label th:text="#{solicitudesAccesoExpediente.tabla.title.idExpediente}" class="mf-field-doc required"></label> 
+					    <div class="input-auxbtn">
+		  						<div>
+		                           <input
+		                               type="text" 
+		                               id="identificadorExpedienteEscogidoPorUsuario" 
+		                               name="identificadorExpedienteEscogidoPorUsuario" 
+		                               maxlength="50" 
+		                               class="sticked-input-right" />
+		                       </div>
+						</div>  
+					</div>
+				</div>				
+				<div class="fld">
+					<label th:text="#{generar.token.fechacaducidad}" class="mf-field-doc"></label> <input
+						type="date" id="fechaCaducidadToken" name="fechaCaducidadToken"
+						class="mf-datepicker" title="dd/mm/aaaa" size="14"
+						onclick="superponer_CalendarioPrimerPlanoModalToken();" />
+				</div>
+				<div class="fld">
+					<label for="interesados" th:text="#{generar.token.listanif}"></label>
+					<div>
+						<input type="text" class="sticked-input-right medium"
+							id="nifToken" name="nifToken" maxlength="9" />
+						<button type="button" name="button" th:value="#{button.anadir}"
+							th:utext="#{generarExpediente.metadato.anadir.button}"
+							onclick="addInteresadoExp()"></button>
+					</div>
+					<ul id="listInteresados">
+						<li th:each="key, iterationStatus : ${interesadoslista}"
+							th:id="${'divInteresado_'+__${iterationStatus.index}__}"><input
+							type="text" class="sticked-input-right" disabled="disabled"
+							th:field="${interesadoslista[__${iterationStatus.index}__]}" />
+							<button
+								th:id="${'removeInteresadoButton_' + __${iterationStatus.index}__}"
+								class="mf-icon mf-icon-cancel2" type="button" name="button"
+								th:value="#{button.eliminar}"
+								th:onclick="'removeInteresadoExp(' + ${iterationStatus.index} + ')'"></button>
+						</li>
+					</ul>
+				</div>					
+				<fieldset class="fsubmit">
+					<button class="primary" type="button" name="button"
+						th:value="#{puntounicojusticia.remitir}"
+						onclick="remitirToken()">
+						<span class="mf-icon mf-icon-circle-wheel"></span> <span
+							th:utext="#{generar.token.botongenerar}"></span>
+					</button>							 
+				</fieldset>
+			</form>
+			<ul class="error-list"></ul>
+			<div class="js-timer-veil mf-veil hidden"></div>
+		</div>
+
+	<div class="mf-veil" style="display:none"></div>
+	</div>
+
+	<script>
+		var tablaSolicitudesAccesoExpediente;
+		showMessage();
+	</script>
+
+</body>
+</html>

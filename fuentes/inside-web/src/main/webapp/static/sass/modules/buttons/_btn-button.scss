@@ -1,0 +1,114 @@
+
+/* Buttons & simbuttons */
+
+%button {
+    display: $button-display;
+    width: $button-width;
+    min-width: $button-min-width;
+    padding: $button-padding;
+    margin: $button-margin;
+    cursor: pointer;
+
+    color: $button-font-color;
+    @include fontSize($button-font-size);
+    font-weight: $button-font-weight;
+    line-height: $button-line-height;
+    text-align: $button-text-align;
+    text-shadow: $button-text-shadow;
+
+    @include border($button-border-width, $button-border-style, $button-border-color);
+    
+    @include border-radius($button-border-radius);
+    
+    @include box-shadow($button-box-shadow);
+    
+    @include background($button-bg);
+    
+    @include transition(none);
+
+    &:visited {
+        color: $button-font-color;
+    }
+
+    &:hover,
+    &:focus {
+        outline: none;
+
+        text-decoration: none;
+
+        @include box-shadow($button-hover-box-shadow);
+
+        @include background($button-hover-bg);
+    }
+    
+    &:active {
+        @include box-shadow($button-active-box-shadow);
+    
+        @include background($button-active-bg);
+    }
+    
+    @include ie-shadow();
+    
+    &[disabled],
+    &.disabled,
+    &.disabled:hover,
+    &.disabled:active {
+        opacity: $button-disabled-opacity;
+
+        color: $button-disabled-font-color-leg;
+        color: $button-disabled-font-color;
+        
+        cursor: default;
+        
+        text-shadow: $button-disabled-text-shadow;
+        
+        @include box-shadow($button-disabled-box-shadow);
+    }
+}
+
+.#{$ns}-button,
+.simbutton {
+    @extend %button;
+}
+
+
+
+/* input[type=submit] .#{$ns}-icon, 
+input[type=button] .#{$ns}-icon, 
+button .#{$ns}-icon, 
+.simbutton .#{$ns}-icon,
+input[type=submit] .ui-icon, 
+input[type=button] .ui-icon, 
+button .ui-icon, 
+.simbutton .ui-icon {
+    display: inline-block;
+    
+    margin-left: -2px;
+    margin-top: -1px;
+    margin-bottom: -1px;
+
+    vertical-align: text-bottom;
+}
+    
+.simbutton span.ui-icon {
+    // float: left;
+    // margin: 0;
+}
+    
+.primary .#{$ns}-icon, 
+.primary span.ui-icon {
+    margin-top: 0;
+}
+
+.ie7 button .#{$ns}-icon {
+    display: none;
+}
+    
+button[disabled] .#{$ns}-icon, 
+button[disabled].ui-state-default .#{$ns}-icon, 
+button[disabled] .ui-icon, 
+button[disabled].ui-state-default .ui-icon, 
+.disabled .#{$ns}-icon, 
+.disabled .ui-icon {
+    opacity: 0.5;
+} */

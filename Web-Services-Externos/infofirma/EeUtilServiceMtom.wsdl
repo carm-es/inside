@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="EeUtilServiceMtomImplService" targetNamespace="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:ns1="http://service.ws.inside.dsic.mpt.es/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="http://eeutil-oper-firma.seap.minhap.es/eeutil-oper-firma/ws/EeUtilServiceMtom?wsdl=EeUtilServiceMtom.wsdl" namespace="http://service.ws.inside.dsic.mpt.es/">
+    </wsdl:import>
+  <wsdl:binding name="EeUtilServiceMtomImplServiceSoapBinding" type="ns1:EeUtilServiceMtom">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="validacionFirma">
+      <soap:operation soapAction="urn:validacionFirma" style="document"/>
+      <wsdl:input name="validacionFirma">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="validacionFirmaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerInformacionFirma">
+      <soap:operation soapAction="urn:obtenerInformacionFirma" style="document"/>
+      <wsdl:input name="obtenerInformacionFirma">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="obtenerInformacionFirmaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="postProcesarFirma">
+      <soap:operation soapAction="urn:postProcesarFirma" style="document"/>
+      <wsdl:input name="postProcesarFirma">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="postProcesarFirmaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="comprobarFirmaFormatoA">
+      <soap:operation soapAction="urn:comprobarFirmaFormatoA" style="document"/>
+      <wsdl:input name="comprobarFirmaFormatoA">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="comprobarFirmaFormatoAResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validarCertificado">
+      <soap:operation soapAction="urn:validarCertificado" style="document"/>
+      <wsdl:input name="validarCertificado">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="validarCertificadoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerFirmantes">
+      <soap:operation soapAction="urn:obtenerFirmantes" style="document"/>
+      <wsdl:input name="obtenerFirmantes">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="obtenerFirmantesResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getInfoCertificado">
+      <soap:operation soapAction="urn:getInfoCertificado" style="document"/>
+      <wsdl:input name="getInfoCertificado">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getInfoCertificadoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resellarFirmaA">
+      <soap:operation soapAction="urn:resellarFirmaA" style="document"/>
+      <wsdl:input name="resellarFirmaA">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="resellarFirmaAResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="ampliarFirma">
+      <soap:operation soapAction="urn:ampliarFirma" style="document"/>
+      <wsdl:input name="ampliarFirma">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ampliarFirmaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EeUtilServiceMtomImplService">
+    <wsdl:port binding="tns:EeUtilServiceMtomImplServiceSoapBinding" name="EeUtilServiceMtomImplPort">
+      <soap:address location="http://eeutil-oper-firma.seap.minhap.es/eeutil-oper-firma/ws/EeUtilServiceMtom"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

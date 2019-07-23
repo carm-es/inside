@@ -1,0 +1,80 @@
+// Error page
+
+.#{$ns}-securitypage {
+    margin: $securitypage-margin;
+    min-height: $securitypage-minheight;
+
+    @include background($securitypage-bg);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        width: $securitypage-desktop-width;
+        padding: $securitypage-desktop-padding;
+    }
+}
+
+.#{$ns}-securitypage--title {
+    color: $securitypage-title-color;
+}
+
+.#{$ns}-securitypage--subtitle {
+    color: $securitypage-subtitle-color;
+}
+
+.#{$ns}-securitypage--text {
+    color: $securitypage-text-color;
+}
+
+.#{$ns}-securitypage--links {
+    list-style: none;
+}
+
+.#{$ns}-securitypage--link {
+    margin: 2em 1em;
+    
+    border: $securitypage-border;
+    @include border-radius(5px);
+
+    @include mf-background($securitypage-link-bg);
+    @include box-shadow($securitypage-link-shadow);
+
+    & > a {
+        display: block;
+        padding: 1em 2em;
+
+        @include morfont-icon("\e699", $margin: 0 0.3em 0 0);
+    }
+}
+
+// wrapper con securitypage
+
+%wrapper__securitypage {
+    max-width: none;
+    padding: $securitypage-wrapper-padding;
+    
+    @include mf-background($securitypage-wrapper-bg, $securitypage-wrapper-bg-f);
+    @include box-shadow($securitypage-wrapper-shadow);
+}
+
+.#{$ns}-wrapper__selectentitypage {
+    @extend %wrapper__securitypage;
+
+    @include mf-background($securitypage-selectentity-wrapper-bg);
+}
+
+.#{$ns}mf-wrapper__error404page {
+    @extend %wrapper__securitypage;
+
+    @include mf-background($securitypage-error404-wrapper-bg);
+}
+
+.#{$ns}-wrapper__deniedpage {
+    @extend %wrapper__securitypage;
+
+    @include mf-background($securitypage-denied-wrapper-bg);
+}
+
+.#{$ns}-wrapper__errorpage {
+    @extend %wrapper__securitypage;
+
+    @include mf-background($securitypage-error-wrapper-bg);
+}
