@@ -59,7 +59,7 @@ $(document).ready(
             }
         });
 
-function loadUnidadesOrganicas(identificadorUsuario) {
+function loadUnidadesOrganicas(identificadorUsuario, context) {
     var divData = $('#init-modal-lista-unidades');
     var data = divData.data();
     var buttons = createButtonsDialog([ {
@@ -83,7 +83,7 @@ function loadUnidadesOrganicas(identificadorUsuario) {
     });
 
     $.ajax({
-        url : "getUnidadesOrganicas",
+        url : context + "/getUnidadesOrganicas",
         dataType : 'json',
         type : 'POST',
         data : {

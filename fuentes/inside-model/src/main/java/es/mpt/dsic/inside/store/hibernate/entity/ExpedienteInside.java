@@ -63,8 +63,6 @@ public class ExpedienteInside implements java.io.Serializable {
       new HashSet<ExpedienteInsideOrgano>(0);
   private Set<ExpedienteInsideMetadatosAdicionales> expedienteInsideMetadatosAdicionaleses =
       new HashSet<ExpedienteInsideMetadatosAdicionales>(0);
-  private Set<ExpedienteInsideRespuestaEnvioJusticia> expedienteInsideRespuestaEnvioJusticia =
-      new HashSet<ExpedienteInsideRespuestaEnvioJusticia>(0);
   private Set<ExpedienteInsideIndice> expedienteInsideIndices =
       new HashSet<ExpedienteInsideIndice>(0);
   private Set<ExpedienteInsideInteresado> expedienteInsideInteresados =
@@ -87,7 +85,6 @@ public class ExpedienteInside implements java.io.Serializable {
       Set<ExpedienteInsideIndiceFirmas> expedienteInsideIndiceFirmases,
       Set<ExpedienteInsideOrgano> expedienteInsideOrganos,
       Set<ExpedienteInsideMetadatosAdicionales> expedienteInsideMetadatosAdicionaleses,
-      Set<ExpedienteInsideRespuestaEnvioJusticia> expedienteInsideRespuestaEnvioJusticia,
       Set<ExpedienteInsideIndice> expedienteInsideIndices,
       Set<ExpedienteInsideInteresado> expedienteInsideInteresados) {
     this.expedienteInsideIndice = expedienteInsideIndice;
@@ -102,7 +99,6 @@ public class ExpedienteInside implements java.io.Serializable {
     this.expedienteInsideIndiceFirmases = expedienteInsideIndiceFirmases;
     this.expedienteInsideOrganos = expedienteInsideOrganos;
     this.expedienteInsideMetadatosAdicionaleses = expedienteInsideMetadatosAdicionaleses;
-    this.expedienteInsideRespuestaEnvioJusticia = expedienteInsideRespuestaEnvioJusticia;
     this.expedienteInsideIndices = expedienteInsideIndices;
     this.expedienteInsideInteresados = expedienteInsideInteresados;
   }
@@ -262,16 +258,6 @@ public class ExpedienteInside implements java.io.Serializable {
   }
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "expedienteInside")
-  public Set<ExpedienteInsideRespuestaEnvioJusticia> getExpedienteInsideRespuestaEnvioJusticia() {
-    return this.expedienteInsideRespuestaEnvioJusticia;
-  }
-
-  public void setExpedienteInsideRespuestaEnvioJusticia(
-      Set<ExpedienteInsideRespuestaEnvioJusticia> expedienteInsideRespuestaEnvioJusticia) {
-    this.expedienteInsideRespuestaEnvioJusticia = expedienteInsideRespuestaEnvioJusticia;
-  }
-
-  @OneToMany(fetch = FetchType.LAZY, mappedBy = "expedienteInside")
   public Set<ExpedienteInsideIndice> getExpedienteInsideIndices() {
     return this.expedienteInsideIndices;
   }
@@ -334,16 +320,6 @@ public class ExpedienteInside implements java.io.Serializable {
       sb.append("expedienteInsideMetadatosAdicionaleses=<");
       for (ExpedienteInsideMetadatosAdicionales expedienteInsideMetadatosAdicionales : expedienteInsideMetadatosAdicionaleses) {
         sb.append(expedienteInsideMetadatosAdicionales.toString() + coma);
-      }
-      sb.append(">");
-    }
-
-    if (expedienteInsideRespuestaEnvioJusticia == null) {
-      sb.append("expedienteInsideRespuestaEnvioJusticia=null" + coma);
-    } else {
-      sb.append("expedienteInsideRespuestaEnvioJusticia=<");
-      for (ExpedienteInsideRespuestaEnvioJusticia expedienteInsideRespuestaEnvioJusticiaItertor : expedienteInsideRespuestaEnvioJusticia) {
-        sb.append(expedienteInsideRespuestaEnvioJusticiaItertor.toString() + coma);
       }
       sb.append(">");
     }

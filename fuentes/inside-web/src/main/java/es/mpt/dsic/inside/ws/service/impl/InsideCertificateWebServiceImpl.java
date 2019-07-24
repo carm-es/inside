@@ -19,17 +19,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import es.mpt.dsic.inside.justicia.service.PuntoUnicoJusticiaService;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
-import es.mpt.dsic.inside.remisionnube.service.PuntoUnicoRemisionNubeService;
-import es.mpt.dsic.inside.service.InSideService;
-import es.mpt.dsic.inside.service.InSideServicePermisos;
-import es.mpt.dsic.inside.service.InsideUtilService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.util.ws.security.CredentialUtil;
 import es.mpt.dsic.inside.ws.exception.InsideExceptionConverter;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
-import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
 import es.mpt.dsic.inside.ws.operation.InsideOperationWebService;
 import es.mpt.dsic.inside.ws.service.InsideCertificateWebService;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
@@ -57,12 +50,7 @@ import es.mpt.dsic.inside.xml.inside.ws.documento.alta.TipoDocumentoAsociadoaExp
 import es.mpt.dsic.inside.xml.inside.ws.expediente.TipoExpedienteEniFileInside;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.documentos.TipoExpedienteEniFileInsideConDocumentos;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.file.RespuestaPdfExpediente;
-import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.PeticionRemisionAJusticiaType;
-import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.RespuestaRemisionAJusticiaType;
-import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.RespuestaType;
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoResultadoVisualizacionDocumentoInside;
-import es.mpt.dsic.puntoUnicoJusticia.client.modelo.EnviarAJusticiaResponse;
-import es.mpt.dsic.puntoUnicoJusticia.client.modelo.ParametrosEnvioJusticia;
 
 @WebService(endpointInterface = "es.mpt.dsic.inside.ws.service.InsideCertificateWebService",
     targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService",
@@ -82,22 +70,7 @@ public class InsideCertificateWebServiceImpl implements InsideCertificateWebServ
   InsideOperationWebService insideOperationWebService;
 
   @Autowired
-  private InSideService service;
-
-  @Autowired
-  private InSideServicePermisos servicePermisos;
-
-  @Autowired
   private CredentialUtil credentialUtil;
-
-  @Autowired
-  private InsideUtilService insideUtilService;
-
-  @Autowired
-  private PuntoUnicoJusticiaService puntoUnicoJusticiaService;
-
-  @Autowired
-  private PuntoUnicoRemisionNubeService servicioRemisionNube;
 
   @Override
   @Secured("ROLE_ALTA_EXPEDIENTE")
@@ -600,58 +573,32 @@ public class InsideCertificateWebServiceImpl implements InsideCertificateWebServ
   }
 
   @Override
-  public RespuestaRemisionAJusticiaType remisionAJusticia(
-      PeticionRemisionAJusticiaType peticionRemisionAJusticiaType) throws InsideWSException {
-
-    try {
-      if (peticionRemisionAJusticiaType == null) {
-        throw new InsideWSException(InsideWsErrors.PETICION_NULA);
-      }
-      // Control Permisos
-      servicePermisos.checkPermisos(peticionRemisionAJusticiaType.getIdexpEni(), null,
-          ObjetoExpedienteInside.class, credentialUtil.getAppLogged());
-
-      RespuestaType respuestaType = new RespuestaType();
-
-      ParametrosEnvioJusticia parametroMJU = servicioRemisionNube.getParametrosMJU(
-          peticionRemisionAJusticiaType.getDatosRemisionJusticia(),
-          peticionRemisionAJusticiaType.getDir3Juzgado());
-
-      EnviarAJusticiaResponse resultadoEnvioJusticia =
-          puntoUnicoJusticiaService.enviarExpedienteMJU(insideUtilService
-              .getMapaExpedienteYDocumentos(peticionRemisionAJusticiaType.getIdexpEni(), null),
-              parametroMJU);
-      String resultado = insideUtilService.guardarResultadoEnvioJusticia(resultadoEnvioJusticia,
-          peticionRemisionAJusticiaType.getIdexpEni(), null, null,
-          parametroMJU.getPresentadorcodigoOrganoRemitente());
-      if (!resultadoEnvioJusticia.getResultadoEnvioToJusticia().isACK()) {
-        String[] partesDelMensajeError = resultado.split("@");
-        if (partesDelMensajeError.length > 1) {
-          respuestaType.setDescripcion("ERROR: " + partesDelMensajeError[1]);
-        } else {
-          respuestaType.setDescripcion("ERROR: desconocido");
-        }
-
-      } else {
-        respuestaType.setDescripcion(resultado);
-      }
-
-      RespuestaRemisionAJusticiaType respuesta = new RespuestaRemisionAJusticiaType();
-      respuesta.setRespuesta(respuestaType);
-      return respuesta;
-
-    } catch (Exception e) {
-      logger.error("Error al remitir expediente a justicia");
-      throw InsideExceptionConverter.convertToException(e);
-    }
-
-  }
-
-  @Override
   @Secured("ROLE_LEER_EXPEDIENTE")
   public RespuestaPdfExpediente getPdfExpediente(byte[] expedienteEni) throws InsideWSException {
     try {
       return insideOperationWebService.getPdfExpediente(expedienteEni);
+    } catch (Exception e) {
+      throw InsideExceptionConverter.convertToException(e);
+    }
+  }
+
+  @Override
+  @Secured("ROLE_LEER_EXPEDIENTE")
+  public RespuestaPdfExpediente getPdfExpedientePorId(String identificador, String version)
+      throws InsideWSException {
+    try {
+      return insideOperationWebService.getPdfExpedientePorId(identificador, version);
+    } catch (Exception e) {
+      throw InsideExceptionConverter.convertToException(e);
+    }
+  }
+
+  @Override
+  @Secured("ROLE_LEER_EXPEDIENTE")
+  public RespuestaPdfExpediente visualizarExpediente(byte[] expedienteEni)
+      throws InsideWSException {
+    try {
+      return insideOperationWebService.visualizarExpediente(expedienteEni);
     } catch (Exception e) {
       throw InsideExceptionConverter.convertToException(e);
     }

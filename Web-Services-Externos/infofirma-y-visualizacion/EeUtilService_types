@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="EeUtilService" targetNamespace="http://service.ws.inside.dsic.mpt.es/" xmlns:ns1="http://service.ws.inside.dsic.mpt.es/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://service.ws.inside.dsic.mpt.es/" xmlns:tns="http://service.ws.inside.dsic.mpt.es/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="foliar" type="tns:foliar"/>
+<xs:element name="foliarResponse" type="tns:foliarResponse"/>
+<xs:element name="obtenerInformacionFirma" type="tns:obtenerInformacionFirma"/>
+<xs:element name="obtenerInformacionFirmaResponse" type="tns:obtenerInformacionFirmaResponse"/>
+<xs:element name="visualizar" type="tns:visualizar"/>
+<xs:element name="visualizarResponse" type="tns:visualizarResponse"/>
+<xs:complexType name="obtenerInformacionFirma">
+<xs:sequence>
+<xs:element name="aplicacionInfo" type="tns:applicationLogin"/>
+<xs:element name="Firma" type="xs:base64Binary"/>
+<xs:element name="opcionesObtenerInformacionFirma" type="tns:opcionesObtenerInformacionFirma"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="applicationLogin">
+<xs:sequence>
+<xs:element name="idaplicacion" type="xs:string"/>
+<xs:element name="password" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesObtenerInformacionFirma">
+<xs:sequence>
+<xs:element name="obtenerFirmantes" type="xs:boolean"/>
+<xs:element name="obtenerDatosFirmados" type="xs:boolean"/>
+<xs:element name="obtenerTipoFirma" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="obtenerInformacionFirmaResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="resultadoObtenerInformacionFirma" type="tns:InformacionFirma"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="InformacionFirma">
+<xs:sequence>
+<xs:element name="esFirma" type="xs:boolean"/>
+<xs:element minOccurs="0" name="tipoDeFirma" type="tns:TipoDeFirma"/>
+<xs:element minOccurs="0" name="documentoFirmado" type="tns:ContenidoInfo"/>
+<xs:element minOccurs="0" name="hashFirmado" type="xs:string"/>
+<xs:element minOccurs="0" name="algoritmoHashFirmado" type="xs:string"/>
+<xs:element minOccurs="0" name="firmantes" type="tns:ListaFirmaInfo"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="TipoDeFirma">
+<xs:sequence>
+<xs:element name="tipoFirma" type="xs:string"/>
+<xs:element minOccurs="0" name="modoFirma" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ContenidoInfo">
+<xs:sequence>
+<xs:element name="contenido" type="xs:base64Binary"/>
+<xs:element minOccurs="0" name="tipoMIME" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ListaFirmaInfo">
+<xs:sequence>
+<xs:element name="informacionFirmas">
+<xs:complexType>
+<xs:sequence>
+<xs:element maxOccurs="unbounded" name="informacionFirmas" type="tns:FirmaInfo"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="FirmaInfo">
+<xs:sequence>
+<xs:element name="nifcif" type="xs:string"/>
+<xs:element name="nombre" type="xs:string"/>
+<xs:element name="apellido1" type="xs:string"/>
+<xs:element name="apellido2" type="xs:string"/>
+<xs:element name="fecha" type="xs:string"/>
+<xs:element minOccurs="0" name="extras" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="EstadoInfo">
+<xs:sequence>
+<xs:element minOccurs="0" name="status" type="xs:string"/>
+<xs:element minOccurs="0" name="codigo" type="xs:string"/>
+<xs:element minOccurs="0" name="descripcion" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="foliar">
+<xs:sequence>
+<xs:element name="aplicacionInfo" type="tns:applicationLogin"/>
+<xs:element name="atributos" type="tns:atributos"/>
+<xs:element name="item" type="tns:item"/>
+<xs:element name="opcionesFoliado" type="tns:opcionesFoliado"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="atributos">
+<xs:sequence>
+<xs:element minOccurs="0" name="identificador" type="xs:string"/>
+<xs:element minOccurs="0" name="propiedades" type="tns:ListaPropiedades"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ListaPropiedades">
+<xs:sequence>
+<xs:element name="propiedades">
+<xs:complexType>
+<xs:sequence>
+<xs:element maxOccurs="unbounded" name="propiedades" type="tns:propiedad"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="propiedad">
+<xs:sequence>
+<xs:element name="clave" type="xs:string"/>
+<xs:element name="valor" type="xs:string"/>
+<xs:element default="0" minOccurs="0" name="importancia" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="item">
+<xs:sequence>
+<xs:element name="identificador" type="xs:ID"/>
+<xs:element name="nombre" type="xs:string"/>
+<xs:element minOccurs="0" name="padre" type="xs:IDREF"/>
+<xs:element minOccurs="0" name="hijos" type="tns:ListaItem"/>
+<xs:element minOccurs="0" name="documentoContenido" type="tns:documentoContenido"/>
+<xs:element minOccurs="0" name="propiedadesItem" type="tns:ListaPropiedades"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="ListaItem">
+<xs:sequence>
+<xs:element name="items">
+<xs:complexType>
+<xs:sequence>
+<xs:element maxOccurs="unbounded" name="items" type="tns:item"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="documentoContenido">
+<xs:sequence>
+<xs:element name="bytesDocumento" type="xs:base64Binary"/>
+<xs:element name="mimeDocumento" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesFoliado">
+<xs:sequence>
+<xs:element default="2" minOccurs="0" name="numeroPaginasBlanco" type="xs:int"/>
+<xs:element minOccurs="0" name="opcionesLogo" type="tns:opcionesLogo"/>
+<xs:element minOccurs="0" name="opcionesNumerosPagina" type="tns:opcionesNumerosPagina"/>
+<xs:element minOccurs="0" name="opcionesPortada" type="tns:opcionesPortada"/>
+<xs:element minOccurs="0" name="opcionesIndice" type="tns:opcionesIndice"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesLogo">
+<xs:sequence>
+<xs:element default="true" name="estamparLogo" type="xs:boolean"/>
+<xs:element default="true" name="estamparNombreOrganismo" type="xs:boolean"/>
+<xs:element minOccurs="0" name="listaCadenasNombreOrganismo" type="tns:listaCadenas"/>
+<xs:element minOccurs="0" name="posicion" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="listaCadenas">
+<xs:sequence>
+<xs:element name="cadenas">
+<xs:complexType>
+<xs:sequence>
+<xs:element maxOccurs="unbounded" name="cadenas" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesNumerosPagina">
+<xs:sequence>
+<xs:element default="true" name="estamparNumeroPagina" type="xs:boolean"/>
+<xs:element default="false" name="estamparNumeroPaginasTotal" type="xs:boolean"/>
+<xs:element minOccurs="0" name="posicion" type="xs:int"/>
+<xs:element default="true" name="estamparMasDatos" type="xs:boolean"/>
+<xs:element minOccurs="0" name="cadenasMasDatos" type="tns:listaCadenas"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesPortada">
+<xs:sequence>
+<xs:element default="true" name="tieneTitulo1Portada" type="xs:boolean"/>
+<xs:element default="true" name="tieneTitulo2Portada" type="xs:boolean"/>
+<xs:element minOccurs="0" name="titulo1Portada" type="xs:string"/>
+<xs:element minOccurs="0" name="titulo2Portada" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesIndice">
+<xs:sequence>
+<xs:element default="true" minOccurs="0" name="tieneTitulo1Indice" type="xs:boolean"/>
+<xs:element default="true" minOccurs="0" name="tieneTitulo2Indice" type="xs:boolean"/>
+<xs:element minOccurs="0" name="titulo1Indice" type="xs:string"/>
+<xs:element minOccurs="0" name="titulo2Indice" type="xs:string"/>
+<xs:element minOccurs="0" name="numFilasHoja" type="xs:int"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="foliarResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="salidaFoliado" type="tns:SalidaFoliado"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="SalidaFoliado">
+<xs:sequence>
+<xs:element name="documentoContenido" type="tns:documentoContenido"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="visualizar">
+<xs:sequence>
+<xs:element name="aplicacionInfo" type="tns:applicationLogin"/>
+<xs:element name="item" type="tns:item"/>
+<xs:element name="opcionesVisualizacion" type="tns:opcionesVisualizacion"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="opcionesVisualizacion">
+<xs:sequence>
+<xs:element minOccurs="0" name="opcionesLogo" type="tns:opcionesLogo"/>
+<xs:element default="modelo1" minOccurs="0" name="modelo" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="visualizarResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="salidaVisualizar" type="tns:SalidaVisualizacion"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="SalidaVisualizacion">
+<xs:sequence>
+<xs:element name="documentoContenido" type="tns:documentoContenido"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ErrorTest" nillable="true" type="tns:EstadoInfo"/>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="obtenerInformacionFirma">
+    <wsdl:part element="ns1:obtenerInformacionFirma" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="InSideException">
+    <wsdl:part element="ns1:ErrorTest" name="InSideException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="foliarResponse">
+    <wsdl:part element="ns1:foliarResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="obtenerInformacionFirmaResponse">
+    <wsdl:part element="ns1:obtenerInformacionFirmaResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="visualizar">
+    <wsdl:part element="ns1:visualizar" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="visualizarResponse">
+    <wsdl:part element="ns1:visualizarResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="foliar">
+    <wsdl:part element="ns1:foliar" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="EeUtilService">
+    <wsdl:operation name="obtenerInformacionFirma">
+      <wsdl:input message="ns1:obtenerInformacionFirma" name="obtenerInformacionFirma">
+    </wsdl:input>
+      <wsdl:output message="ns1:obtenerInformacionFirmaResponse" name="obtenerInformacionFirmaResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:InSideException" name="InSideException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="foliar">
+      <wsdl:input message="ns1:foliar" name="foliar">
+    </wsdl:input>
+      <wsdl:output message="ns1:foliarResponse" name="foliarResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:InSideException" name="InSideException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="visualizar">
+      <wsdl:input message="ns1:visualizar" name="visualizar">
+    </wsdl:input>
+      <wsdl:output message="ns1:visualizarResponse" name="visualizarResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:InSideException" name="InSideException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

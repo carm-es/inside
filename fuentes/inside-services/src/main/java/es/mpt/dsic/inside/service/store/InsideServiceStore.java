@@ -19,7 +19,6 @@ import javax.xml.stream.XMLStreamException;
 import es.mpt.dsic.inside.model.busqueda.consulta.ConsultaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaUsuario;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoAuditoriaFirmaServidor;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoElastic;
@@ -33,19 +32,17 @@ import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.ObjetoNumeroProcedimiento;
+import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAcceso;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaToken;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoComunicacionTokenExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.model.objetos.filter.ObjetoFilterPageRequest;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
-import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreQueryNotValidException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectAlreadyExistsException;
@@ -118,6 +115,9 @@ public interface InsideServiceStore {
   List<ObjetoInsideDocumentoUnidad> getDocumentosUnidad(String nif, boolean soloUnidadActiva)
       throws InsideServiceStoreException;
 
+  List<ObjetoInsideDocumentoUnidad> getDocumentosMetadatosUnidad(String nif,
+      boolean soloUnidadActiva) throws InsideServiceStoreException;
+
   ObjetoExpedienteToken getTokenByUsuarioExpediente(ObjetoExpedienteToken data)
       throws InsideServiceStoreException;
 
@@ -129,29 +129,9 @@ public interface InsideServiceStore {
   void saveAuditoriaToken(ObjetoAuditoriaToken objectAuditoriaToken)
       throws InsideServiceStoreException;
 
-  void saveComunicacionTokenExpediente(
-      ObjetoComunicacionTokenExpediente objetoComunicacionTokenExpediente)
-      throws InsideServiceStoreException;
-
   public void saveAuditoriaAccesoDocumento(
       ObjetoAuditoriaAccesoDocumento objetoAuditoriaAccesoDocumento)
       throws InsideServiceStoreException;
-
-  void saveSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InsideServiceStoreException;
-
-  List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteActivas(
-      int maximoResultados, int numeroMaximoIntentos) throws InsideServiceStoreException;
-
-  List<ObjetoSolicitudAccesoExpediente> getSolicitudesAccesoExpediente(
-      ObjetoInsideUsuario objetoInsideUsuario)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException;
-
-  ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpediente(String id)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException;
-
-  String getUrlDestinoPeticionAccesoExpediente(String dir3) throws InSideServiceException;
 
   List<ObjetoInsideUsuario> getUsuarios() throws InsideServiceStoreException;
 
@@ -197,14 +177,6 @@ public interface InsideServiceStore {
   ObjetoInsideAplicacion actualizarCredencialesEeetuilApp(String app,
       ObjetoCredencialEeutil credential) throws InsideServiceStoreException;
 
-  public void insertRespuestaRemisionJusticia(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InsideServiceStoreException;
-
-  void insertRespuestaRemisionJusticiaExpedienteNoInside(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InsideServiceStoreException;
-
   ObjetoInsideAplicacion getAplicacionBySerialNumber(String serialNumberCertificado)
       throws InsideServiceStoreException;
 
@@ -241,19 +213,6 @@ public interface InsideServiceStore {
   public void deleteEstructuraCarpeta(String identificadorEstructura)
       throws InsideServiceStoreException;
 
-  public ObjetoSolicitudAccesoExpAppUrl saveSolicitudAccesoExpAppUrl(
-      ObjetoSolicitudAccesoExpAppUrl objetoSolicitudAccesoExpAppUrl)
-      throws InsideServiceStoreException;
-
-  public ObjetoSolicitudAccesoExpAppUrl getSolicitudAccesoExpAppUrlPorDir3(String dir3Padre)
-      throws InsideServiceStoreException;
-
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEvioJusticaByCodigoEnvio(
-      ObjectInsideRespuestaEnvioJusticia respuestaEnvioJusticia) throws InSideServiceException;
-
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEnvioJusticiaByCodigoEnvio(
-      String codigoEnvio) throws InSideServiceException;
-
   public void updateDocumentoUnidad(ObjetoDocumentoInside object, String usuario, boolean online)
       throws InsideServiceStoreException;
 
@@ -264,9 +223,6 @@ public interface InsideServiceStore {
       throws InsideServiceStoreException;
 
   public void saveAuditoriaFirmaServidor(ObjetoAuditoriaFirmaServidor objetoAuditoriaFirmaServidor);
-
-  public List<ObjetoAuditoriaAcceso> getAuditoriaAccesoDocumento(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException;
 
   List<ObjetoInsideExpedienteUnidad> getExpedientesUnidadPorMetadatos(String nif,
       TipoMetadatosAdicionales tipoMetadatosAdicionales) throws InsideServiceStoreException;
@@ -279,14 +235,18 @@ public interface InsideServiceStore {
   public List<ObjetoInsideUsuario> getUsuariosUnidadOrganica(ObjetoInsideUsuario usuarioEnSesion,
       Locale locale) throws InsideServiceStoreException;
 
-
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteUnidadOrganicaUsuario(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException;
-
-  public ObjetoComunicacionTokenExpediente getComunicacionTokenExpedientePorId(String id)
+  public List<ObjetoUnidadOrganica> getUnidadesOrganicasUsuariosInside(String texto)
       throws InsideServiceStoreException;
 
-  public ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpedientePorIdPeticion(
-      String idPeticion) throws JAXBException;
+  public boolean existeUsuarioInsideConDir3(String dir3);
+
+  public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
+      throws InsideServiceStoreException;
+
+  public ObjetoInsideExpedienteUnidad getExpedienteUnidad(String identificadorExpediente)
+      throws InsideServiceStoreException;
+
+  public ObjetoInsideUnidad getUnidadOrganica(Object idUnidadOrganica)
+      throws InsideServiceStoreException;
 
 }

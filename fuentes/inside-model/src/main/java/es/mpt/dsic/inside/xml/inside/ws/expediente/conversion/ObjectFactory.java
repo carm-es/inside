@@ -38,11 +38,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom.MetadatosEni }
+   * Create an instance of {@link TipoDocumentoIndizadoConversionWS }
    * 
    */
-  public TipoExpedienteConversionInsideWSMtom.MetadatosEni createTipoExpedienteConversionInsideWSMtomMetadatosEni() {
-    return new TipoExpedienteConversionInsideWSMtom.MetadatosEni();
+  public TipoDocumentoIndizadoConversionWS createTipoDocumentoIndizadoConversionWS() {
+    return new TipoDocumentoIndizadoConversionWS();
+  }
+
+  /**
+   * Create an instance of {@link TipoExpedienteConversionInside.MetadatosEni.Estado }
+   * 
+   */
+  public TipoExpedienteConversionInside.MetadatosEni.Estado createTipoExpedienteConversionInsideMetadatosEniEstado() {
+    return new TipoExpedienteConversionInside.MetadatosEni.Estado();
   }
 
   /**
@@ -54,11 +62,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoIndiceConversionWS }
+   * Create an instance of {@link TipoCarpetaIndizadaConversion }
    * 
    */
-  public TipoIndiceConversionWS createTipoIndiceConversionWS() {
-    return new TipoIndiceConversionWS();
+  public TipoCarpetaIndizadaConversion createTipoCarpetaIndizadaConversion() {
+    return new TipoCarpetaIndizadaConversion();
   }
 
   /**
@@ -70,19 +78,51 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoIndiceConversionWSMtom }
+   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom }
    * 
    */
-  public TipoIndiceConversionWSMtom createTipoIndiceConversionWSMtom() {
-    return new TipoIndiceConversionWSMtom();
+  public TipoExpedienteConversionInsideWSMtom createTipoExpedienteConversionInsideWSMtom() {
+    return new TipoExpedienteConversionInsideWSMtom();
   }
 
   /**
-   * Create an instance of {@link TipoCarpetaIndizadaConversionWS }
+   * Create an instance of {@link TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo }
    * 
    */
-  public TipoCarpetaIndizadaConversionWS createTipoCarpetaIndizadaConversionWS() {
-    return new TipoCarpetaIndizadaConversionWS();
+  public TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo createTipoOpcionesVisualizacionIndiceWSFilasNombreOrganismo() {
+    return new TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo();
+  }
+
+  /**
+   * Create an instance of {@link TipoOpcionesVisualizacionIndice }
+   * 
+   */
+  public TipoOpcionesVisualizacionIndice createTipoOpcionesVisualizacionIndice() {
+    return new TipoOpcionesVisualizacionIndice();
+  }
+
+  /**
+   * Create an instance of {@link TipoExpedienteConversionInsideWS.MetadatosEni }
+   * 
+   */
+  public TipoExpedienteConversionInsideWS.MetadatosEni createTipoExpedienteConversionInsideWSMetadatosEni() {
+    return new TipoExpedienteConversionInsideWS.MetadatosEni();
+  }
+
+  /**
+   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado }
+   * 
+   */
+  public TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado createTipoExpedienteConversionInsideWSMtomMetadatosEniEstado() {
+    return new TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado();
+  }
+
+  /**
+   * Create an instance of {@link TipoIndiceConversionWS }
+   * 
+   */
+  public TipoIndiceConversionWS createTipoIndiceConversionWS() {
+    return new TipoIndiceConversionWS();
   }
 
   /**
@@ -94,6 +134,30 @@ public class ObjectFactory {
   }
 
   /**
+   * Create an instance of {@link TipoExpedienteConversionInside.MetadatosEni }
+   * 
+   */
+  public TipoExpedienteConversionInside.MetadatosEni createTipoExpedienteConversionInsideMetadatosEni() {
+    return new TipoExpedienteConversionInside.MetadatosEni();
+  }
+
+  /**
+   * Create an instance of {@link TipoExpedienteConversionInside }
+   * 
+   */
+  public TipoExpedienteConversionInside createTipoExpedienteConversionInside() {
+    return new TipoExpedienteConversionInside();
+  }
+
+  /**
+   * Create an instance of {@link TipoCarpetaIndizadaConversionWS }
+   * 
+   */
+  public TipoCarpetaIndizadaConversionWS createTipoCarpetaIndizadaConversionWS() {
+    return new TipoCarpetaIndizadaConversionWS();
+  }
+
+  /**
    * Create an instance of {@link TipoIndiceConversion }
    * 
    */
@@ -102,27 +166,35 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoIndizadoConversionWS }
+   * Create an instance of {@link TipoOpcionesVisualizacionIndice.FilasNombreOrganismo }
    * 
    */
-  public TipoDocumentoIndizadoConversionWS createTipoDocumentoIndizadoConversionWS() {
-    return new TipoDocumentoIndizadoConversionWS();
+  public TipoOpcionesVisualizacionIndice.FilasNombreOrganismo createTipoOpcionesVisualizacionIndiceFilasNombreOrganismo() {
+    return new TipoOpcionesVisualizacionIndice.FilasNombreOrganismo();
   }
 
   /**
-   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom }
+   * Create an instance of {@link TipoDocumentoIndizadoConversion }
    * 
    */
-  public TipoExpedienteConversionInsideWSMtom createTipoExpedienteConversionInsideWSMtom() {
-    return new TipoExpedienteConversionInsideWSMtom();
+  public TipoDocumentoIndizadoConversion createTipoDocumentoIndizadoConversion() {
+    return new TipoDocumentoIndizadoConversion();
   }
 
   /**
-   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado }
+   * Create an instance of {@link TipoExpedienteConversionInsideWSMtom.MetadatosEni }
    * 
    */
-  public TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado createTipoExpedienteConversionInsideWSMtomMetadatosEniEstado() {
-    return new TipoExpedienteConversionInsideWSMtom.MetadatosEni.Estado();
+  public TipoExpedienteConversionInsideWSMtom.MetadatosEni createTipoExpedienteConversionInsideWSMtomMetadatosEni() {
+    return new TipoExpedienteConversionInsideWSMtom.MetadatosEni();
+  }
+
+  /**
+   * Create an instance of {@link TipoIndiceConversionWSMtom }
+   * 
+   */
+  public TipoIndiceConversionWSMtom createTipoIndiceConversionWSMtom() {
+    return new TipoIndiceConversionWSMtom();
   }
 
   /**
@@ -139,78 +211,6 @@ public class ObjectFactory {
    */
   public TipoExpedienteConversionInsideWS createTipoExpedienteConversionInsideWS() {
     return new TipoExpedienteConversionInsideWS();
-  }
-
-  /**
-   * Create an instance of {@link TipoExpedienteConversionInside.MetadatosEni }
-   * 
-   */
-  public TipoExpedienteConversionInside.MetadatosEni createTipoExpedienteConversionInsideMetadatosEni() {
-    return new TipoExpedienteConversionInside.MetadatosEni();
-  }
-
-  /**
-   * Create an instance of {@link TipoOpcionesVisualizacionIndice.FilasNombreOrganismo }
-   * 
-   */
-  public TipoOpcionesVisualizacionIndice.FilasNombreOrganismo createTipoOpcionesVisualizacionIndiceFilasNombreOrganismo() {
-    return new TipoOpcionesVisualizacionIndice.FilasNombreOrganismo();
-  }
-
-  /**
-   * Create an instance of {@link TipoOpcionesVisualizacionIndice }
-   * 
-   */
-  public TipoOpcionesVisualizacionIndice createTipoOpcionesVisualizacionIndice() {
-    return new TipoOpcionesVisualizacionIndice();
-  }
-
-  /**
-   * Create an instance of {@link TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo }
-   * 
-   */
-  public TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo createTipoOpcionesVisualizacionIndiceWSFilasNombreOrganismo() {
-    return new TipoOpcionesVisualizacionIndiceWS.FilasNombreOrganismo();
-  }
-
-  /**
-   * Create an instance of {@link TipoExpedienteConversionInsideWS.MetadatosEni }
-   * 
-   */
-  public TipoExpedienteConversionInsideWS.MetadatosEni createTipoExpedienteConversionInsideWSMetadatosEni() {
-    return new TipoExpedienteConversionInsideWS.MetadatosEni();
-  }
-
-  /**
-   * Create an instance of {@link TipoExpedienteConversionInside }
-   * 
-   */
-  public TipoExpedienteConversionInside createTipoExpedienteConversionInside() {
-    return new TipoExpedienteConversionInside();
-  }
-
-  /**
-   * Create an instance of {@link TipoExpedienteConversionInside.MetadatosEni.Estado }
-   * 
-   */
-  public TipoExpedienteConversionInside.MetadatosEni.Estado createTipoExpedienteConversionInsideMetadatosEniEstado() {
-    return new TipoExpedienteConversionInside.MetadatosEni.Estado();
-  }
-
-  /**
-   * Create an instance of {@link TipoCarpetaIndizadaConversion }
-   * 
-   */
-  public TipoCarpetaIndizadaConversion createTipoCarpetaIndizadaConversion() {
-    return new TipoCarpetaIndizadaConversion();
-  }
-
-  /**
-   * Create an instance of {@link TipoDocumentoIndizadoConversion }
-   * 
-   */
-  public TipoDocumentoIndizadoConversion createTipoDocumentoIndizadoConversion() {
-    return new TipoDocumentoIndizadoConversion();
   }
 
   /**

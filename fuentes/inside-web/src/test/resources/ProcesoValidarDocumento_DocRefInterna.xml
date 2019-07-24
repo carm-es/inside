@@ -1,0 +1,41 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<enidoc:documento Id="ES_E04975701_2017_2046_sfd" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido" xmlns:ns4="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" xmlns:enidoc="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e">
+    <contenido Id="CONTENIDO_DOCUMENTO">
+        <referenciaFichero>#FIRMA_0</referenciaFichero>
+        <NombreFormato>BIN</NombreFormato>
+    </contenido>
+    <ns2:metadatos Id="DOC_ES_E04975701_2017_2046_sfd_METADATOS">
+        <ns2:VersionNTI>http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e</ns2:VersionNTI>
+        <ns2:Identificador>ES_E04975701_2017_2046_sfd</ns2:Identificador>
+        <ns2:Organo>EA9999999</ns2:Organo>
+        <ns2:FechaCaptura>2017-06-15T00:00:00.000+02:00</ns2:FechaCaptura>
+        <ns2:OrigenCiudadanoAdministracion>false</ns2:OrigenCiudadanoAdministracion>
+        <ns2:EstadoElaboracion>
+            <ns2:ValorEstadoElaboracion>EE01</ns2:ValorEstadoElaboracion>
+        </ns2:EstadoElaboracion>
+        <ns2:TipoDocumental>TD01</ns2:TipoDocumental>
+    </ns2:metadatos>
+    <ns3:firmas>
+        <ns3:firma Id="FIRMA_0">
+            <ns3:TipoFirma>TF05</ns3:TipoFirma>
+            <ns3:ContenidoFirma>
+                <ns3:FirmaConCertificado>
+                    <ns3:FirmaBase64>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</ns3:FirmaBase64>
+                </ns3:FirmaConCertificado>
+            </ns3:ContenidoFirma>
+        </ns3:firma>
+    </ns3:firmas>
+</enidoc:documento>

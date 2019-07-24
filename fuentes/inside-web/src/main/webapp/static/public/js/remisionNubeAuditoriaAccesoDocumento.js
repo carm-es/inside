@@ -40,15 +40,24 @@ $(document).ready(function() {
             "bSortable" : false,
             "width" : "20%"
         }, {
+            "bSortable" : true,
+            "width" : "30%"
+        }, {
+            "bSortable" : true,
+            "width" : "30%"
+        }, {
+            "bSortable" : true,
+            "iDataSort" : 6,
+            "width" : "20%"
+        }, {
             "bSortable" : false,
-            "width" : "20%"
+            "width" : "10%"
         }, {
-            "bSortable" : true,
-            "width" : "20%"
-        }, {
-            "bSortable" : true,
-            "width" : "20%"
+            "bSortable" : false,
+            "bVisible" : false,
+            "width" : "0%"
         } ],
+        "order" : [ [ 3, "desc" ] ],
         "paging" : true
     });
 
@@ -58,3 +67,8 @@ $(document).ready(function() {
     showMessage();
 
 });
+
+function generarInforme(id) {
+    $("#generarInformeForm #identificador").val(id);
+    $("#generarInformeForm").submit();
+}

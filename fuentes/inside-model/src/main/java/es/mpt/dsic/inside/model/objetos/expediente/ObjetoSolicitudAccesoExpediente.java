@@ -24,6 +24,7 @@ public class ObjetoSolicitudAccesoExpediente {
   private String idPeticion;
   private String usuarioPeticionario;
   private String asunto;
+  private String motivacion;
   private String idExpedienteSolicitado;
   private String dir3ExpedienteSolicitado;
   private int codigoSia;
@@ -201,6 +202,15 @@ public class ObjetoSolicitudAccesoExpediente {
     this.nifUsuarioGeneraToken = nifUsuarioGeneraToken;
   }
 
+  public String getMotivacion() {
+    return motivacion;
+  }
 
+  public void setMotivacion(String motivacion) {
+    if (motivacion != null && motivacion.length() > 255) {
+      motivacion = motivacion.substring(0, 255);
+    }
+    this.motivacion = motivacion;
+  }
 
 }

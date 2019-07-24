@@ -1,12 +1,9 @@
-<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:documentmtom:v1.0" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" name="CSVDocumentMtomService" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:documentmtom:v1.0">
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:document:v1.0" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" name="CSVDocumentService" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:document:v1.0">
   <wsdl:types>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:documentmtom:v1.0" xmlns:ns4="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" xmlns:ns3="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" xmlns:ns1="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:documentmtom:v1.0">
-  <xs:import namespace="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0"/>
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom"/>
-  <xs:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"/>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:document:v1.0" xmlns:ns1="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:document:v1.0">
   <xs:import namespace="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0"/>
   <xs:element name="consultarDocumento" type="tns:consultarDocumento"/>
-  <xs:element name="convertirDocumentoAEni" type="tns:convertirDocumentoAEni"/>
   <xs:element name="eliminarDocumento" type="tns:eliminarDocumento"/>
   <xs:element name="guardarDocumento" type="tns:guardarDocumento"/>
   <xs:element name="guardarDocumentoENI" type="tns:guardarDocumentoENI"/>
@@ -14,134 +11,57 @@
   <xs:element name="modificarDocumentoENI" type="tns:modificarDocumentoENI"/>
   <xs:element name="obtenerDocumento" type="tns:obtenerDocumento"/>
   <xs:element name="obtenerDocumentoENI" type="tns:obtenerDocumentoENI"/>
-  <xs:complexType name="guardarDocumento">
-    <xs:sequence>
-      <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="guardarDocumentoRequest" type="ns1:guardarDocumentoMtomRequest"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="modificarDocumentoENI">
-    <xs:sequence>
-      <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="modificarDocumentoEniRequest" type="ns1:guardarDocumentoEniMtomRequest"/>
-    </xs:sequence>
-  </xs:complexType>
   <xs:complexType name="guardarDocumentoENI">
     <xs:sequence>
       <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="guardarDocumentoEniRequest" type="ns1:guardarDocumentoEniMtomRequest"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="obtenerDocumentoENI">
-    <xs:sequence>
-      <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="obtenerDocumentoEniRequest" type="ns4:obtenerDocumentoEniRequest"/>
+      <xs:element name="guardarDocumentoEniRequest" type="ns1:guardarDocumentoEniRequest"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="consultarDocumento">
     <xs:sequence>
       <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="consultarDocumentoRequest" type="ns4:consultarDocumentoRequest"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="modificarDocumento">
-    <xs:sequence>
-      <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="modificarDocumentoRequest" type="ns1:guardarDocumentoMtomRequest"/>
+      <xs:element name="consultarDocumentoRequest" type="ns1:consultarDocumentoRequest"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="eliminarDocumento">
     <xs:sequence>
       <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="eliminarDocumentoRequest" type="ns4:eliminarDocumentoRequest"/>
+      <xs:element name="eliminarDocumentoRequest" type="ns1:eliminarDocumentoRequest"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="obtenerDocumento">
     <xs:sequence>
       <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="obtenerDocumentoRequest" type="ns4:obtenerDocumentoRequest"/>
+      <xs:element name="obtenerDocumentoRequest" type="ns1:obtenerDocumentoRequest"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="convertirDocumentoAEni">
+  <xs:complexType name="guardarDocumento">
     <xs:sequence>
       <xs:element name="credential" type="ns1:WSCredential"/>
-      <xs:element name="convertirDocumentoEniRequest" type="ns4:convertirDocumentoEniRequest"/>
+      <xs:element name="guardarDocumentoRequest" type="ns1:guardarDocumentoRequest"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="modificarDocumentoENI">
+    <xs:sequence>
+      <xs:element name="credential" type="ns1:WSCredential"/>
+      <xs:element name="modificarDocumentoEniRequest" type="ns1:guardarDocumentoEniRequest"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="modificarDocumento">
+    <xs:sequence>
+      <xs:element name="credential" type="ns1:WSCredential"/>
+      <xs:element name="modificarDocumentoRequest" type="ns1:guardarDocumentoRequest"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="obtenerDocumentoENI">
+    <xs:sequence>
+      <xs:element name="credential" type="ns1:WSCredential"/>
+      <xs:element name="obtenerDocumentoEniRequest" type="ns1:obtenerDocumentoEniRequest"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0" xmlns:ns6="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" xmlns:ns5="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" xmlns:ns4="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" xmlns:ns1="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0" version="1.0">
-
-  <xs:import namespace="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0"/>
-
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom"/>
-
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"/>
-
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma"/>
-
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom"/>
-
-  <xs:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"/>
-
-  <xs:import namespace="http://www.w3.org/2005/05/xmlmime"/>
-  <xs:complexType name="WSCredential">
-    <xs:sequence>
-      <xs:element name="idaplicacion" type="xs:string"/>
-      <xs:element name="password" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="guardarDocumentoMtomRequest">
-    <xs:complexContent>
-      <xs:extension base="ns1:guardarDocumento">
-        <xs:sequence>
-          <xs:element name="contenido" type="tns:ContenidoMtomInfo"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="ContenidoMtomInfo">
-    <xs:sequence>
-      <xs:element name="contenido" type="xs:base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
-      <xs:element minOccurs="0" name="tipoMIME" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="guardarDocumentoEniMtomRequest">
-    <xs:sequence>
-      <xs:element name="dir3" type="xs:string"/>
-      <xs:element minOccurs="0" name="csv" type="xs:string"/>
-      <xs:element name="documento" type="ns5:TipoDocumentoMtom"/>
-      <xs:element minOccurs="0" name="metadatosAdicionales" type="ns6:TipoMetadatosAdicionales"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="documentoEniMtomResponse">
-    <xs:complexContent>
-      <xs:extension base="ns1:response">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="documento" type="ns5:TipoDocumentoMtom"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <xs:complexType name="documentoMtomResponse">
-    <xs:complexContent>
-      <xs:extension base="ns1:response">
-        <xs:sequence>
-          <xs:element minOccurs="0" name="contenido" type="tns:ContenidoMtomInfo"/>
-        </xs:sequence>
-      </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-</xs:schema>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns:ns2="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0" xmlns:ns1="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0">
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom"/>
-  <xs:import namespace="urn:es:gob:aapp:csvstorage:webservices:documentmtom:model:v1.0"/>
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"/>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0" xmlns:ns1="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="urn:es:gob:aapp:csvstorage:webservices:document:model:v1.0">
+  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"/>
   <xs:element name="CSVStorageException" nillable="true">
     <xs:complexType>
       <xs:sequence>
@@ -150,17 +70,20 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="convertirDocumentoEniResponse" type="tns:convertirDocumentoEniResponse"/>
-  <xs:element name="obtenerDocumentoEniResponse" type="tns:obtenerDocumentoEniResponse"/>
-  <xs:element name="obtenerDocumentoMtomResponse" type="tns:obtenerDocumentoMtomResponse"/>
-  <xs:complexType name="guardarDocumento">
+  <xs:complexType name="WSCredential">
+    <xs:sequence>
+      <xs:element name="idaplicacion" type="xs:string"/>
+      <xs:element name="password" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="guardarDocumentoEniRequest">
     <xs:sequence>
       <xs:element name="dir3" type="xs:string"/>
       <xs:element minOccurs="0" name="csv" type="xs:string"/>
-      <xs:element minOccurs="0" name="idEni" type="xs:string"/>
+      <xs:element name="documento" type="ns1:TipoDocumento"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="guardarDocumentoResponse">
+  <xs:complexType name="guardarDocumentoEniResponse">
     <xs:sequence>
       <xs:element minOccurs="0" name="response" type="tns:response"/>
     </xs:sequence>
@@ -169,23 +92,6 @@
     <xs:sequence>
       <xs:element minOccurs="0" name="codigo" type="xs:string"/>
       <xs:element minOccurs="0" name="descripcion" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="guardarDocumentoEniResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="response" type="tns:response"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="obtenerDocumentoEniRequest">
-    <xs:sequence>
-      <xs:element name="dir3" type="xs:string"/>
-      <xs:element name="idENI" type="xs:string"/>
-      <xs:element minOccurs="0" name="csv" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="obtenerDocumentoEniResponse">
-    <xs:sequence>
-      <xs:element minOccurs="0" name="documentoEniResponse" type="ns2:documentoEniMtomResponse"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="consultarDocumentoRequest">
@@ -219,56 +125,65 @@
       <xs:element minOccurs="0" name="idEni" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="obtenerDocumentoMtomResponse">
+  <xs:complexType name="obtenerDocumentoResponse">
     <xs:sequence>
-      <xs:element minOccurs="0" name="documentoResponse" type="ns2:documentoMtomResponse"/>
+      <xs:element minOccurs="0" name="documentoResponse" type="tns:documentoResponse"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="convertirDocumentoEniRequest">
+  <xs:complexType name="documentoResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="codigo" type="xs:string"/>
+      <xs:element minOccurs="0" name="descripcion" type="xs:string"/>
+      <xs:element minOccurs="0" name="contenido" type="tns:ContenidoInfo"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ContenidoInfo">
+    <xs:sequence>
+      <xs:element name="contenido" type="xs:base64Binary"/>
+      <xs:element name="tipoMIME" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="guardarDocumentoRequest">
     <xs:sequence>
       <xs:element name="dir3" type="xs:string"/>
-      <xs:element name="csv" type="xs:string"/>
-      <xs:element name="metadatosEni">
-        <xs:complexType>
-          <xs:sequence>
-            <xs:element name="VersionNTI" type="xs:string"/>
-            <xs:element name="Identificador" type="xs:string"/>
-            <xs:element maxOccurs="unbounded" name="Organo" type="xs:string"/>
-            <xs:element name="FechaCaptura" type="xs:dateTime"/>
-            <xs:element name="OrigenCiudadanoAdministracion" type="xs:boolean"/>
-            <xs:element name="EstadoElaboracion" type="ns3:TipoEstadoElaboracion"/>
-            <xs:element name="TipoDocumental" type="xs:string"/>
-          </xs:sequence>
-        </xs:complexType>
-      </xs:element>
+      <xs:element minOccurs="0" name="csv" type="xs:string"/>
+      <xs:element minOccurs="0" name="idEni" type="xs:string"/>
+      <xs:element name="contenido" type="tns:ContenidoInfo"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="convertirDocumentoEniResponse">
+  <xs:complexType name="guardarDocumentoResponse">
     <xs:sequence>
-      <xs:element minOccurs="0" name="documentoEniResponse" type="ns2:documentoEniMtomResponse"/>
+      <xs:element minOccurs="0" name="response" type="tns:response"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="guardarDocumentoResponse" nillable="true" type="tns:guardarDocumentoResponse"/>
-  <xs:element name="errorInfo" nillable="true"/>
-  <xs:element name="modificarDocumentoEniResponse" nillable="true" type="tns:guardarDocumentoEniResponse"/>
+  <xs:complexType name="obtenerDocumentoEniRequest">
+    <xs:sequence>
+      <xs:element name="dir3" type="xs:string"/>
+      <xs:element name="idENI" type="xs:string"/>
+      <xs:element minOccurs="0" name="csv" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="obtenerDocumentoEniResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="documentoEniResponse" type="tns:documentoEniResponse"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="documentoEniResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="codigo" type="xs:string"/>
+      <xs:element minOccurs="0" name="descripcion" type="xs:string"/>
+      <xs:element minOccurs="0" name="documento" type="ns1:TipoDocumento"/>
+    </xs:sequence>
+  </xs:complexType>
   <xs:element name="guardarDocumentoEniResponse" nillable="true" type="tns:guardarDocumentoEniResponse"/>
+  <xs:element name="errorInfo" nillable="true"/>
   <xs:element name="consultarDocumentoResponse" nillable="true" type="tns:consultarDocumentoResponse"/>
-  <xs:element name="modificarDocumentoResponse" nillable="true" type="tns:guardarDocumentoResponse"/>
   <xs:element name="eliminarDocumentoResponse" nillable="true" type="tns:eliminarDocumentoResponse"/>
-</xs:schema>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales">
-  <xs:complexType name="TipoMetadatosAdicionales">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" name="MetadatoAdicional" type="tns:MetadatoAdicional"/>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="MetadatoAdicional">
-    <xs:sequence>
-      <xs:element name="valor" type="xs:anyType"/>
-    </xs:sequence>
-    <xs:attribute name="tipo" type="xs:string"/>
-    <xs:attribute name="nombre" type="xs:string" use="required"/>
-  </xs:complexType>
+  <xs:element name="obtenerDocumentoResponse" nillable="true" type="tns:obtenerDocumentoResponse"/>
+  <xs:element name="guardarDocumentoResponse" nillable="true" type="tns:guardarDocumentoResponse"/>
+  <xs:element name="modificarDocumentoEniResponse" nillable="true" type="tns:guardarDocumentoEniResponse"/>
+  <xs:element name="modificarDocumentoResponse" nillable="true" type="tns:guardarDocumentoResponse"/>
+  <xs:element name="obtenerDocumentoEniResponse" nillable="true" type="tns:obtenerDocumentoEniResponse"/>
 </xs:schema>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.w3.org/2000/09/xmldsig#" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://www.w3.org/2000/09/xmldsig#">
   <xs:element name="CanonicalizationMethod" type="tns:CanonicalizationMethodType"/>
@@ -348,6 +263,15 @@
     </xs:sequence>
     <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
   </xs:complexType>
+  <xs:complexType mixed="true" name="SignatureMethodType">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="HMACOutputLength" type="xs:integer"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
+  </xs:complexType>
   <xs:complexType mixed="true" name="KeyInfoType">
     <xs:sequence>
       <xs:choice maxOccurs="unbounded" minOccurs="0">
@@ -363,49 +287,10 @@
     </xs:sequence>
     <xs:attribute name="Id" type="xs:ID"/>
   </xs:complexType>
-  <xs:complexType name="RetrievalMethodType">
+  <xs:complexType name="RSAKeyValueType">
     <xs:sequence>
-      <xs:element minOccurs="0" name="Transforms" type="tns:TransformsType"/>
-    </xs:sequence>
-    <xs:attribute name="URI" type="xs:anyURI"/>
-    <xs:attribute name="Type" type="xs:anyURI"/>
-  </xs:complexType>
-  <xs:complexType mixed="true" name="SignatureMethodType">
-    <xs:sequence>
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-        <xs:element name="HMACOutputLength" type="xs:integer"/>
-        <xs:any namespace="##other" processContents="lax"/>
-      </xs:choice>
-    </xs:sequence>
-    <xs:attribute name="Algorithm" type="xs:anyURI" use="required"/>
-  </xs:complexType>
-  <xs:complexType name="SPKIDataType">
-    <xs:sequence>
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-        <xs:element name="SPKISexp" type="xs:base64Binary"/>
-        <xs:any namespace="##other" processContents="lax"/>
-      </xs:choice>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="X509DataType">
-    <xs:sequence>
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-        <xs:element name="X509CRL" type="xs:base64Binary"/>
-        <xs:element name="X509IssuerSerial" type="tns:X509IssuerSerialType"/>
-        <xs:element name="X509SKI" type="xs:base64Binary"/>
-        <xs:element name="X509Certificate" type="xs:base64Binary"/>
-        <xs:element name="X509SubjectName" type="xs:string"/>
-        <xs:any namespace="##other" processContents="lax"/>
-      </xs:choice>
-    </xs:sequence>
-  </xs:complexType>
-  <xs:complexType name="PGPDataType">
-    <xs:sequence>
-      <xs:choice maxOccurs="unbounded" minOccurs="0">
-        <xs:element name="PGPKeyID" type="xs:base64Binary"/>
-        <xs:element name="PGPKeyPacket" type="xs:base64Binary"/>
-        <xs:any namespace="##other" processContents="lax"/>
-      </xs:choice>
+      <xs:element name="Modulus" type="xs:base64Binary"/>
+      <xs:element name="Exponent" type="xs:base64Binary"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="DSAKeyValueType">
@@ -419,12 +304,6 @@
       <xs:element minOccurs="0" name="PgenCounter" type="xs:base64Binary"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="ManifestType">
-    <xs:sequence>
-      <xs:element maxOccurs="unbounded" name="Reference" type="tns:ReferenceType"/>
-    </xs:sequence>
-    <xs:attribute name="Id" type="xs:ID"/>
-  </xs:complexType>
   <xs:complexType name="SignatureValueType">
     <xs:simpleContent>
       <xs:extension base="xs:base64Binary">
@@ -432,11 +311,23 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
-  <xs:complexType name="RSAKeyValueType">
+  <xs:complexType name="X509DataType">
     <xs:sequence>
-      <xs:element name="Modulus" type="xs:base64Binary"/>
-      <xs:element name="Exponent" type="xs:base64Binary"/>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="X509CRL" type="xs:base64Binary"/>
+        <xs:element name="X509IssuerSerial" type="tns:X509IssuerSerialType"/>
+        <xs:element name="X509SKI" type="xs:base64Binary"/>
+        <xs:element name="X509Certificate" type="xs:base64Binary"/>
+        <xs:element name="X509SubjectName" type="xs:string"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
     </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SignaturePropertiesType">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="SignatureProperty" type="tns:SignaturePropertyType"/>
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:ID"/>
   </xs:complexType>
   <xs:complexType mixed="true" name="SignaturePropertyType">
     <xs:sequence>
@@ -454,9 +345,32 @@
       </xs:choice>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="SignaturePropertiesType">
+  <xs:complexType name="PGPDataType">
     <xs:sequence>
-      <xs:element maxOccurs="unbounded" name="SignatureProperty" type="tns:SignaturePropertyType"/>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="PGPKeyID" type="xs:base64Binary"/>
+        <xs:element name="PGPKeyPacket" type="xs:base64Binary"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="X509IssuerSerialType">
+    <xs:sequence>
+      <xs:element name="X509IssuerName" type="xs:string"/>
+      <xs:element name="X509SerialNumber" type="xs:integer"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="SPKIDataType">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element name="SPKISexp" type="xs:base64Binary"/>
+        <xs:any namespace="##other" processContents="lax"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ManifestType">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="Reference" type="tns:ReferenceType"/>
     </xs:sequence>
     <xs:attribute name="Id" type="xs:ID"/>
   </xs:complexType>
@@ -468,11 +382,12 @@
     <xs:attribute name="MimeType" type="xs:string"/>
     <xs:attribute name="Encoding" type="xs:anyURI"/>
   </xs:complexType>
-  <xs:complexType name="X509IssuerSerialType">
+  <xs:complexType name="RetrievalMethodType">
     <xs:sequence>
-      <xs:element name="X509IssuerName" type="xs:string"/>
-      <xs:element name="X509SerialNumber" type="xs:integer"/>
+      <xs:element minOccurs="0" name="Transforms" type="tns:TransformsType"/>
     </xs:sequence>
+    <xs:attribute name="URI" type="xs:anyURI"/>
+    <xs:attribute name="Type" type="xs:anyURI"/>
   </xs:complexType>
 </xs:schema>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" version="1.0">
@@ -527,20 +442,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-</xs:schema>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns:ns1="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/mtom">
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom"/>
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"/>
-  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma"/>
-  <xs:element name="documentoMtom" type="tns:TipoDocumentoMtom"/>
-  <xs:complexType name="TipoDocumentoMtom">
-    <xs:sequence>
-      <xs:element ref="ns1:contenidoMtom"/>
-      <xs:element ref="ns2:metadatos"/>
-      <xs:element minOccurs="0" ref="ns3:firmas"/>
-    </xs:sequence>
-    <xs:attribute name="Id" type="xs:ID"/>
-  </xs:complexType>
 </xs:schema>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos">
   <xs:element name="metadatos" type="tns:TipoMetadatos"/>
@@ -597,29 +498,83 @@
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido/mtom" version="1.0">
-
-  <xs:import namespace="http://www.w3.org/2005/05/xmlmime"/>
-  <xs:element name="contenidoMtom" type="tns:TipoContenidoMtom"/>
-
-  <xs:complexType name="TipoContenidoMtom">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido">
+  <xs:element name="contenido" type="tns:TipoContenido"/>
+  <xs:complexType name="TipoContenido">
     <xs:sequence>
       <xs:element minOccurs="0" name="DatosXML" type="xs:anyType"/>
-      <xs:element minOccurs="0" name="ValorBinario" type="xs:base64Binary" xmime:expectedContentTypes="application/octet-stream"/>
+      <xs:element minOccurs="0" name="ValorBinario" type="xs:base64Binary"/>
       <xs:element minOccurs="0" name="referenciaFichero" type="xs:string"/>
       <xs:element name="NombreFormato" type="xs:string"/>
     </xs:sequence>
     <xs:attribute name="Id" type="xs:ID"/>
   </xs:complexType>
-
+</xs:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns:ns1="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e">
+  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido"/>
+  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"/>
+  <xs:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma"/>
+  <xs:element name="documento" type="tns:TipoDocumento"/>
+  <xs:complexType name="TipoDocumento">
+    <xs:sequence>
+      <xs:element ref="ns1:contenido"/>
+      <xs:element ref="ns2:metadatos"/>
+      <xs:element minOccurs="0" ref="ns3:firmas"/>
+    </xs:sequence>
+    <xs:attribute name="Id" type="xs:ID"/>
+  </xs:complexType>
 </xs:schema>
   </wsdl:types>
-  <wsdl:message name="obtenerDocumentoResponse">
-    <wsdl:part element="ns1:obtenerDocumentoMtomResponse" name="parameters">
+  <wsdl:message name="modificarDocumentoENI">
+    <wsdl:part element="tns:modificarDocumentoENI" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="obtenerDocumentoENIResponse">
-    <wsdl:part element="ns1:obtenerDocumentoEniResponse" name="parameters">
+  <wsdl:message name="guardarDocumento">
+    <wsdl:part element="tns:guardarDocumento" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarDocumentoResponse">
+    <wsdl:part element="ns1:consultarDocumentoResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="eliminarDocumento">
+    <wsdl:part element="tns:eliminarDocumento" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="modificarDocumentoENIResponse">
+    <wsdl:part element="ns1:modificarDocumentoEniResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="obtenerDocumentoENI">
+    <wsdl:part element="tns:obtenerDocumentoENI" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="modificarDocumento">
+    <wsdl:part element="tns:modificarDocumento" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarDocumento">
+    <wsdl:part element="tns:consultarDocumento" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="obtenerDocumento">
+    <wsdl:part element="tns:obtenerDocumento" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="CSVStorageException">
+    <wsdl:part element="ns1:errorInfo" name="CSVStorageException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="eliminarDocumentoResponse">
+    <wsdl:part element="ns1:eliminarDocumentoResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="modificarDocumentoResponse">
+    <wsdl:part element="ns1:modificarDocumentoResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="guardarDocumentoResponse">
+    <wsdl:part element="ns1:guardarDocumentoResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
   <wsdl:message name="guardarDocumentoENI">
@@ -630,83 +585,15 @@
     <wsdl:part element="ns1:guardarDocumentoEniResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="convertirDocumentoAEni">
-    <wsdl:part element="tns:convertirDocumentoAEni" name="parameters">
+  <wsdl:message name="obtenerDocumentoENIResponse">
+    <wsdl:part element="ns1:obtenerDocumentoEniResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="guardarDocumentoResponse">
-    <wsdl:part element="ns1:guardarDocumentoResponse" name="parameters">
+  <wsdl:message name="obtenerDocumentoResponse">
+    <wsdl:part element="ns1:obtenerDocumentoResponse" name="parameters">
     </wsdl:part>
   </wsdl:message>
-  <wsdl:message name="modificarDocumentoResponse">
-    <wsdl:part element="ns1:modificarDocumentoResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="eliminarDocumentoResponse">
-    <wsdl:part element="ns1:eliminarDocumentoResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="CSVStorageException">
-    <wsdl:part element="ns1:errorInfo" name="CSVStorageException">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="obtenerDocumento">
-    <wsdl:part element="tns:obtenerDocumento" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="consultarDocumento">
-    <wsdl:part element="tns:consultarDocumento" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="modificarDocumento">
-    <wsdl:part element="tns:modificarDocumento" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="obtenerDocumentoENI">
-    <wsdl:part element="tns:obtenerDocumentoENI" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="modificarDocumentoENIResponse">
-    <wsdl:part element="ns1:modificarDocumentoEniResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="eliminarDocumento">
-    <wsdl:part element="tns:eliminarDocumento" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="consultarDocumentoResponse">
-    <wsdl:part element="ns1:consultarDocumentoResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="guardarDocumento">
-    <wsdl:part element="tns:guardarDocumento" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="modificarDocumentoENI">
-    <wsdl:part element="tns:modificarDocumentoENI" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:message name="convertirDocumentoAEniResponse">
-    <wsdl:part element="ns1:convertirDocumentoEniResponse" name="parameters">
-    </wsdl:part>
-  </wsdl:message>
-  <wsdl:portType name="CSVDocumentMtomService">
-    <wsdl:operation name="guardarDocumento">
-      <wsdl:input message="tns:guardarDocumento" name="guardarDocumento">
-    </wsdl:input>
-      <wsdl:output message="tns:guardarDocumentoResponse" name="guardarDocumentoResponse">
-    </wsdl:output>
-      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
-    </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="modificarDocumentoENI">
-      <wsdl:input message="tns:modificarDocumentoENI" name="modificarDocumentoENI">
-    </wsdl:input>
-      <wsdl:output message="tns:modificarDocumentoENIResponse" name="modificarDocumentoENIResponse">
-    </wsdl:output>
-      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
-    </wsdl:fault>
-    </wsdl:operation>
+  <wsdl:portType name="CSVDocumentService">
     <wsdl:operation name="guardarDocumentoENI">
       <wsdl:input message="tns:guardarDocumentoENI" name="guardarDocumentoENI">
     </wsdl:input>
@@ -715,26 +602,10 @@
       <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
     </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="obtenerDocumentoENI">
-      <wsdl:input message="tns:obtenerDocumentoENI" name="obtenerDocumentoENI">
-    </wsdl:input>
-      <wsdl:output message="tns:obtenerDocumentoENIResponse" name="obtenerDocumentoENIResponse">
-    </wsdl:output>
-      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
-    </wsdl:fault>
-    </wsdl:operation>
     <wsdl:operation name="consultarDocumento">
       <wsdl:input message="tns:consultarDocumento" name="consultarDocumento">
     </wsdl:input>
       <wsdl:output message="tns:consultarDocumentoResponse" name="consultarDocumentoResponse">
-    </wsdl:output>
-      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
-    </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="modificarDocumento">
-      <wsdl:input message="tns:modificarDocumento" name="modificarDocumento">
-    </wsdl:input>
-      <wsdl:output message="tns:modificarDocumentoResponse" name="modificarDocumentoResponse">
     </wsdl:output>
       <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
     </wsdl:fault>
@@ -755,35 +626,47 @@
       <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
     </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="convertirDocumentoAEni">
-      <wsdl:input message="tns:convertirDocumentoAEni" name="convertirDocumentoAEni">
+    <wsdl:operation name="guardarDocumento">
+      <wsdl:input message="tns:guardarDocumento" name="guardarDocumento">
     </wsdl:input>
-      <wsdl:output message="tns:convertirDocumentoAEniResponse" name="convertirDocumentoAEniResponse">
+      <wsdl:output message="tns:guardarDocumentoResponse" name="guardarDocumentoResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="modificarDocumentoENI">
+      <wsdl:input message="tns:modificarDocumentoENI" name="modificarDocumentoENI">
+    </wsdl:input>
+      <wsdl:output message="tns:modificarDocumentoENIResponse" name="modificarDocumentoENIResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="modificarDocumento">
+      <wsdl:input message="tns:modificarDocumento" name="modificarDocumento">
+    </wsdl:input>
+      <wsdl:output message="tns:modificarDocumentoResponse" name="modificarDocumentoResponse">
+    </wsdl:output>
+      <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerDocumentoENI">
+      <wsdl:input message="tns:obtenerDocumentoENI" name="obtenerDocumentoENI">
+    </wsdl:input>
+      <wsdl:output message="tns:obtenerDocumentoENIResponse" name="obtenerDocumentoENIResponse">
     </wsdl:output>
       <wsdl:fault message="tns:CSVStorageException" name="CSVStorageException">
     </wsdl:fault>
     </wsdl:operation>
   </wsdl:portType>
-  <wsdl:binding name="CSVDocumentMtomServiceSoapBinding" type="tns:CSVDocumentMtomService">
+  <wsdl:binding name="CSVDocumentServiceSoapBinding" type="tns:CSVDocumentService">
     <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-    <wsdl:operation name="guardarDocumento">
-      <soap:operation soapAction="urn:guardarDocumento" style="document"/>
-      <wsdl:input name="guardarDocumento">
+    <wsdl:operation name="consultarDocumento">
+      <soap:operation soapAction="urn:consultarDocumento" style="document"/>
+      <wsdl:input name="consultarDocumento">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="guardarDocumentoResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-      <wsdl:fault name="CSVStorageException">
-        <soap:fault name="CSVStorageException" use="literal"/>
-      </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="modificarDocumentoENI">
-      <soap:operation soapAction="urn:modificarDocumentoENI" style="document"/>
-      <wsdl:input name="modificarDocumentoENI">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="modificarDocumentoENIResponse">
+      <wsdl:output name="consultarDocumentoResponse">
         <soap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="CSVStorageException">
@@ -802,42 +685,6 @@
         <soap:fault name="CSVStorageException" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="obtenerDocumentoENI">
-      <soap:operation soapAction="urn:obtenerDocumentoENI" style="document"/>
-      <wsdl:input name="obtenerDocumentoENI">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="obtenerDocumentoENIResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-      <wsdl:fault name="CSVStorageException">
-        <soap:fault name="CSVStorageException" use="literal"/>
-      </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="consultarDocumento">
-      <soap:operation soapAction="urn:consultarDocumento" style="document"/>
-      <wsdl:input name="consultarDocumento">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="consultarDocumentoResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-      <wsdl:fault name="CSVStorageException">
-        <soap:fault name="CSVStorageException" use="literal"/>
-      </wsdl:fault>
-    </wsdl:operation>
-    <wsdl:operation name="modificarDocumento">
-      <soap:operation soapAction="urn:modificarDocumento" style="document"/>
-      <wsdl:input name="modificarDocumento">
-        <soap:body use="literal"/>
-      </wsdl:input>
-      <wsdl:output name="modificarDocumentoResponse">
-        <soap:body use="literal"/>
-      </wsdl:output>
-      <wsdl:fault name="CSVStorageException">
-        <soap:fault name="CSVStorageException" use="literal"/>
-      </wsdl:fault>
-    </wsdl:operation>
     <wsdl:operation name="eliminarDocumento">
       <soap:operation soapAction="urn:eliminarDocumento" style="document"/>
       <wsdl:input name="eliminarDocumento">
@@ -850,12 +697,12 @@
         <soap:fault name="CSVStorageException" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
-    <wsdl:operation name="convertirDocumentoAEni">
-      <soap:operation soapAction="urn:convertirDocumentoAEni" style="document"/>
-      <wsdl:input name="convertirDocumentoAEni">
+    <wsdl:operation name="guardarDocumento">
+      <soap:operation soapAction="urn:guardarDocumento" style="document"/>
+      <wsdl:input name="guardarDocumento">
         <soap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="convertirDocumentoAEniResponse">
+      <wsdl:output name="guardarDocumentoResponse">
         <soap:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="CSVStorageException">
@@ -874,10 +721,46 @@
         <soap:fault name="CSVStorageException" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="modificarDocumentoENI">
+      <soap:operation soapAction="urn:modificarDocumentoENI" style="document"/>
+      <wsdl:input name="modificarDocumentoENI">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="modificarDocumentoENIResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CSVStorageException">
+        <soap:fault name="CSVStorageException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="modificarDocumento">
+      <soap:operation soapAction="urn:modificarDocumento" style="document"/>
+      <wsdl:input name="modificarDocumento">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="modificarDocumentoResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CSVStorageException">
+        <soap:fault name="CSVStorageException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="obtenerDocumentoENI">
+      <soap:operation soapAction="urn:obtenerDocumentoENI" style="document"/>
+      <wsdl:input name="obtenerDocumentoENI">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="obtenerDocumentoENIResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="CSVStorageException">
+        <soap:fault name="CSVStorageException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
   </wsdl:binding>
-  <wsdl:service name="CSVDocumentMtomService">
-    <wsdl:port binding="tns:CSVDocumentMtomServiceSoapBinding" name="CSVDocumentMtomServicePort">
-      <soap:address location="http://csvstorage.redsara.es/csvstorage/services/CSVDocumentMtomService"/>
+  <wsdl:service name="CSVDocumentService">
+    <wsdl:port binding="tns:CSVDocumentServiceSoapBinding" name="CSVDocumentServicePort">
+      <soap:address location="http://server:port/csvstorage/services/CSVDocumentService"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

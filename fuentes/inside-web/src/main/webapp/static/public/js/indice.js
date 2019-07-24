@@ -79,8 +79,8 @@ function configurarPlUpload() {
         drop_element : 'js-gallery-visor',
         browse_button : 'js-insertar-documento',
         url : $("#context").val() + "/uploadTempData",
-        chunk_size : '10mb',
-        max_file_size : "10gb"
+        chunk_size : '4mb',
+        max_file_size : "8mb"
     });
 
     uploader.bind('FilesAdded', function(up, files) {
@@ -90,6 +90,18 @@ function configurarPlUpload() {
 
     uploader.bind('UploadProgress', function(up, file) {
         $('.mf-dialog #progressDocumento').attr('value', file.percent);
+    });
+
+    // Salta con las cabeceras del la response. Xej. un 500
+    uploader.bind('Error', function(up, err) {
+        console.log("Inicio Error");
+        console.log(arguments);
+        console.log("Fin Error");
+
+        $("#tipoMensaje").val(4);
+        $("#valorMensaje").val("Error. No se pueden importar un documento mayor de 8MB.");
+        showMessage();
+
     });
 
     uploader.bind('UploadComplete', function(up, file_plupload) {
@@ -132,7 +144,7 @@ function configurarPlUpload() {
     //Salta con las cabeceras del la response. Xej. un 500
     uploader.bind('Error', function(up, err) {
         $("#tipoMensaje").val(4);
-        $("#valorMensaje").val("Error en la subida del fichero al servidor: " + err);
+        $("#valorMensaje").val("Error en la subida del fichero al servidor (Tamaño máximo permitido de 8MB)");
         showMessage();
     });
 
@@ -338,7 +350,7 @@ function mostrarVisor(visor, item) {
 
     var arbol = $('#js-arbol');
     var panel = visor.siblings('#js-gallery-visor');
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     enviarAjax2(arbol.data('url_elemento_ver'), {
         idDocumento : item.data('id'),
         hidden : false
@@ -354,7 +366,7 @@ function mostrarVisor(visor, item) {
         visor.find('.js-gallery-ver--lista-datos-organos').html(data.organos.join(', '));
         visor.find('.js-gallery-ver--visor').attr('src', 'data:application/pdf;base64,' + data.contenidoVisualizar);
 
-        $('#expedienteVeil').addClass('hidden');
+        $mf.timer.off();
     });
 }
 
@@ -607,14 +619,18 @@ function enviarAjax2(url, par, callback, callbackError) {
                 }
                 callback && callback(data);
             }
+
+            habilitarTodosBotonesSuperior();
+            $mf.timer.off();
         },
         error : function(e) {
             console.log(e);
             timerModal.off(parent);
+            habilitarTodosBotonesSuperior();
+            $mf.timer.off();
         }
     });
 
-    $('#expedienteVeil').addClass('hidden');
 }
 
 function getLista() {
@@ -655,11 +671,12 @@ function getLista() {
 
 function crearCarpeta(e) {
     e.preventDefault();
-
     var arbol = $('#js-arbol');
     var lista = getLista();
 
     if (elementoSeleccionadoNoEsDocumento('crear carpeta')) {
+        $mf.timer.on();
+        deshabilitarTodosBotonesSuperior();
         lista.par.name = generarNombreCarpeta(lista.lista);
 
         enviarAjax2(arbol.data('url_carpeta_nueva'), lista.par, function(data) {
@@ -670,6 +687,7 @@ function crearCarpeta(e) {
             });
         });
     }
+
 }
 
 function crearEstructuraCarpetas(e) {
@@ -678,7 +696,7 @@ function crearEstructuraCarpetas(e) {
     var arbol = $('#js-arbol');
     var lista = getLista();
 
-    if (elementoSeleccionadoNoEsDocumento('crear carpeta')) {
+    if (elementoSeleccionadoNoEsDocumento('crear plantilla')) {
 
         enviarAjax2(arbol.data('url_estructura_carpeta'), lista.par, function(data) {
             if (data.mensajeUsuario != null) {
@@ -1234,4 +1252,14 @@ function initDialogFields($el) {
 function showErrorMessage(text, list) {
 
     $('<li>' + text + '</li>').appendTo(list);
+}
+
+function descargarConVelo(formulariodestino, tiempo) {
+    $mf.timer.on();
+    $(formulariodestino).submit();
+    setTimeout(function() {
+        $mf.timer.off();
+    }, tiempo);
+
+    alert("Este proceso puede tardar, por favor, espere a que termine la descarga. Gracias");
 }

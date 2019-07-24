@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
+import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
 import es.mpt.dsic.inside.ws.validation.exception.InsideValidationDataException;
 
 public class InsideExceptionConverter {
@@ -44,20 +45,54 @@ public class InsideExceptionConverter {
     return result;
   }
 
+  public static InsideWSRemisionExpedienteException convertToRemisionExpedienteException(
+      Exception e) {
+    logger.info("Error de tipo " + e.getClass().getSimpleName()
+        + " procesando petición en Inside RemisionExpediente : " + e.getMessage(), e);
+
+    InsideWSRemisionExpedienteException result;
+    if (e instanceof InsideWSRemisionExpedienteException) {
+      result = (InsideWSRemisionExpedienteException) e;
+      logger.warn(construyeMensaje(result), result);
+    } else if (e instanceof InsideServiceStoreException) {
+      result = new InsideWSRemisionExpedienteException(InsideWsRemisionExpedienteErrors.REM_0002);
+      logger.error(construyeMensaje(result), result);
+    } else if (e instanceof InSideServiceException) {
+      result = new InsideWSRemisionExpedienteException(InsideWsRemisionExpedienteErrors.REM_0001);
+      logger.warn(construyeMensaje(result), result);
+    } else {
+      result =
+          new InsideWSRemisionExpedienteException(InsideWsRemisionExpedienteErrors.REM_0000, e);
+      logger.error(construyeMensaje(result), result);
+    }
+
+    return result;
+  }
+
+
   /**
    * Construye un mensaje descriptivo del error a partir de una excepción.
    * 
    * @param e
    * @return
    */
-  private static String construyeMensaje(InsideWSException e) {
+  private static String construyeMensaje(Exception e) {
 
     String ls = System.getProperty("line.separator");
+    String mensaje;
 
-    String mensaje = "CODIGO: " + e.getFaultInfo().getCodigo() + ls;
-    mensaje += "DESCRIPCION: " + e.getFaultInfo().getDescripcion() + ls;
+    if (e instanceof InsideWSRemisionExpedienteException) {
+      mensaje =
+          "CODIGO: " + ((InsideWSRemisionExpedienteException) e).getFaultInfo().getCodigo() + ls;
+      mensaje += "DESCRIPCION: "
+          + ((InsideWSRemisionExpedienteException) e).getFaultInfo().getDescripcion() + ls;
+    } else {
+      mensaje = "CODIGO: " + ((InsideWSException) e).getFaultInfo().getCodigo() + ls;
+      mensaje += "DESCRIPCION: " + ((InsideWSException) e).getFaultInfo().getDescripcion() + ls;
+    }
 
     return mensaje;
 
   }
+
 }

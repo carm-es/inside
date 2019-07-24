@@ -34,11 +34,17 @@
         <property name="identificador" type="string">
             <column name="identificador" not-null="true" />
         </property>
+        
         <property name="csv" type="string">
             <column name="csv" not-null="true" />
         </property>
+        
         <property name="uuid" type="string">
             <column name="uuid" not-null="true" />
+        </property>
+        
+        <property name="versionExpediente" type="int">
+            <column name="versionExpediente" />
         </property>
                  
         <property name="fechaCaducidad" type="timestamp">

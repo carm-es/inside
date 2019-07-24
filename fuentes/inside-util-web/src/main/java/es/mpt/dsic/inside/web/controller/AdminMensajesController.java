@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import es.mpt.dsic.inside.model.objetos.adminMensajes.ObjetoMensajeUsuario;
 import es.mpt.dsic.inside.service.messages.InsideMessageService;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.web.object.MessageObject;
-import es.mpt.dsic.inside.web.util.WebConstants;
 
 @Controller
 @RequestMapping(value = "/adminMensajes")

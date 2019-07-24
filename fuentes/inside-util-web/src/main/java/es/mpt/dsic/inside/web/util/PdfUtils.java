@@ -17,16 +17,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import com.lowagie.text.Chunk;
@@ -43,8 +50,13 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfWriter;
 import es.gob.utilidades.cliente.rec.model.JustificanteType;
+import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAcceso;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
+import es.mpt.dsic.inside.service.util.InsideWSUtils;
+import es.mpt.dsic.inside.service.util.WebConstants;
+import es.mpt.dsic.inside.xml.inside.MetadatoAdicional;
+import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.PeticionSolicitarAccesoExpedienteType;
 
 
 
@@ -83,19 +95,16 @@ public class PdfUtils {
   /** The Constant WIDTH_TABLE_HOR. */
   private static final float WIDTH_TABLE_HOR = 727f;
 
-  /** The Constant WIDTH_TABLE_VER. */
-  private static final float WIDTH_TABLE_VER = 480f;
-
   /** The Constant relativeWidthsHor. */
   private static final float[] relativeWidthsHor = {1f};
-
-  /** The Constant relativeWidthsVer. */
-  private static final float[] relativeWidthsVer = {1f};
 
 
   /** The context. */
   @Autowired(required = true)
   private ApplicationContext context;
+
+  @Autowired
+  private MessageSource messageSource;
 
   /** The rec utils. */
   @Autowired
@@ -162,26 +171,33 @@ public class PdfUtils {
 
       if (registrar) {
 
-        // Obtenemos un justificante de registro electr�nico del Acta de
+        // Obtenemos un justificante de registro electronico del Acta de
         // Ingreso
-        JustificanteType justificanteType = recUtils.doRegistroElectronico(
-            token.getIdentificador() + WebConstants.ACTA_DE_INGRESO_SUFIJO
-                + WebConstants.FORMAT_PDF,
-            new String(Base64.encodeBase64(pdfResult)),
-            InsideWSUtils.hashData(pdfResult, WebConstants.ALGORITMO_MD5));
+        try {
+          JustificanteType justificanteType = recUtils.doRegistroElectronico(
+              token.getIdentificador() + WebConstants.ACTA_DE_INGRESO_SUFIJO
+                  + WebConstants.FORMAT_PDF,
+              new String(Base64.encodeBase64(pdfResult)),
+              InsideWSUtils.hashData(pdfResult, WebConstants.ALGORITMO_MD5));
 
 
-        InsideWSUtils.writeFile(new File(basePath),
-            basePath + token.getIdentificador()
-                + WebConstants.JUSTIFICANTE_REGISTRO_ELECTRONICO_SUFIJO + WebConstants.FORMAT_PDF,
-            Base64.decodeBase64(justificanteType.getBlJustificante()));
+          InsideWSUtils.writeFile(new File(basePath),
+              basePath + token.getIdentificador()
+                  + WebConstants.JUSTIFICANTE_REGISTRO_ELECTRONICO_SUFIJO + WebConstants.FORMAT_PDF,
+              Base64.decodeBase64(justificanteType.getBlJustificante()));
 
-        justificante = Base64.decodeBase64(justificanteType.getBlJustificante());
-        mapaActaANDJustificante.put(WebConstants.JUSTIFICANTE_REGISTRO_ELECTRONICO_SUFIJO,
-            justificante);
+          justificante = Base64.decodeBase64(justificanteType.getBlJustificante());
+        } catch (Exception e) {
+          logger.error("Error al registrar en registro electrónico " + e.getMessage()
+              + e.getLocalizedMessage());
+          justificante = this.crearInformeNoRegistroElectronico(user, token);
+        }
 
+      } else {
+        justificante = this.crearInformeNoRegistroElectronico(user, token);
       }
-
+      mapaActaANDJustificante.put(WebConstants.JUSTIFICANTE_REGISTRO_ELECTRONICO_SUFIJO,
+          justificante);
 
 
     } catch (FileNotFoundException e) {
@@ -206,6 +222,21 @@ public class PdfUtils {
   private Document createDocument() {
     Document doc = new Document();
     doc.setPageSize(new Rectangle(842, 595));
+    doc.setMargins(75, 40, 100, 60);
+    return doc;
+  }
+
+
+  private Document createDocumentoRemisionNube() {
+    Document doc = new Document();
+    doc.setPageSize(new Rectangle(595, 842));
+    doc.setMargins(75, 40, 100, 60);
+    return doc;
+  }
+
+  private Document createDocumentoNoRegistroElectronico() {
+    Document doc = new Document();
+    doc.setPageSize(new Rectangle(595, 842));
     doc.setMargins(75, 40, 100, 60);
     return doc;
   }
@@ -440,6 +471,285 @@ public class PdfUtils {
     img.scalePercent(25);
     // cellImg.setImage(img);//addElement(img);
     return cellImg;
+  }
+
+  public byte[] crearInformeNoRegistroElectronico(ObjetoInsideUsuario usuario,
+      ObjetoExpedienteToken token) throws DocumentException, IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    // creamos el pdf
+    Document doc = createDocumentoNoRegistroElectronico();
+
+    PdfWriter pw = PdfWriter.getInstance(doc, baos);
+    doc.open();
+    doc.newPage();
+
+    // llamada para imprimir imagen de cabecera
+    imprimirImagen(doc);
+
+    // imprime titulo
+    printTitle(doc, messageSource.getMessage("listadoAuditoriaAccesoNube.informe.titulo", null,
+        WebConstants.LOCALE_DEFAULT));
+
+    // imprime subtitulo
+    doc.add(new Paragraph(messageSource.getMessage("listadoAuditoriaAccesoNube.informe.titulo2",
+        null, WebConstants.LOCALE_DEFAULT), DEFAULT_FONT_TITLE));
+    doc.add(new Paragraph(
+        "                                                                                     "));
+
+    // imprime datos acceso
+    HashMap<String, String> data = new HashMap<String, String>();
+    data.put("identificador", token.getIdentificador());
+    data.put("csv", token.getCsv());
+    data.put("uuid", token.getUuid());
+    data.put("fechaAcceso", DateFormatUtils.format(new Date(), "dd/MM/yyyy hh:mm:ss"));
+    data.put("usuario", usuario != null ? usuario.getNif() : "No dado de alte en Inside");
+    data.put("textoError",
+        messageSource.getMessage("listadoAuditoriaAccesoNube.informe.error.registroe.mensaje", null,
+            WebConstants.LOCALE_DEFAULT));
+    pintarDatosAccesoNoRegistro(data, doc);
+
+    // imprime pie de fecha
+    imprimirPieFecha(doc);
+
+    doc.close();
+    pw.close();
+    baos.close();
+    return baos.toByteArray();
+  }
+
+  public byte[] crearInformeAuditoriaAccesoDocumento(ObjetoAuditoriaAcceso datosAcceso)
+      throws DocumentException, IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    // creamos el pdf
+    Document doc = createDocumentoRemisionNube();
+
+    PdfWriter pw = PdfWriter.getInstance(doc, baos);
+    doc.open();
+    doc.newPage();
+
+    // llamada para imprimir imagen de cabecera
+    imprimirImagen(doc);
+
+    // imprime titulo
+    printTitle(doc, messageSource.getMessage("listadoAuditoriaAccesoNube.informe.titulo", null,
+        WebConstants.LOCALE_DEFAULT));
+
+    // imprime subtitulo
+    doc.add(new Paragraph(messageSource.getMessage("listadoAuditoriaAccesoNube.informe.titulo2",
+        null, WebConstants.LOCALE_DEFAULT), DEFAULT_FONT_TITLE));
+    doc.add(new Paragraph(
+        "                                                                                     "));
+
+    // imprime datos acceso
+    HashMap<String, String> data = new HashMap<String, String>();
+    data.put("identificador", datosAcceso.getIdentificador());
+    data.put("unidadOrganica", datosAcceso.getUnidadOrganica());
+    data.put("usuario", datosAcceso.getUsuario());
+    data.put("unidadOrganicaUsuario", datosAcceso.getUnidadOrganicaUsuario());
+    data.put("fechaAcceso",
+        DateFormatUtils.format(datosAcceso.getFechaAcceso(), "dd/MM/yyyy hh:mm:ss"));
+    pintarDatosAcceso(data, doc);
+
+    // imprime pie de fecha
+    imprimirPieFecha(doc);
+
+    doc.close();
+    pw.close();
+    baos.close();
+    return baos.toByteArray();
+  }
+
+  public byte[] crearInformeSolicitarAccesoExpediente(
+      PeticionSolicitarAccesoExpedienteType peticionSolicitarAccesoExpedienteType,
+      String dir3ExpedienteSolicitado, String urlDestino, String idPeticion, String respuestaSW)
+      throws DocumentException, IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    // creamos el pdf
+    Document doc = createDocumentoRemisionNube();
+
+    PdfWriter pw = PdfWriter.getInstance(doc, baos);
+    doc.open();
+    doc.newPage();
+
+    // llamada para imprimir imagen de cabecera
+    imprimirImagen(doc);
+
+    // imprime titulo
+    printTitle(doc, messageSource.getMessage("solicitudesAccesoExpediente.informe.titulo", null,
+        WebConstants.LOCALE_DEFAULT));
+
+    // imprime subtitulo
+    doc.add(new Paragraph(messageSource.getMessage("solicitudesAccesoExpediente.informe.titulo2",
+        null, WebConstants.LOCALE_DEFAULT), DEFAULT_FONT_TITLE));
+    doc.add(new Paragraph(
+        "                                                                                     "));
+
+    // imprime datos acceso
+    HashMap<String, String> data = new HashMap<String, String>();
+    data.put("unidadOrganicaDestino", dir3ExpedienteSolicitado);
+    data.put("unidadOrganicaOrigen",
+        peticionSolicitarAccesoExpedienteType.getPeticion().getUsuario());
+    data.put("idPeticion", idPeticion);
+    if (peticionSolicitarAccesoExpedienteType.getMetadatos() != null
+        && peticionSolicitarAccesoExpedienteType.getMetadatos().getMetadatoAdicional() != null) {
+      String metadatosAdicionales = "";
+      boolean masDeUno =
+          peticionSolicitarAccesoExpedienteType.getMetadatos().getMetadatoAdicional().size() > 1;
+      for (MetadatoAdicional f : peticionSolicitarAccesoExpedienteType.getMetadatos()
+          .getMetadatoAdicional()) {
+        org.w3c.dom.Element e = (org.w3c.dom.Element) f.getValor();
+        metadatosAdicionales +=
+            f.getNombre() + " : " + e.getTextContent() + (masDeUno ? " / " : " ");
+      }
+      data.put("metadatosAdicionales", metadatosAdicionales);
+    }
+    data.put("fechaSolicitud", DateFormatUtils.format(new Date(), "dd/MM/yyyy HH:mm:ss"));
+    data.put("urlDestino", urlDestino);
+    data.put("urlRemitente", peticionSolicitarAccesoExpedienteType.getEndpointPeticionario());
+    data.put("respuestaUrlDestino", respuestaSW);
+
+
+    pintarDatosRecepcionSolicitudCredenciales(data, doc);
+
+    // imprime pie de fecha
+    imprimirPieFecha(doc);
+
+    doc.close();
+    pw.close();
+    baos.close();
+    return baos.toByteArray();
+  }
+
+  /**
+   * Prints the general data.
+   *
+   * @param data the data
+   * @param doc the doc
+   * @throws DocumentException the document exception
+   */
+  void pintarDatosAcceso(Map<String, String> data, Document doc) throws DocumentException {
+
+    PdfPTable generalData = new PdfPTable(2);
+    generalData.setWidthPercentage(DEFAULT_WIDTH_PERCENTAGE);
+    generalData.setWidths(new float[] {0.25f, 0.75f});
+
+    LinkedHashMap<String, String> dataPdf = new LinkedHashMap<String, String>();
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.identificador", "identificador");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.unidadOrganica", "unidadOrganica");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.usuario", "usuario");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.unidadOrganicaUsuario",
+        "unidadOrganicaUsuario");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.fechaAcceso", "fechaAcceso");
+
+    doc.add(fillPdf(dataPdf, data, generalData));
+  }
+
+  /**
+   * Prints the general data.
+   *
+   * @param data the data
+   * @param doc the doc
+   * @throws DocumentException the document exception
+   */
+  void pintarDatosAccesoNoRegistro(Map<String, String> data, Document doc)
+      throws DocumentException {
+
+    PdfPTable generalData = new PdfPTable(2);
+    generalData.setWidthPercentage(DEFAULT_WIDTH_PERCENTAGE);
+    generalData.setWidths(new float[] {0.25f, 0.75f});
+
+    LinkedHashMap<String, String> dataPdf = new LinkedHashMap<String, String>();
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.identificador", "identificador");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.token.csv", "csv");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.token.uuid", "uuid");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.fechaAcceso", "fechaAcceso");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.usuario", "usuario");
+
+    dataPdf.put("listadoAuditoriaAccesoNube.informe.error.registroe", "textoError");
+
+    doc.add(fillPdf(dataPdf, data, generalData));
+  }
+
+  /**
+   * Prints the general data.
+   *
+   * @param data the data
+   * @param doc the doc
+   * @throws DocumentException the document exception
+   */
+  void pintarDatosRecepcionSolicitudCredenciales(Map<String, String> data, Document doc)
+      throws DocumentException {
+
+    PdfPTable generalData = new PdfPTable(2);
+    generalData.setWidthPercentage(DEFAULT_WIDTH_PERCENTAGE);
+    generalData.setWidths(new float[] {0.30f, 0.70f});
+
+    LinkedHashMap<String, String> dataPdf = new LinkedHashMap<String, String>();
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.dir3Destinatario", "unidadOrganicaDestino");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.dir3Origen", "unidadOrganicaOrigen");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.fechaSolicitud", "fechaSolicitud");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.idPeticion", "idPeticion");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.urlDestino", "urlDestino");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.respuestaUrlDestino", "respuestaUrlDestino");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.urlRemitente", "urlRemitente");
+
+    dataPdf.put("solicitudesAccesoExpediente.informe.metadatosAdicionales", "metadatosAdicionales");
+
+    doc.add(fillPdf(dataPdf, data, generalData));
+  }
+
+  void imprimirImagen(Document doc) throws DocumentException {
+    // imprimir imagen de cabecera. La imagen a pelo en base64 porque no se consige cargarla
+    Image img = null;
+    String imagenBase64Properties = messageSource.getMessage(
+        "listadoAuditoriaAccesoNube.imagen.cabecera", null, WebConstants.LOCALE_DEFAULT);
+
+
+    try {
+      // img =
+      // Image.getInstance("C:\\desarrollo\\workspaceInside\\inside-web\\images\\logoSEAP_315x68.png");
+      img = Image.getInstance(Base64.decodeBase64(imagenBase64Properties));
+
+      doc.add(img);
+      doc.add(new Paragraph(
+          "                                                                                     "));
+    } catch (MalformedURLException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+
+    /////// fin imprimir imagen
+  }
+
+
+  void imprimirPieFecha(Document doc) throws DocumentException {
+    doc.add(new Paragraph(
+        "                                                                                     "));
+    SimpleDateFormat formateador = new SimpleDateFormat("EEEEEEEEE dd 'de' MMMMM 'de' yyyy");
+    Calendar cal = Calendar.getInstance();
+    cal.setTimeZone(TimeZone.getDefault());
+    doc.add(new Paragraph(" Madrid, " + formateador.format(new Date()), DEFAULT_FONT_BASE));
   }
 
 

@@ -26,19 +26,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link EstructuraCarpeta }
-   * 
-   */
-  public EstructuraCarpeta createEstructuraCarpeta() {
-    return new EstructuraCarpeta();
-  }
-
-  /**
    * Create an instance of {@link TipoCarpetaIndizada }
    * 
    */
   public TipoCarpetaIndizada createTipoCarpetaIndizada() {
     return new TipoCarpetaIndizada();
+  }
+
+  /**
+   * Create an instance of {@link EstructuraCarpeta }
+   * 
+   */
+  public EstructuraCarpeta createEstructuraCarpeta() {
+    return new EstructuraCarpeta();
   }
 
 }

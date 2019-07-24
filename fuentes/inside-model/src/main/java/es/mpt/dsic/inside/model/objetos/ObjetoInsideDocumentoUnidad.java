@@ -19,6 +19,7 @@ public class ObjetoInsideDocumentoUnidad {
   private Integer idUnidad;
   private String estadoExpediente;
   private GregorianCalendar fechaVersion;
+  private String metAdicionales;
 
   public String getIdentificador() {
     return identificador;
@@ -51,6 +52,15 @@ public class ObjetoInsideDocumentoUnidad {
   public void setFechaVersion(GregorianCalendar fechaVersion) {
     this.fechaVersion = fechaVersion;
   }
+
+  public String getMetAdicionales() {
+    return metAdicionales;
+  }
+
+  public void setMetAdicionales(String metAdicionales) {
+    this.metAdicionales = metAdicionales;
+  }
+
 
 
 }

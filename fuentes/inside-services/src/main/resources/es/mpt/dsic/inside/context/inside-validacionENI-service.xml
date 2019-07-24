@@ -31,7 +31,7 @@
 	<bean id="ConsumidorValidacionENI" class="es.mpt.dsic.inside.service.validacionENI.impl.ConsumidorValidacionENI">
 		<property name="user" 			value="${ws.validacionENI.login}"></property>
 		<property name="password" 		value="${ws.validacionENI.password}"></property>
-		<property name="versionSchemas" value="${ws.validacionENI.versionSchemas}"></property>
+		<property name="schemasDir"		value="${config.path}/schemas"/>
 		<property name="url" 			value="${ws.validacionENI.url}"></property>
 	</bean>
 		  

@@ -12,11 +12,11 @@ $mf.timer = {
             }
             $veil.data('hash', JSON.stringify(data));
         } else {
-            $('<div class="mf-veil timer-veil"><p><span></span>Cargando...</p></div>').appendTo($el.css({
-                position : 'relative'
-            })).css({
-                position : 'absolute'
-            }).data('hash', JSON.stringify([ hash ]));
+            $(
+                    '<div class="mf-veil timer-veil" style="background-image: url(images/ajax-loader.gif);background-repeat: no-repeat; background-position: center center; "></div>')
+                    .appendTo($el.css({
+                        position : 'relative'
+                    })).css({}).data('hash', JSON.stringify([ hash ]));
         }
         return hash
     },

@@ -12,10 +12,15 @@
 package es.mpt.dsic.inside.service.mail;
 
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
+import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.PeticionComunicacionTokenExpedienteType;
 
 public interface MailService {
 
   public String sendToken(ObjetoExpedienteToken objetoExpedienteToken, String idSesion,
       String URLDeEntornoEjecucion) throws Exception;
+
+  public String sendComunicacionToken(
+      PeticionComunicacionTokenExpedienteType peticionComunicacionTokenExpedienteType,
+      String emailDestino, boolean esSw, String urlAccesoBusquedaTokenExterno) throws Exception;
 
 }

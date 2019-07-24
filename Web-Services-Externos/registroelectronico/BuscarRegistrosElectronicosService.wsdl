@@ -1,66 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions targetNamespace="http://registrar.ws2.rec2are.map.es" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://registrar.ws2.rec2are.map.es" xmlns:intf="http://registrar.ws2.rec2are.map.es" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://type.ws2.rec2are.map.es" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<wsdl:definitions targetNamespace="http://busquedaregistros.ws2.rec2are.map.es" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://busquedaregistros.ws2.rec2are.map.es" xmlns:intf="http://busquedaregistros.ws2.rec2are.map.es" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://type.ws2.rec2are.map.es" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 <!--WSDL created by Apache Axis version: 1.4
 Built on Apr 22, 2006 (06:55:48 PDT)-->
  <wsdl:types>
   <schema targetNamespace="http://type.ws2.rec2are.map.es" xmlns="http://www.w3.org/2001/XMLSchema">
-   <import namespace="http://registrar.ws2.rec2are.map.es"/>
+   <import namespace="http://busquedaregistros.ws2.rec2are.map.es"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
    <complexType name="AutenticacionType">
     <sequence>
      <element name="idAplicacion" type="xsd:string"/>
      <element name="password" type="xsd:string"/>
-    </sequence>
-   </complexType>
-   <complexType name="InteresadoType">
-    <sequence>
-     <element name="cdTipoDocIndentificativoInteresado" type="xsd:string"/>
-     <element name="tlNumDocIdentificativoInteresado" type="xsd:string"/>
-     <element name="tlNombreInteresado" type="xsd:string"/>
-     <element name="tlApellido1Interesado" type="xsd:string"/>
-     <element name="tlApellido2Interesado" type="xsd:string"/>
-     <element name="tlRazonSocialInteresado" type="xsd:string"/>
-     <element name="cdPaisInteresado" type="xsd:string"/>
-     <element name="cdProvinciaInteresado" type="xsd:string"/>
-     <element name="cdMunicipioInteresado" type="xsd:string"/>
-     <element name="tlDireccionInteresado" type="xsd:string"/>
-     <element name="cdCodigoPostalInteresado" type="xsd:string"/>
-     <element name="tlDEHInteresado" type="xsd:string"/>
-     <element name="tlTelefonoContactoInteresado" type="xsd:string"/>
-     <element name="tlCorreoElectronicoInteresado" type="xsd:string"/>
-     <element name="cdCanalPreferenteInteresado" type="xsd:string"/>
-     <element name="cdTipoDocIndentificativoRepresentante" type="xsd:string"/>
-     <element name="tlNumDocIdentificativoRepresentante" type="xsd:string"/>
-     <element name="tlNombreRepresentante" type="xsd:string"/>
-     <element name="tlApellido1Representante" type="xsd:string"/>
-     <element name="tlApellido2Representante" type="xsd:string"/>
-     <element name="tlRazonSocialRepresentante" type="xsd:string"/>
-     <element name="cdPaisRepresentante" type="xsd:string"/>
-     <element name="cdProvinciaRepresentante" type="xsd:string"/>
-     <element name="cdMunicipioRepresentante" type="xsd:string"/>
-     <element name="tlDireccionRepresentante" type="xsd:string"/>
-     <element name="cdCodigoPostalRepresentante" type="xsd:string"/>
-     <element name="tlDEHRepresentante" type="xsd:string"/>
-     <element name="tlTelefonoContactoRepresentante" type="xsd:string"/>
-     <element name="tlCorreoElectronicoRepresentante" type="xsd:string"/>
-     <element name="cdCanalPreferenteRepresentante" type="xsd:string"/>
-     <element name="tlObservaciones" type="xsd:string"/>
-    </sequence>
-   </complexType>
-   <complexType name="DocumentoType">
-    <sequence>
-     <element name="dsNombre" type="xsd:string"/>
-     <element name="cdValidez" type="xsd:string"/>
-     <element name="cdTipo" type="xsd:string"/>
-     <element name="blDocumento" type="xsd:string"/>
-     <element name="blFirma" type="xsd:string"/>
-     <element name="cdFirmado" type="xsd:string"/>
-     <element name="blPKCertificado" type="xsd:string"/>
-     <element name="blTimeStamp" type="xsd:string"/>
-     <element name="blValidacionOCSP" type="xsd:string"/>
-     <element name="blHash" type="xsd:string"/>
-     <element name="dsTipoMIME" type="xsd:string"/>
-     <element name="tlObservaciones" type="xsd:string"/>
     </sequence>
    </complexType>
    <complexType name="InteresadoJustificanteType">
@@ -169,93 +118,97 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     </sequence>
    </complexType>
   </schema>
-  <schema targetNamespace="http://registrar.ws2.rec2are.map.es" xmlns="http://www.w3.org/2001/XMLSchema">
+  <schema targetNamespace="http://busquedaregistros.ws2.rec2are.map.es" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://type.ws2.rec2are.map.es"/>
    <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
-   <complexType name="ArrayOf_tns1_InteresadoType">
-    <complexContent>
-     <restriction base="soapenc:Array">
-      <attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:InteresadoType[]"/>
-     </restriction>
-    </complexContent>
-   </complexType>
-   <complexType name="ArrayOf_tns1_DocumentoType">
-    <complexContent>
-     <restriction base="soapenc:Array">
-      <attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:DocumentoType[]"/>
-     </restriction>
-    </complexContent>
-   </complexType>
-   <complexType name="RegistroType">
+   <complexType name="CriteriosBusquedaType">
     <sequence>
-     <element name="cdOficinaOrigen" type="xsd:string"/>
-     <element name="cdTipoRegistro" type="xsd:string"/>
-     <element name="feRegistro" nillable="true" type="xsd:string"/>
-     <element name="cdUnidadDestino" type="xsd:string"/>
+     <element name="cdOficinaOrigen" nillable="true" type="xsd:string"/>
+     <element name="cdTipoRegistro" nillable="true" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="nmRegistro" nillable="true" type="xsd:string"/>
+     <element name="feRegistroDesde" nillable="true" type="xsd:string"/>
+     <element name="feRegistroHasta" nillable="true" type="xsd:string"/>
      <element name="cdUnidadOrigen" nillable="true" type="xsd:string"/>
-     <element name="interesados" nillable="true" type="impl:ArrayOf_tns1_InteresadoType"/>
-     <element name="documentos" nillable="true" type="impl:ArrayOf_tns1_DocumentoType"/>
-     <element name="tlResumen" type="xsd:string"/>
-     <element name="cdAsunto" type="xsd:string"/>
+     <element name="cdUnidadDestino" nillable="true" type="xsd:string"/>
+     <element name="cdAsunto" nillable="true" type="xsd:string"/>
      <element name="tlReferenciaExterna" nillable="true" type="xsd:string"/>
-     <element name="tlNumeroExpediente" nillable="true" type="xsd:string"/>
-     <element name="cdTipoTransporte" nillable="true" type="xsd:string"/>
-     <element name="tlNumeroTransporte" nillable="true" type="xsd:string"/>
-     <element name="tlNombreUsuario" nillable="true" type="xsd:string"/>
-     <element name="tlContactoUsuario" nillable="true" type="xsd:string"/>
-     <element name="cdDocumentacionFisicaSoportes" type="xsd:string"/>
-     <element name="tlExpone" nillable="true" type="xsd:string"/>
-     <element name="tlSolicita" nillable="true" type="xsd:string"/>
-     <element name="tlObservaciones" nillable="true" type="xsd:string"/>
-     <element name="flJustificante" nillable="true" type="xsd:string"/>
+     <element name="tlNumDocIdentificativoInteresado" nillable="true" type="xsd:string"/>
+     <element name="tlNombreInteresado" nillable="true" type="xsd:string"/>
+     <element name="tlApellido1Interesado" nillable="true" type="xsd:string"/>
+     <element name="tlApellido2Interesado" nillable="true" type="xsd:string"/>
+     <element name="tlRazonSocialInteresado" nillable="true" type="xsd:string"/>
+     <element name="tlNumDocIdentificativoRepresentante" nillable="true" type="xsd:string"/>
+     <element name="tlNombreRepresentante" nillable="true" type="xsd:string"/>
+     <element name="tlApellido1Representante" nillable="true" type="xsd:string"/>
+     <element name="tlApellido2Representante" nillable="true" type="xsd:string"/>
+     <element name="tlRazonSocialRepresentante" nillable="true" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="firstResult" nillable="true" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="maxResult" nillable="true" type="xsd:string"/>
     </sequence>
+   </complexType>
+   <complexType name="ArrayOf_tns1_JustificanteType">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:JustificanteType[]"/>
+     </restriction>
+    </complexContent>
    </complexType>
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="registrarRequest">
+   <wsdl:message name="buscarRegistroRequest">
 
-      <wsdl:part name="autenticacion" type="tns1:AutenticacionType"/>
+      <wsdl:part name="autenticacion" type="tns1:AutenticacionType">
 
-      <wsdl:part name="registro" type="impl:RegistroType"/>
+      </wsdl:part>
 
-   </wsdl:message>
+      <wsdl:part name="criteriosBusqueda" type="impl:CriteriosBusquedaType">
 
-   <wsdl:message name="registrarResponse">
-
-      <wsdl:part name="JustificanteType" type="tns1:JustificanteType"/>
+      </wsdl:part>
 
    </wsdl:message>
 
-   <wsdl:portType name="RegistrarElectronicosService">
+   <wsdl:message name="buscarRegistroResponse">
 
-      <wsdl:operation name="registrar" parameterOrder="autenticacion registro">
+      <wsdl:part name="buscarRegistrosElectronicosReturn" type="impl:ArrayOf_tns1_JustificanteType">
 
-         <wsdl:input message="impl:registrarRequest" name="registrarRequest"/>
+      </wsdl:part>
 
-         <wsdl:output message="impl:registrarResponse" name="registrarResponse"/>
+   </wsdl:message>
+
+   <wsdl:portType name="BuscarRegistrosElectronicos">
+
+      <wsdl:operation name="buscarRegistro" parameterOrder="autenticacion criteriosBusqueda">
+
+         <wsdl:input message="impl:buscarRegistroRequest" name="buscarRegistroRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:buscarRegistroResponse" name="buscarRegistroResponse">
+
+       </wsdl:output>
 
       </wsdl:operation>
 
    </wsdl:portType>
 
-   <wsdl:binding name="RegistrarServiceSoapBinding" type="impl:RegistrarElectronicosService">
+   <wsdl:binding name="BuscarRegistrosElectronicosServiceSoapBinding" type="impl:BuscarRegistrosElectronicos">
 
       <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
 
-      <wsdl:operation name="registrar">
+      <wsdl:operation name="buscarRegistro">
 
-         <wsdlsoap:operation soapAction="http://registrar.ws2.rec2are.map.es/registrar"/>
+         <wsdlsoap:operation soapAction=""/>
 
-         <wsdl:input name="registrarRequest">
+         <wsdl:input name="buscarRegistroRequest">
 
-            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://registrar.ws2.rec2are.map.es" use="encoded"/>
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://busqueda.ws.rec2are.map.es" use="encoded"/>
 
          </wsdl:input>
 
-         <wsdl:output name="registrarResponse">
+         <wsdl:output name="buscarRegistroResponse">
 
-            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://registrar.ws2.rec2are.map.es" use="encoded"/>
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://busquedaregistros.ws2.rec2are.map.es" use="encoded"/>
 
          </wsdl:output>
 
@@ -263,11 +216,11 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:binding>
 
-   <wsdl:service name="RegistrarService">
+   <wsdl:service name="BuscarRegistrosElectronicosService">
 
-      <wsdl:port binding="impl:RegistrarServiceSoapBinding" name="RegistrarService">
+      <wsdl:port binding="impl:BuscarRegistrosElectronicosServiceSoapBinding" name="BuscarRegistrosElectronicosService">
 
-         <wsdlsoap:address location="http://rec2ws.redsara.es/registro2/services/RegistrarService"/>
+         <wsdlsoap:address location="http://server:port/registro2/services/BuscarRegistrosElectronicosService"/>
 
       </wsdl:port>
 

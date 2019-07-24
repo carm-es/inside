@@ -11,6 +11,7 @@
 
 package es.mpt.dsic.inside.ws.service;
 
+import java.util.Date;
 import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -29,8 +30,6 @@ import es.mpt.dsic.inside.xml.inside.ws.aplicacion.InfAdicional;
 import es.mpt.dsic.inside.xml.inside.ws.estructuraCarpeta.EstructuraCarpeta;
 import es.mpt.dsic.inside.xml.inside.ws.filter.FilterPageRequest;
 import es.mpt.dsic.inside.xml.inside.ws.numeroProcedimiento.NumeroProcedimiento;
-import es.mpt.dsic.inside.xml.inside.ws.respuestaEnvioJusticia.RespuestaEnvioJusticia;
-import es.mpt.dsic.inside.xml.inside.ws.solicitudAccesoExpAppUrl.SolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.xml.inside.ws.unidad.Unidad;
 import es.mpt.dsic.inside.xml.inside.ws.unidadAplicacionEeutil.UnidadAplicacionEeutil;
 import es.mpt.dsic.inside.xml.inside.ws.usuario.Usuario;
@@ -49,12 +48,6 @@ public interface AdminWebService {
   @WebResult(name = "Usuario", partName = "Usuario",
       targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/usuario")
   public List<Usuario> listaUsuarios() throws InsideWSException;
-
-  @WebMethod(operationName = "respuestaEnvioJusticia", action = "urn:respuestaEnvioJusticia")
-  @WebResult(name = "RespuestaEnvioJusticia", partName = "RespuestaEnvioJusticia",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/respuestaEnvioJusticia")
-  public RespuestaEnvioJusticia respuestaEnvioJusticia(@WebParam(name = "codigoEnvio") @XmlElement(
-      required = true, name = "codigoEnvio") String codigoEnvio) throws InsideWSException;
 
   @WebMethod(operationName = "altaUsuario", action = "urn:altaUsuario")
   @WebResult(name = "Usuario", partName = "Usuario",
@@ -109,7 +102,6 @@ public interface AdminWebService {
       @WebParam(name = "numeroProcedimiento") @XmlElement(required = false,
           name = "numeroProcedimiento") String numeroProcedimiento)
       throws InsideWSException;
-
 
   @WebMethod(operationName = "eliminarUnidadAplicacion", action = "urn:eliminarUnidadAplicacion")
   public void eliminarUnidadAplicacion(
@@ -167,6 +159,11 @@ public interface AdminWebService {
   @WebMethod(operationName = "actualizarUnidadesDir3", action = "urn:comprobarDirectorioTemporal")
   public void actualizarUnidadesDir3() throws InsideWSException;
 
+  @WebMethod(operationName = "actualizarUnidadesDir3NovedadesDesdeFecha",
+      action = "urn:comprobarDirectorioTemporal")
+  public void actualizarUnidadesDir3NovedadesDesdeFecha(@WebParam(name = "fechaInicio") @XmlElement(
+      required = true, name = "fechaInicio") Date fechaInicio) throws InsideWSException;
+
   @WebMethod(operationName = "actualizarCredencialesEeetuilApp",
       action = "urn:actualizarCredencialesEeetuilApp")
   @WebResult(name = "Aplicacion", partName = "Aplicacion",
@@ -175,7 +172,6 @@ public interface AdminWebService {
       targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/aplicacion") @XmlElement(
           required = true, name = "aplicacion") Aplicacion data)
       throws InsideWSException;
-
 
   @WebMethod(operationName = "crearActualizarUnidadAplicacionEeutil",
       action = "urn:crearActualizarUnidadAplicacionEeutil")
@@ -239,26 +235,6 @@ public interface AdminWebService {
   public void deleteEstructuraCarpeta(
       @WebParam(name = "identificadorEstructura") @XmlElement(required = true,
           name = "identificadorEstructura") String identificadorEstructura)
-      throws InsideWSException;
-
-  @WebMethod(operationName = "altaSolicitudAccesoExpAppUrl",
-      action = "urn:altaSolicitudAccesoExpAppUrl")
-  @WebResult(name = "SolicitudAccesoExpAppUrl", partName = "SolicitudAccesoExpAppUrl",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/solicitudAccesoExpAppUrl")
-  public SolicitudAccesoExpAppUrl altaSolicitudAccesoExpAppUrl(@WebParam(
-      name = "solicitudAccesoExpAppUrl",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/solicitudAccesoExpAppUrl") @XmlElement(
-          required = true, name = "solicitudAccesoExpAppUrl") SolicitudAccesoExpAppUrl data)
-      throws InsideWSException;
-
-  @WebMethod(operationName = "actualizarSolicitudAccesoExpAppUrl",
-      action = "urn:actualizarSolicitudAccesoExpAppUrl")
-  @WebResult(name = "SolicitudAccesoExpAppUrl", partName = "SolicitudAccesoExpAppUrl",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/solicitudAccesoExpAppUrl")
-  public SolicitudAccesoExpAppUrl actualizarSolicitudAccesoExpAppUrl(@WebParam(
-      name = "solicitudAccesoExpAppUrl",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/solicitudAccesoExpAppUrl") @XmlElement(
-          required = true, name = "solicitudAccesoExpAppUrl") SolicitudAccesoExpAppUrl data)
       throws InsideWSException;
 
   @WebMethod(operationName = "listaUsuariosPaginado", action = "urn:listaUsuariosPaginado")

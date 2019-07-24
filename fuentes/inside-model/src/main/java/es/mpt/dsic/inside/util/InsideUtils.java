@@ -430,4 +430,19 @@ public class InsideUtils {
   public static final String PERMISO_LECTURA = "lectura";
   public static final String PERMISO_ESCRITURA = "escritura";
 
+  /* EL LITERAL PARA EL XML */
+  public static final String HUELLA_SHA256_LITERAL_URI = "http://www.w3.org/2001/04/xmlenc#sha256";
+  public static final String HUELLA_SHA384_LITERAL_URI = "http://www.w3.org/2001/04/xmlenc#sha384";
+  public static final String HUELLA_SHA512_LITERAL_URI = "http://www.w3.org/2001/04/xmlenc#sha512";
+
+  // public static final String HUELLA_SHA256_LITERAL_URI = "SHA256";
+  // public static final String HUELLA_SHA384_LITERAL_URI = "SHA384";
+  // public static final String HUELLA_SHA512_LITERAL_URI = "SHA512";
+
+  /* EL ALGORITMO PARA JAVA */
+  public static final String HUELLA_SHA256_ALGORITMO = "SHA-256";
+  public static final String HUELLA_SHA384_ALGORITMO = "SHA-384";
+  public static final String HUELLA_SHA512_ALGORITMO = "SHA-512";
+
+
 }

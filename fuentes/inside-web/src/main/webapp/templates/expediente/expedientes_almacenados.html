@@ -37,11 +37,11 @@
 			</div>
 			<ul class="mf-window-toolbar" th:fragment="actionButtons"
 				id="actionButtons">
-				<li class="mf-window-toolbar--tool"><a href="generarExpediente">
+				<li class="mf-window-toolbar--tool" sec:authorize="hasRole('USER_ROLE')"><a href="generarExpediente">
 						<span class="mf-icon mf-icon-new-folder"></span> <span
 						th:text="#{generadorExpedientes.nuevo}"></span>
 				</a></li>
-				<li class="mf-window-toolbar--tool"><a
+				<li class="mf-window-toolbar--tool" sec:authorize="hasRole('USER_ROLE')"><a
 					href="importarExpediente"> <span
 						class="mf-icon mf-icon-folder-import"></span> <span
 						th:text="#{generadorExpedientes.importar}"></span>
@@ -100,10 +100,6 @@
 							th:text="#{expedientesAlmacenados.tablaFecha}"></th>
 							
 						<th class="mf-sort-ln" href="·"
-							th:title="#{expedientesAlmacenados.tablaRemitidoMJU.title}"
-							th:text="#{expedientesAlmacenados.tablaRemitidoMJU}"></th>
-							
-						<th class="mf-sort-ln" href="·"
 							th:title="#{expedientesAlmacenados.tablaAcciones.title}"
 							th:text="#{expedientesAlmacenados.tablaAcciones}"></th>
 					</tr>
@@ -127,8 +123,6 @@
 							th:text="${expediente.identificador}"></td>
 						<td class="grid-column-articulo_tipo.codigo"
 							th:text="${#calendars.format(expediente.fechaVersion, 'dd-MM-yyyy')}"></td>
-							
-						<td class="grid-column-creador"	th:text="${expediente.remitidoMJU}"></td>
 							
 						<td class="grid-column-__actions last-column">
 							<ul class="grid-row-actions">
@@ -191,6 +185,7 @@
 		</div>
 
 		<div class="mf-veil" style="display:none"></div>
+
 		<!-- modal del primer paso de generacion de token -->
 		<div id="init-modal-generated-token-PasoPrevio"
 			data-title="Generar credenciales de acceso" data-modal="1" data-width="600"

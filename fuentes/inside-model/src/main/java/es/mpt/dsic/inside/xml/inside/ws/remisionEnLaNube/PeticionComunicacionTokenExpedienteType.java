@@ -1,10 +1,23 @@
+/*
+ * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
+ * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
+ * (at your option) any later version as soon as they are approved by the European Commission.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and more details. You
+ * should have received a copy of the EUPL1.1 license along with this program; if not, you may find
+ * it at http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ */
+
 
 package es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.datatype.XMLGregorianCalendar;
 import es.mpt.dsic.inside.xml.eni.documento.contenido.TipoContenido;
 import es.mpt.dsic.inside.xml.eni.expediente.TipoExpediente;
 import es.mpt.dsic.inside.xml.eni.expediente.metadatos.TipoMetadatos;
@@ -28,6 +41,8 @@ import es.mpt.dsic.inside.xml.eni.expediente.metadatos.TipoMetadatos;
  *         &lt;element name="peticion" type="{https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube}PeticionType"/>
  *         &lt;element name="asunto" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="adjunto" type="{http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido}TipoContenido" minOccurs="0"/>
+ *         &lt;element name="motivacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="plazoDisponibilidad" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="metadatosExp" type="{http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos}TipoMetadatos" minOccurs="0"/>
  *         &lt;element name="indiceExp" type="{http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e}TipoExpediente" minOccurs="0"/>
  *         &lt;element name="token" type="{https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube}StringTokenType"/>
@@ -44,14 +59,18 @@ import es.mpt.dsic.inside.xml.eni.expediente.metadatos.TipoMetadatos;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PeticionComunicacionTokenExpedienteType",
-    propOrder = {"peticion", "asunto", "adjunto", "metadatosExp", "indiceExp", "token",
-        "datosRemisionJusticia", "endpointRemitente", "urlAccesoWeb"})
+    propOrder = {"peticion", "asunto", "adjunto", "motivacion", "plazoDisponibilidad",
+        "metadatosExp", "indiceExp", "token", "datosRemisionJusticia", "endpointRemitente",
+        "urlAccesoWeb"})
 public class PeticionComunicacionTokenExpedienteType {
 
   @XmlElement(required = true)
   protected PeticionType peticion;
   protected String asunto;
   protected TipoContenido adjunto;
+  protected String motivacion;
+  @XmlSchemaType(name = "dateTime")
+  protected XMLGregorianCalendar plazoDisponibilidad;
   protected TipoMetadatos metadatosExp;
   protected TipoExpediente indiceExp;
   @XmlElement(required = true)
@@ -120,6 +139,46 @@ public class PeticionComunicacionTokenExpedienteType {
    */
   public void setAdjunto(TipoContenido value) {
     this.adjunto = value;
+  }
+
+  /**
+   * Gets the value of the motivacion property.
+   * 
+   * @return possible object is {@link String }
+   * 
+   */
+  public String getMotivacion() {
+    return motivacion;
+  }
+
+  /**
+   * Sets the value of the motivacion property.
+   * 
+   * @param value allowed object is {@link String }
+   * 
+   */
+  public void setMotivacion(String value) {
+    this.motivacion = value;
+  }
+
+  /**
+   * Gets the value of the plazoDisponibilidad property.
+   * 
+   * @return possible object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public XMLGregorianCalendar getPlazoDisponibilidad() {
+    return plazoDisponibilidad;
+  }
+
+  /**
+   * Sets the value of the plazoDisponibilidad property.
+   * 
+   * @param value allowed object is {@link XMLGregorianCalendar }
+   * 
+   */
+  public void setPlazoDisponibilidad(XMLGregorianCalendar value) {
+    this.plazoDisponibilidad = value;
   }
 
   /**

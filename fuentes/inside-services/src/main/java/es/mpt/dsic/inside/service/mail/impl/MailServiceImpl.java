@@ -15,8 +15,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.io.FileSystemResource;
@@ -24,7 +26,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.service.mail.MailService;
-
+import es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube.PeticionComunicacionTokenExpedienteType;
 
 /**
  * Servicio de envío de emails
@@ -53,7 +55,6 @@ public class MailServiceImpl implements MailService {
   private String textoXML;
   private String respuesta;
   private String fechaQueCaducaToken;
-
 
   public String getTextoXML() {
     return textoXML;
@@ -151,7 +152,6 @@ public class MailServiceImpl implements MailService {
     if (!active)
       return noActivoEnvioCorreo;
 
-
     // plantilla para el envío de email
     MimeMessage message = mailSender.createMimeMessage();
 
@@ -170,16 +170,112 @@ public class MailServiceImpl implements MailService {
       logger.info("MailServiceImpl.sendToken: Envio de correo finalizado");
       return respuesta;
 
+    } catch (Exception e) {
+      logger.error("Error en el envio del correo de Credenciales de Acceso" + e);
+      throw new Exception("Error en el envio de correo de Credenciales de Acceso");
+    }
+
+  }
+
+  public String sendComunicacionToken(
+      PeticionComunicacionTokenExpedienteType peticionComunicacionTokenExpedienteType,
+      String emailDestino, boolean esSw, String urlAccesoBusquedaTokenExterno) throws Exception {
+
+    String noActivoEnvioCorreo = "";
+    texto = getCabeceraMensaje();
+
+    if (!active) {
+      return noActivoEnvioCorreo;
+    }
+    // plantilla para el envío de email
+    MimeMessage message = mailSender.createMimeMessage();
+
+    try {
+      // el flag a true indica que va a ser multipart
+      MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+      construirMensajeComunicacionToken(peticionComunicacionTokenExpedienteType, emailDestino,
+          helper, esSw, urlAccesoBusquedaTokenExterno);
+
+      helper.setText(texto);
+      ObjetoExpedienteToken objetoExpedienteToken = new ObjetoExpedienteToken();
+      objetoExpedienteToken
+          .setIdentificador(peticionComunicacionTokenExpedienteType.getToken().getIdexpEni());
+
+      adjuntarFichero(objetoExpedienteToken,
+          ThreadLocalRandom.current().nextInt(1, 100000000 + 1) + "", helper);
+
+      // el envío
+      this.mailSender.send(message);
+      logger.info("MailServiceImpl.sendComunicacionToken: Envio de correo finalizado");
+      return respuesta;
 
     } catch (Exception e) {
       logger.error("Error en el envio del correo de Credenciales de Acceso" + e);
       throw new Exception("Error en el envio de correo de Credenciales de Acceso");
     }
 
-
   }
 
+  private void construirMensajeComunicacionToken(
+      PeticionComunicacionTokenExpedienteType peticionComunicacionTokenExpedienteType,
+      String emailDestino, MimeMessageHelper helper, boolean esSw,
+      String urlAccesoBusquedaTokenExterno) throws MessagingException {
 
+    try {
+      helper.setTo(emailDestino);
+      helper.setSubject("INSIDE. Ha recibido credenciales de acceso");
+      helper.setFrom(getFrom());
+      texto = "\nHa recibido credenciales de acceso a un expediente: "
+          + peticionComunicacionTokenExpedienteType.getToken().getIdexpEni();
+      if (esSw) {
+        texto += "\n";
+        texto += "\n Puede acceder al expediente en " + urlAccesoBusquedaTokenExterno;
+        texto += "\n Credenciales (se adjunta en este mensaje):";
+        texto += "\n 	Identificador: "
+            + peticionComunicacionTokenExpedienteType.getToken().getIdexpEni();
+        texto += "\n 	CSV: " + peticionComunicacionTokenExpedienteType.getToken().getCsv();
+        texto += "\n 	UUID: " + peticionComunicacionTokenExpedienteType.getToken().getUuid();
+
+      } else {
+        texto += "\n Puede acceder a el a través de Inside en " + urlAccesoBusquedaTokenExterno;
+      }
+
+      if (peticionComunicacionTokenExpedienteType.getDatosRemisionJusticia() != null) {
+        texto += "\n";
+        texto += "\n Datos juzgado:";
+        texto += "\n 	Nig: "
+            + peticionComunicacionTokenExpedienteType.getDatosRemisionJusticia().getNig();
+        texto += "\n 	Año procedimiento: " + peticionComunicacionTokenExpedienteType
+            .getDatosRemisionJusticia().getAnyoProcedimiento();
+        texto += "\n 	Clase procedimiento: " + peticionComunicacionTokenExpedienteType
+            .getDatosRemisionJusticia().getClaseProcedimiento();
+        texto += "\n 	Número procedimiento: " + peticionComunicacionTokenExpedienteType
+            .getDatosRemisionJusticia().getNumeroProcedimiento();
+        texto += "\n 	Descripción: "
+            + peticionComunicacionTokenExpedienteType.getDatosRemisionJusticia().getDescripcion();
+        texto += "\n";
+        if (StringUtils.isNotBlank(peticionComunicacionTokenExpedienteType
+            .getDatosRemisionJusticia().getDir3Remitente())) {
+          texto += "\n 	Remitente: " + peticionComunicacionTokenExpedienteType
+              .getDatosRemisionJusticia().getDir3Remitente();
+        }
+      }
+
+      textoXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + "<token>\n" + "\t<Identificador>"
+          + peticionComunicacionTokenExpedienteType.getToken().getIdexpEni() + "</Identificador>\n"
+          + "\t<CSV>" + peticionComunicacionTokenExpedienteType.getToken().getCsv() + "</CSV>\n"
+          + "\t<UUID>" + peticionComunicacionTokenExpedienteType.getToken().getUuid() + "</UUID>\n"
+          + "</token>";
+
+    } catch (MessagingException e) {
+      logger.error("Error al construir el mensaje del correo Credenciales de Acceso" + e);
+      e.printStackTrace();
+      throw new MessagingException(
+          "Error al construir el mensaje del correo Credenciales de Acceso" + e);
+    }
+
+  }
 
   // forma el mensaje del correo
   private void construirMensaje(ObjetoExpedienteToken objetoExpedienteToken, String to,
@@ -202,7 +298,6 @@ public class MailServiceImpl implements MailService {
         fechaQueCaducaToken = "Este_token_no_caduca";
       }
 
-
       textoXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + "<token>\n" + "\t<Identificador>"
           + objetoExpedienteToken.getIdentificador() + "</Identificador>\n" + "\t<CSV>"
           + objetoExpedienteToken.getCsv() + "</CSV>\n" + "\t<UUID>"
@@ -212,8 +307,6 @@ public class MailServiceImpl implements MailService {
       texto = texto + "\nIdentificador ... " + objetoExpedienteToken.getIdentificador()
           + "\nCSV ............. " + objetoExpedienteToken.getCsv() + "\nUUID ............ "
           + objetoExpedienteToken.getUuid();
-
-
 
       if (objetoExpedienteToken.getAsunto() != null
           && !objetoExpedienteToken.getAsunto().trim().equals("")) {
@@ -229,13 +322,11 @@ public class MailServiceImpl implements MailService {
 
   }
 
-
-
   // adjunta fichero a correo
   private void adjuntarFichero(ObjetoExpedienteToken objetoExpedienteToken, String idSesion,
       MimeMessageHelper helper) throws IOException {
     // adjuntar informacion en fichero como adjunto
-    String filename = objetoExpedienteToken.getIdentificador() + "_" + fechaQueCaducaToken + ".xml";
+    String filename = objetoExpedienteToken.getIdentificador() + ".xml";
     try {
       String pathTemp = escribir(textoXML.getBytes(), idSesion, filename, true);
       if (pathTemp != null && !pathTemp.trim().equals("")) {
@@ -252,8 +343,6 @@ public class MailServiceImpl implements MailService {
       throw new IOException("Error al adjuntar fichero en correo de Credenciales de Acceso" + e);
     }
   }
-
-
 
   // escribir fichero token adjunto en temporal
   private String escribir(byte[] data, String folder, String filename, boolean create)
@@ -293,6 +382,5 @@ public class MailServiceImpl implements MailService {
     logger.debug("Fin MailServiceImpl.escribir");
     return path.toString();
   }
-
 
 }

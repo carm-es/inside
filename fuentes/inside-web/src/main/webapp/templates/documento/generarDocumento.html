@@ -120,10 +120,12 @@
             </form>
             <form id="generarDocumento" th:action="@{/generarDocumento}"
                 method="post" class="" th:object="${documentoEni}">
+                <input type="hidden" id="metadatoNombreNatural" th:value="${metadatoNombreNatural}"/>
                 <input type="hidden" name="viewName" id="viewName" value="documento/generarDocumento"/>
                 <input type="hidden" name="metadatosAdicionalesDoc" id="metadatosAdicionalesDoc" th:object="${metadatosAdicionales}"/>
                 <input type="hidden" name="documentId" id="documentId"/>
                 <input type="hidden" name="firmaResultado" id="firmaResultado"/>
+                <input type="hidden" name="firmarLongeva" id="firmarLongeva"/>
                 <input type="hidden" name="showMessage" id="showMessage" th:value="${showMessage}"/>
                 <input type="hidden" name="conAdicionales" id="conAdicionales" th:value="${conAdicionales}"/>
                 
@@ -261,7 +263,13 @@
                                             <input type="radio" name="firma" value="firmaServidor" id="firma" onclick="checkFirma()" th:object="${firma}"
                                             th:checked="${firma == 'firmaServidor'}"/>&nbsp; 
                                             <label for="firma" th:text="#{generarDocumento.metadato.firma.firmaServidor}"/>
-                                        </li>	                                    
+                                        </li>
+                                        <div class="fld" id="checkfirmaLongeva">
+	                                        <li>
+	                                            <input type="checkbox" name="firmaLongeva" value="firmaLongeva" id="firmaLongeva" onclick="checkFirmaLongeva()"/>&nbsp; 
+	                                            <label for="firma" th:text="#{generarDocumento.metadato.firma.firmaLongeva}" th:title="#{generarDocumento.metadato.firma.firmaLongeva.ayuda}"/>
+	                                        </li>	
+                                        </div>                                    
 	                                </ul>
 	                                
 	                            </div>
@@ -284,6 +292,8 @@
                      
 	                
 	                	<div class="fld checkbox">
+	                		 <input  type="checkbox" id="firmaCsv" name="firmaCsv" onclick="checkCSV()"/>
+		                     <label for="firmaCsv" th:text="#{generarDocumento.metadato.firma.csv}"></label> 
 			                 <p class="fld">  
 	                            <label for="csv"
 	                                th:text="#{generarDocumento.metadato.csv.csv}"></label> <input
@@ -362,7 +372,7 @@
 	                            <div class="fld">
 	                                <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
 	                                <input  type="text" id="valueMetadatoAdicional" 
-	                                name="valueMetadatoAdicional" maxlength="100" style="width:200px"/>
+	                                name="valueMetadatoAdicional" maxlength="500" style="width:200px"/>
 	                            </div>
 	                            <button type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoDoc()">
 	                                <span class="mf-icon mf-icon-circle-plus"></span>

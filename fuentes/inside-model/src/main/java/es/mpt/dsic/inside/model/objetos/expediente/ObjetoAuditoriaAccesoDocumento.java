@@ -23,6 +23,7 @@ public class ObjetoAuditoriaAccesoDocumento {
   private String usuarioPeticionario;
   private String idDocumento;
   private Date fecha;
+  private Integer idDir3;
 
   public Integer getId() {
     return id;
@@ -71,5 +72,14 @@ public class ObjetoAuditoriaAccesoDocumento {
   public void setFecha(Date fecha) {
     this.fecha = fecha;
   }
+
+  public Integer getIdDir3() {
+    return idDir3;
+  }
+
+  public void setIdDir3(Integer idDir3) {
+    this.idDir3 = idDir3;
+  }
+
 
 }

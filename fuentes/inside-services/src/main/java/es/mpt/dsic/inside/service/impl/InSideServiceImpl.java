@@ -11,9 +11,10 @@
 
 package es.mpt.dsic.inside.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -30,7 +31,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -41,10 +41,8 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.MessageSource;
 import org.springframework.util.Assert;
-import org.w3c.dom.Node;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidacionInfo;
 import es.mpt.dsic.infofirma.service.InfoFirmaService;
 import es.mpt.dsic.infofirma.service.exception.InfoFirmaServiceException;
@@ -56,7 +54,6 @@ import es.mpt.dsic.inside.model.converter.InsideConverterExpediente;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterUtilsException;
 import es.mpt.dsic.inside.model.converter.mime.InsideMimeUtils;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoAuditoriaFirmaServidor;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoElastic;
@@ -71,6 +68,7 @@ import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersionable;
 import es.mpt.dsic.inside.model.objetos.ObjetoNumeroProcedimiento;
+import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatos;
@@ -79,14 +77,12 @@ import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionExpediente;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpediente;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAcceso;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaToken;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoComunicacionTokenExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndice;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenido;
@@ -110,13 +106,12 @@ import es.mpt.dsic.inside.service.exception.InSideServiceRequestErrorException;
 import es.mpt.dsic.inside.service.exception.InSideServiceSignerException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
 import es.mpt.dsic.inside.service.object.converter.InsideServiceObjectConverterException;
+import es.mpt.dsic.inside.service.object.converter.impl.csvstorage.InsideServiceCsvStorageAdapter;
 import es.mpt.dsic.inside.service.object.definitions.InSideServiceObjectDefinitionNotFoundException;
 import es.mpt.dsic.inside.service.object.definitions.InsideObjectDefinitionsContainer;
 import es.mpt.dsic.inside.service.object.metadatos.validator.Exception.InSideServiceValidationException;
 import es.mpt.dsic.inside.service.object.signer.InsideServiceSigner;
-import es.mpt.dsic.inside.service.portales.impl.ConsumidorPortales;
 import es.mpt.dsic.inside.service.semanticValidation.InsideSemanticValidationService;
-import es.mpt.dsic.inside.service.semanticValidation.exception.InsideSemanticValidationException;
 import es.mpt.dsic.inside.service.store.InsideServiceJta;
 import es.mpt.dsic.inside.service.store.InsideServiceStore;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
@@ -127,7 +122,7 @@ import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceSt
 import es.mpt.dsic.inside.service.util.Constantes;
 import es.mpt.dsic.inside.service.util.InsideObjectsUtils;
 import es.mpt.dsic.inside.service.util.InsideUtils;
-import es.mpt.dsic.inside.service.util.UnidadOrganicaRolPortales;
+import es.mpt.dsic.inside.service.util.UtilidadDigestInsideImpl;
 import es.mpt.dsic.inside.service.validacionENI.impl.ConsumidorValidacionENI;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.Validaciones;
 import es.mpt.dsic.inside.service.visualizacion.InsideServiceVisualizacion;
@@ -137,7 +132,6 @@ import es.mpt.dsic.inside.store.hibernate.entity.InsideRol;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadOrganica;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadUsuario;
 import es.mpt.dsic.inside.store.hibernate.entity.UsuarioInside;
-import es.mpt.dsic.inside.util.XMLUtils;
 import es.mpt.dsic.inside.xml.eni.expediente.TipoExpediente;
 import es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoCarpetaIndizada;
 import es.mpt.dsic.inside.xml.eni.expediente.indice.contenido.TipoDocumentoIndizado;
@@ -177,21 +171,20 @@ public class InSideServiceImpl implements InSideService {
   @Autowired
   private ConsumidorValidacionENI consumidorValidacionENI;
 
-  // @Autowired
-  private ConsumidorPortales consumidorPortales;
-
   @Autowired
   private MessageSource messageSource;
 
   @Autowired
   private InsideServiceJta insideServiceJta;
 
+  @Autowired
+  protected InsideServiceCsvStorageAdapter csvStorageAdapter;
 
-  private String funcionResumenDocumentos;
+  @Autowired
+  protected UtilidadDigestInsideImpl utilidadDigestInsideImpl;
 
-  private MessageDigest messageDigest;
-
-  private static final String VALIDACION_CORRECTA = "Validación Correcta";
+  @Autowired
+  protected InsideServiceCsvStorageAdapter insideServiceCsvStorageAdapter;
 
   @Override
   public ObjetoExpedienteInside altaExpediente(ObjetoExpedienteInside expediente, String usuario,
@@ -291,6 +284,12 @@ public class InSideServiceImpl implements InSideService {
   public ObjetoExpedienteInside modificaExpedienteInside(ObjetoExpedienteInside expediente,
       String usuario, boolean online) throws InSideServiceException {
     return modificaExpedienteInside(expediente, insideSigner.isActivo(), usuario, online);
+  }
+
+  @Override
+  public ObjetoExpedienteInside modificaExpedienteInsideWS(ObjetoExpedienteInside expediente,
+      String usuario, boolean online) throws InSideServiceException {
+    return modificaExpedienteInside(expediente, true, usuario, online);
   }
 
   @Override
@@ -704,21 +703,17 @@ public class InSideServiceImpl implements InSideService {
     logger.debug("Parametro <textoPie> : " + textoPie);
     logger.debug("Parametro <expedienteExterno> : " + expedienteExterno);
 
-    if (insideVisualizacion.isActivo()) {
-      OpcionesVisualizacionIndice opciones = new OpcionesVisualizacionIndice();
-      opciones.setEstamparImagen(estamparImagen);
-      opciones.setEstamparNombreOrganismo(estamparNombreOrganismo);
-      opciones.setLineasNombreOrganismo(lineasNombreOrganismo);
-      opciones.setEstamparPie(estamparPie);
-      opciones.setTextoPie(textoPie);
-      opciones.setExterno(expedienteExterno);
-      expediente = insideVisualizacion.expedienteConVisualizacionIndice(expediente, opciones);
-      logger.debug(
-          "expediente tras insideVisualizacion.expedienteConVisualizacionIndice(expediente, opciones); : "
-              + InsideConverterExpediente.expedienteInsideToString(expediente));
-    } else {
-      logger.debug("El servicio de visualizacion no esta activo y no se invoca");
-    }
+    OpcionesVisualizacionIndice opciones = new OpcionesVisualizacionIndice();
+    opciones.setEstamparImagen(estamparImagen);
+    opciones.setEstamparNombreOrganismo(estamparNombreOrganismo);
+    opciones.setLineasNombreOrganismo(lineasNombreOrganismo);
+    opciones.setEstamparPie(estamparPie);
+    opciones.setTextoPie(textoPie);
+    opciones.setExterno(expedienteExterno);
+    expediente = insideVisualizacion.expedienteConVisualizacionIndice(expediente, opciones);
+    logger.debug(
+        "expediente tras insideVisualizacion.expedienteConVisualizacionIndice(expediente, opciones); : "
+            + InsideConverterExpediente.expedienteInsideToString(expediente));
     logger.debug("Fin operacion obtenerVisualizacionIndice");
     return expediente;
 
@@ -731,14 +726,10 @@ public class InSideServiceImpl implements InSideService {
     logger.debug("Parametro <expediente> : "
         + InsideConverterExpediente.expedienteInsideToString(expediente));
 
-    if (insideVisualizacion.isActivo()) {
-      expediente = insideVisualizacion.expedienteConVisualizacionIndice(expediente);
-      logger.debug(
-          "expediente tras insideVisualizacion.expedienteConVisualizacionIndice(expediente); : "
-              + InsideConverterExpediente.expedienteInsideToString(expediente));
-    } else {
-      logger.debug("El servicio de visualizacion no esta activo y no se invoca");
-    }
+    expediente = insideVisualizacion.expedienteConVisualizacionIndice(expediente);
+    logger.debug(
+        "expediente tras insideVisualizacion.expedienteConVisualizacionIndice(expediente); : "
+            + InsideConverterExpediente.expedienteInsideToString(expediente));
 
     logger.debug("Fin operacion obtenerVisualizacionIndice");
     return expediente;
@@ -755,7 +746,7 @@ public class InSideServiceImpl implements InSideService {
     for (String indentificadorDocumento : identificadoresDocumentos) {
       documentos.add(getDocumento(indentificadorDocumento));
     }
-    expediente = vincularDocumentosEnExpediente(expediente, documentos, ruta, usuario, online);
+    expediente = vincularDocumentosEnExpedienteWS(expediente, documentos, ruta, usuario, online);
     logger.debug("Fin operacion vincularDocumentosEnExpediente");
     return expediente;
   }
@@ -770,6 +761,10 @@ public class InSideServiceImpl implements InSideService {
         getCarpetaOExpedienteDeRuta(expediente, ruta);
     int orden = destino.getElementosIndizados().size();
 
+    // Obtengo mapa idDocumento - algoritmo huella para la comprobacion
+    Map<String, String> idDocIndiceExpAndAlgoritmoHuella = this.obtenerDocsExpAndAlgoritmoHuella(
+        expediente.getIndice().getIndiceContenido().getElementosIndizados(), "/");
+
     for (ObjetoDocumentoInside documento : documentos) {
       ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado documentoIndizado =
           new ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado();
@@ -780,19 +775,45 @@ public class InSideServiceImpl implements InSideService {
 
       documentoIndizado.setFechaIncorporacionExpediente(calendar);
       documentoIndizado.setIdentificadorDocumento(documento.getIdentificador());
-      byte[] bytesToDigest = (documento.getContenido().getValorBinario() != null)
-          ? documento.getContenido().getValorBinario()
-          : documento.getContenido().getReferencia().getBytes();
+      // byte[] bytesToDigest =
+      // (documento.getContenido().getValorBinario() != null)
+      // ? documento.getContenido().getValorBinario() :
+      // documento.getContenido().getReferencia().getBytes();
+      //
+      // documentoIndizado.setValorHuella(InsideUtils.getStringDigest(this.messageDigest.digest(bytesToDigest)));
+      // documentoIndizado.setFuncionResumen(this.getFuncionResumenDocumento());
 
-      documentoIndizado
-          .setValorHuella(InsideUtils.getStringDigest(this.messageDigest.digest(bytesToDigest)));
-      documentoIndizado.setFuncionResumen(this.getFuncionResumenDocumento());
+      String hashHuella = utilidadDigestInsideImpl.getValorHuellaContenidoAlgoritmo(documento,
+          idDocIndiceExpAndAlgoritmoHuella);
+      String URI_algoritmoHash = utilidadDigestInsideImpl.encontrarURI_Algoritmo(documento,
+          idDocIndiceExpAndAlgoritmoHuella);
+
+      if (idDocIndiceExpAndAlgoritmoHuella.containsKey(documento.getIdentificador())) {
+        throw new InSideServiceRequestErrorException("Ya existe el documento "
+            + documento.getIdentificador() + " en el expediente " + expediente.getIdentificador());
+      }
+
+      documentoIndizado.setValorHuella(hashHuella);
+      documentoIndizado.setFuncionResumen(URI_algoritmoHash);
       documentoIndizado.setOrdenDocumentoExpediente(++orden);
       documentoIndizado.setOrden(++orden);
       destino.getElementosIndizados().add(documentoIndizado);
     }
 
     logger.debug("Fin operacion vincularDocumentosEnExpediente");
+    return expediente;
+  }
+
+  @Override
+  public ObjetoExpedienteInside vincularDocumentosEnExpedienteWS(ObjetoExpedienteInside expediente,
+      Collection<ObjetoDocumentoInside> documentos, String ruta, String usuario, boolean online)
+      throws InSideServiceException {
+
+    expediente =
+        vincularDocumentosEnExpedienteWithoutSave(expediente, documentos, ruta, usuario, online);
+
+    expediente = modificaExpedienteInsideWS(expediente, usuario, online);
+    logger.debug("Fin operacion vincularDocumentosEnExpedienteWS");
     return expediente;
   }
 
@@ -911,6 +932,60 @@ public class InSideServiceImpl implements InSideService {
           "Error al extraer el contenido del documento firmado", e);
     }
     logger.debug("Fin operacion getDocumentoContenido");
+    return contenido;
+  }
+
+  @Override
+  public ObjetoDocumentoInsideContenido getDocumentoContenido(String identificador,
+      byte[] bytesContenido, String sessionId) throws Exception {
+    logger.debug("Inicio operacion getDocumentoContenido");
+    ObjetoDocumentoInside documento =
+        getObjetoInside(ObjetoDocumentoInside.class, identificador, null);
+    documento = convertFromRepository(documento);
+    ObjetoDocumentoInsideContenido contenido = null;
+    try {
+
+      if (StringUtils.isNotEmpty(documento.getContenido().getReferencia())
+          && (CollectionUtils.isEmpty(documento.getFirmas()) || FirmaInsideTipoFirmaEnum.TF_01
+              .value().equals(documento.getFirmas().get(0).getTipoFirma().value()))) {
+        String[] referenciaSplit = documento.getContenido().getReferencia().split("/");
+        String referencia = referenciaSplit[referenciaSplit.length - 1];
+        contenido = insideServiceCsvStorageAdapter.getcontenidoByUuid(referencia, sessionId);
+
+        File filedownload = new File(contenido.getReferencia());
+        FileInputStream fin = new FileInputStream(filedownload);
+        byte ficheroBytes[] = new byte[(int) filedownload.length()];
+        fin.read(ficheroBytes);
+        contenido.setValorBinario(ficheroBytes);
+
+      } else {
+        contenido = InsideConverterDocumento.documentoInsideToObjetoDocumentoInsideContenido(
+            documento, infoFirmaService, bytesContenido);
+      }
+
+    } catch (InsideConverterException e) {
+      throw new InSideServiceContentExtractException(
+          "Error al extraer el contenido del documento firmado", e);
+    }
+    logger.debug("Fin operacion getDocumentoContenido");
+    return contenido;
+  }
+
+  @Override
+  public ObjetoDocumentoInsideContenido getDocumentoContenidoFromObjetoDocumentoInside(
+      String identificador, byte[] bytesContenido, ObjetoDocumentoInside documento)
+      throws InSideServiceException {
+    logger.debug("Inicio operacion getDocumentoContenidoFromObjetoDocumentoInside");
+
+    ObjetoDocumentoInsideContenido contenido = null;
+    try {
+      contenido = InsideConverterDocumento.documentoInsideToObjetoDocumentoInsideContenido(
+          documento, infoFirmaService, bytesContenido);
+    } catch (InsideConverterException e) {
+      throw new InSideServiceContentExtractException(
+          "Error al extraer el contenido del documento firmado", e);
+    }
+    logger.debug("Fin operacion getDocumentoContenidoFromObjetoDocumentoInside");
     return contenido;
   }
 
@@ -1055,81 +1130,110 @@ public class InSideServiceImpl implements InSideService {
     }
 
     Validaciones validaciones = configurarValidacionesExpediente(validarSIA);
+    if (expedienteConDSSignature == null)
+      return consumidorValidacionENI.validaExpedienteENI(expediente, validaciones);
+    else
+      return consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
 
-    return consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
   }
 
-  public void validacionClasificacionExp(List<OpcionValidacionExpediente> opciones,
-      ObjetoExpedienteInside expedienteInside, List<ResultadoValidacionExpediente> resultados) {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
-    ResultadoValidacionExpediente resTOVE03 = new ResultadoValidacionExpediente();
-    resTOVE03.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);
-    try {
-      if (opciones.contains(OpcionValidacionExpediente.TOVE_03)) {
-        insideSemanticValidationService.validarClasificacion(expedienteInside);
-      }
-    } catch (InsideSemanticValidationException e) {
-      logger.warn(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
-    if (opciones.contains(OpcionValidacionExpediente.TOVE_03)) {
-      resTOVE03.setValido(valido);
-      resTOVE03.setMensaje(mensaje);
-      resultados.add(resTOVE03);
-    }
-  }
+  // public void validacionClasificacionExp(List<OpcionValidacionExpediente>
+  // opciones, ObjetoExpedienteInside expedienteInside,
+  // List<ResultadoValidacionExpediente> resultados) {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  // ResultadoValidacionExpediente resTOVE03 = new
+  // ResultadoValidacionExpediente();
+  // resTOVE03.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);
+  // try {
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_03)) {
+  // insideSemanticValidationService.validarClasificacion(expedienteInside);
+  // }
+  // } catch (InsideSemanticValidationException e) {
+  // logger.warn(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_03)) {
+  // resTOVE03.setValido(valido);
+  // resTOVE03.setMensaje(mensaje);
+  // resultados.add(resTOVE03);
+  // }
+  // }
 
-  public void validacionUnidadesOrganicasExp(List<OpcionValidacionExpediente> opciones,
-      ObjetoExpedienteInside expedienteInside, List<ResultadoValidacionExpediente> resultados) {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
-    ResultadoValidacionExpediente resTOVE02 = new ResultadoValidacionExpediente();
-    resTOVE02.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);
-    try {
-      if (opciones.contains(OpcionValidacionExpediente.TOVE_02)) {
-        insideSemanticValidationService.validarUnidadOrganica(expedienteInside);
-      }
-    } catch (InsideSemanticValidationException e) {
-      logger.warn(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
-    if (opciones.contains(OpcionValidacionExpediente.TOVE_02)) {
-      resTOVE02.setValido(valido);
-      resTOVE02.setMensaje(mensaje);
-      resultados.add(resTOVE02);
-    }
-  }
+  // public void
+  // validacionUnidadesOrganicasExp(List<OpcionValidacionExpediente> opciones,
+  // ObjetoExpedienteInside expedienteInside,
+  // List<ResultadoValidacionExpediente> resultados) {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  // ResultadoValidacionExpediente resTOVE02 = new
+  // ResultadoValidacionExpediente();
+  // resTOVE02.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);
+  // try {
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_02)) {
+  // insideSemanticValidationService.validarUnidadOrganica(expedienteInside);
+  // }
+  // } catch (InsideSemanticValidationException e) {
+  // logger.warn(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_02)) {
+  // resTOVE02.setValido(valido);
+  // resTOVE02.setMensaje(mensaje);
+  // resultados.add(resTOVE02);
+  // }
+  // }
 
-  public void validacionSchemasExp(byte[] expediente, List<OpcionValidacionExpediente> opciones,
-      List<ResultadoValidacionExpediente> resultados) throws TransformerFactoryConfigurationError {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
-    ResultadoValidacionExpediente resTOVE01 = new ResultadoValidacionExpediente();
-    resTOVE01.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);
-    try {
-      if (opciones.contains(OpcionValidacionExpediente.TOVE_01)) {
-        Node nodoEni = XMLUtils.getNode(expediente, "ns7:expediente");
-        String dataXml;
-        if (nodoEni != null) {
-          dataXml = XMLUtils.expedienteAdicionalWebToEni(expediente);
-        } else {
-          dataXml = XMLUtils.expedienteAdicionalWsToEni(expediente);
-        }
-        valido = insideEniValidationService.validarExpedienteDocumentoEniFile(dataXml.getBytes());
-      }
-    } catch (Exception e) {
-      logger.warn(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
-    if (opciones.contains(OpcionValidacionExpediente.TOVE_01)) {
-      resTOVE01.setValido(valido);
-      resTOVE01.setMensaje(mensaje);
-      resultados.add(resTOVE01);
-    }
+  // public void validacionSchemasExp(byte[] expediente,
+  // List<OpcionValidacionExpediente> opciones,
+  // List<ResultadoValidacionExpediente> resultados) throws
+  // TransformerFactoryConfigurationError {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  // ResultadoValidacionExpediente resTOVE01 = new
+  // ResultadoValidacionExpediente();
+  // resTOVE01.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);
+  // try {
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_01)) {
+  // Node nodoEni = XMLUtils.getNode(expediente, "ns7:expediente");
+  // String dataXml;
+  // if (nodoEni != null) {
+  // dataXml = XMLUtils.expedienteAdicionalWebToEni(expediente);
+  // } else {
+  // dataXml = XMLUtils.expedienteAdicionalWsToEni(expediente);
+  // }
+  // valido =
+  // insideEniValidationService.validarExpedienteDocumentoEniFile(dataXml.getBytes());
+  // }
+  // } catch (Exception e) {
+  // logger.warn(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  // if (opciones.contains(OpcionValidacionExpediente.TOVE_01)) {
+  // resTOVE01.setValido(valido);
+  // resTOVE01.setMensaje(mensaje);
+  // resultados.add(resTOVE01);
+  // }
+  // }
+
+  /*
+   * Saber si un fichero es grande: El campo referencia viene relleno y es distinto a la referencia
+   * interna de inside cuando tiene el contenido del fichero referenciado dentro del
+   * documentoeni.xml, que es #FIRMA_0. Si el campo referencia es distinto de null y no tiene firmas
+   * es fichero grande
+   */
+  private boolean isBigFile(ObjetoDocumentoInside documentoInside) {
+    boolean ficheroGrande = false;
+
+    String referencia = documentoInside.getContenido().getReferencia();
+
+    if (referencia != null && CollectionUtils.isEmpty(documentoInside.getFirmas()))
+      ficheroGrande = true;
+
+    return ficheroGrande;
   }
 
   /*
@@ -1144,7 +1248,15 @@ public class InSideServiceImpl implements InSideService {
 
     ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion estadoElaboracionDocumento =
         documentoInside.getMetadatos().getEstadoElaboracion().getValorEstadoElaboracion();
-    // si el estado de elaboracion de un documento es OTROS, debe permitirse el documento
+
+    // Si el fichero del documento es un fichero grande, entonces no validar
+    // la firma ya que estos ficheros de momento no se firman
+    if (isBigFile(documentoInside)) {
+      return false;
+    }
+
+    // si el estado de elaboracion de un documento es OTROS, debe permitirse
+    // el documento
     if (estadoElaboracionDocumento.value().equalsIgnoreCase(
         ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion.EE_99.value())) {
       if (!documentoInside.getFirmas().isEmpty()) {
@@ -1152,7 +1264,6 @@ public class InSideServiceImpl implements InSideService {
       }
       return validarFirmaEnDocumento = false;
     }
-
 
     // Procesos internos inside
     if (!CollectionUtils.isEmpty(opciones)) {
@@ -1219,105 +1330,117 @@ public class InSideServiceImpl implements InSideService {
     return resultados;
   }
 
-  public void validacionFirmasDoc(List<OpcionValidacionDocumento> opciones,
-      ObjetoDocumentoInside documentoInside, List<ResultadoValidacionDocumento> resultados) {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
+  // public void validacionFirmasDoc(List<OpcionValidacionDocumento> opciones,
+  // ObjetoDocumentoInside documentoInside,
+  // List<ResultadoValidacionDocumento> resultados) {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  //
+  // ResultadoValidacionDocumento resTOVD03 = new
+  // ResultadoValidacionDocumento();
+  // resTOVD03.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);
+  // try {
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_03) &&
+  // checkIfNotCsvSign(documentoInside.getFirmas())) {
+  // validarFirma(InsideConverterDocumento.getFirmaElectronica(documentoInside));
+  // }
+  // } catch (InsideConverterException e) {
+  // logger.warn(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // } catch (InSideServiceException e) {
+  // logger.warn(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  //
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_03)) {
+  // resTOVD03.setValido(valido);
+  // resTOVD03.setMensaje(mensaje);
+  // resultados.add(resTOVD03);
+  // }
+  // }
 
-    ResultadoValidacionDocumento resTOVD03 = new ResultadoValidacionDocumento();
-    resTOVD03.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);
-    try {
-      if (opciones.contains(OpcionValidacionDocumento.TOVD_03)
-          && checkIfNotCsvSign(documentoInside.getFirmas())) {
-        validarFirma(InsideConverterDocumento.getFirmaElectronica(documentoInside));
-      }
-    } catch (InsideConverterException e) {
-      logger.warn(e);
-      valido = false;
-      mensaje = e.getMessage();
-    } catch (InSideServiceException e) {
-      logger.warn(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
+  // private boolean checkIfNotCsvSign(List<FirmaInside> list) throws
+  // InsideServiceInternalException {
+  // boolean checkIfNotCsvSign = false;
+  // if (CollectionUtils.isNotEmpty(list)) {
+  // if
+  // (!FirmaInsideTipoFirmaEnum.TF_01.value().equals(list.get(0).getTipoFirma().value()))
+  // checkIfNotCsvSign = true;
+  // } else {
+  // throw new InsideServiceInternalException("El documento no contiene
+  // firma");
+  // }
+  // return checkIfNotCsvSign;
+  // }
 
-    if (opciones.contains(OpcionValidacionDocumento.TOVD_03)) {
-      resTOVD03.setValido(valido);
-      resTOVD03.setMensaje(mensaje);
-      resultados.add(resTOVD03);
-    }
-  }
+  // public void
+  // validacionUnidadesOrganicasDoc(List<OpcionValidacionDocumento> opciones,
+  // ObjetoDocumentoInside documentoInside,
+  // List<ResultadoValidacionDocumento> resultados) {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  //
+  // ResultadoValidacionDocumento resTOVD02 = new
+  // ResultadoValidacionDocumento();
+  // resTOVD02.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);
+  // try {
+  //
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_02)) {
+  //
+  // insideSemanticValidationService.validarUnidadOrganica(documentoInside);
+  // }
+  // } catch (InsideSemanticValidationException e) {
+  // logger.error(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  //
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_02)) {
+  // resTOVD02.setValido(valido);
+  // resTOVD02.setMensaje(mensaje);
+  // resultados.add(resTOVD02);
+  // }
+  // }
 
-  private boolean checkIfNotCsvSign(List<FirmaInside> list) throws InsideServiceInternalException {
-    boolean checkIfNotCsvSign = false;
-    if (CollectionUtils.isNotEmpty(list)) {
-      if (!FirmaInsideTipoFirmaEnum.TF_01.value().equals(list.get(0).getTipoFirma().value()))
-        checkIfNotCsvSign = true;
-    } else {
-      throw new InsideServiceInternalException("El documento no contiene firma");
-    }
-    return checkIfNotCsvSign;
-  }
-
-  public void validacionUnidadesOrganicasDoc(List<OpcionValidacionDocumento> opciones,
-      ObjetoDocumentoInside documentoInside, List<ResultadoValidacionDocumento> resultados) {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
-
-    ResultadoValidacionDocumento resTOVD02 = new ResultadoValidacionDocumento();
-    resTOVD02.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);
-    try {
-
-      if (opciones.contains(OpcionValidacionDocumento.TOVD_02)) {
-
-        insideSemanticValidationService.validarUnidadOrganica(documentoInside);
-      }
-    } catch (InsideSemanticValidationException e) {
-      logger.error(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
-
-    if (opciones.contains(OpcionValidacionDocumento.TOVD_02)) {
-      resTOVD02.setValido(valido);
-      resTOVD02.setMensaje(mensaje);
-      resultados.add(resTOVD02);
-    }
-  }
-
-  public void validacionSchemasDoc(byte[] documento, List<OpcionValidacionDocumento> opciones,
-      List<ResultadoValidacionDocumento> resultados) throws TransformerFactoryConfigurationError {
-    boolean valido = true;
-    String mensaje = VALIDACION_CORRECTA;
-
-    ResultadoValidacionDocumento resTOVD01 = new ResultadoValidacionDocumento();
-    resTOVD01.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);
-    try {
-
-      if (opciones.contains(OpcionValidacionDocumento.TOVD_01)) {
-
-        Node nodoEni = XMLUtils.getNode(documento, "ns5:documento");
-        String dataXml;
-        if (nodoEni != null) {
-          dataXml = XMLUtils.documentoAdicionalWebToEni(documento);
-        } else {
-          dataXml = XMLUtils.documentoAdicionalWsToEni(documento);
-        }
-        valido = insideEniValidationService.validarExpedienteDocumentoEniFile(dataXml.getBytes());
-
-      }
-    } catch (Exception e) {
-      logger.error(e);
-      valido = false;
-      mensaje = e.getMessage();
-    }
-
-    if (opciones.contains(OpcionValidacionDocumento.TOVD_01)) {
-      resTOVD01.setValido(valido);
-      resTOVD01.setMensaje(mensaje);
-      resultados.add(resTOVD01);
-    }
-  }
+  // public void validacionSchemasDoc(byte[] documento,
+  // List<OpcionValidacionDocumento> opciones,
+  // List<ResultadoValidacionDocumento> resultados) throws
+  // TransformerFactoryConfigurationError {
+  // boolean valido = true;
+  // String mensaje = VALIDACION_CORRECTA;
+  //
+  // ResultadoValidacionDocumento resTOVD01 = new
+  // ResultadoValidacionDocumento();
+  // resTOVD01.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);
+  // try {
+  //
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_01)) {
+  //
+  // Node nodoEni = XMLUtils.getNode(documento, "ns5:documento");
+  // String dataXml;
+  // if (nodoEni != null) {
+  // dataXml = XMLUtils.documentoAdicionalWebToEni(documento);
+  // } else {
+  // dataXml = XMLUtils.documentoAdicionalWsToEni(documento);
+  // }
+  // valido =
+  // insideEniValidationService.validarExpedienteDocumentoEniFile(dataXml.getBytes());
+  //
+  // }
+  // } catch (Exception e) {
+  // logger.error(e);
+  // valido = false;
+  // mensaje = e.getMessage();
+  // }
+  //
+  // if (opciones.contains(OpcionValidacionDocumento.TOVD_01)) {
+  // resTOVD01.setValido(valido);
+  // resTOVD01.setMensaje(mensaje);
+  // resultados.add(resTOVD01);
+  // }
+  // }
 
   /**
    * Devuelve la visualización de un documento Inside.
@@ -1412,6 +1535,10 @@ public class InSideServiceImpl implements InSideService {
     logger.debug("rutaContenedora tras getCarpetaOExpedienteDeRuta(expediente,ruta); : "
         + rutaContenedora.toString());
 
+    List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> listaContenidoEncontrado =
+        new ArrayList<ObjetoExpedienteInsideIndiceContenidoElementoIndizado>();
+
+    // Se itera para comprobar que los documentos existen en el expediente
     for (String identificadorContenido : identificadoresContenido) {
       logger.debug("buscando elementoIndizado con identificador: " + identificadorContenido);
       ObjetoExpedienteInsideIndiceContenidoElementoIndizado contenidoEncontrado =
@@ -1419,12 +1546,20 @@ public class InSideServiceImpl implements InSideService {
               rutaContenedora.getElementosIndizados());
       if (contenidoEncontrado != null) {
         logger.debug("encontrado elementoIndizado con identificador: " + identificadorContenido);
-        rutaContenedora.getElementosIndizados().remove(contenidoEncontrado);
+        listaContenidoEncontrado.add(contenidoEncontrado);
       } else {
         throw new InSideServiceRequestErrorException(
             "No existe el elemento del tipo indicado con identificador " + identificadorContenido
                 + " en la ruta " + ruta);
       }
+    }
+
+    // Se comprueba si el expediente queda vacío
+    if (listaContenidoEncontrado.size() == rutaContenedora.getElementosIndizados().size()) {
+      throw new InSideServiceRequestErrorException(
+          "Estructura incorrecta. El expediente no puede quedar vacío.");
+    } else {
+      rutaContenedora.getElementosIndizados().removeAll(listaContenidoEncontrado);
     }
 
     logger.debug("expediente tras eliminar elementoIndizado: "
@@ -1623,10 +1758,6 @@ public class InSideServiceImpl implements InSideService {
     return objetoFirmado;
   }
 
-  public String getFuncionResumenDocumento() {
-    return this.funcionResumenDocumentos;
-  }
-
   /**
    * Establece el Algoritmo que se utiliza para calcular la huella digital de los documentos para el
    * indice del Expediente electrónico
@@ -1634,13 +1765,14 @@ public class InSideServiceImpl implements InSideService {
    * @param funcionResumen
    * @throws NoSuchAlgorithmException
    */
-  @Required
-  public void setFuncionResumenDocumentos(String funcionResumen) throws NoSuchAlgorithmException {
-    logger.info(
-        "Estableciendo función de Resumen para documentos del índice a '" + funcionResumen + "'");
-    this.messageDigest = MessageDigest.getInstance(funcionResumen);
-    this.funcionResumenDocumentos = funcionResumen;
-  }
+  // @Required
+  // public void setFuncionResumenDocumentos(String funcionResumen) throws
+  // NoSuchAlgorithmException {
+  // logger.info("Estableciendo función de Resumen para documentos del índice
+  // a '" + funcionResumen + "'");
+  // this.messageDigest = MessageDigest.getInstance(funcionResumen);
+  // this.funcionResumenDocumentos = funcionResumen;
+  // }
 
   @Override
   public void deleteDocument(String identificador) throws InSideServiceException {
@@ -1713,7 +1845,8 @@ public class InSideServiceImpl implements InSideService {
       byte[] firmaBase64 =
           bs64.encode(nodofirma.getBytes(es.mpt.dsic.inside.service.util.XMLUtils.UTF8_CHARSET));
       // establecerFirmaExpedienteANodoFirmaBase64(expediente, "FIRMA_0",
-      // FirmaInsideTipoFirmaEnum.TF_02, firmaBase64, expediente.getIdentificador());
+      // FirmaInsideTipoFirmaEnum.TF_02, firmaBase64,
+      // expediente.getIdentificador());
       establecerFirmaExpedienteANodoFirmaBase64(expediente, "FIRMA_0",
           FirmaInsideTipoFirmaEnum.TF_03, firmaBase64, expediente.getIdentificador());
     } catch (InSideServiceSignerException e) {
@@ -1862,6 +1995,15 @@ public class InSideServiceImpl implements InSideService {
   }
 
   @Override
+  public List<ObjetoInsideDocumentoUnidad> getDocumentosMetadatosUnidad(ObjetoInsideUsuario usuario,
+      boolean soloUnidadActiva) throws InSideServiceException {
+    if (usuario == null || StringUtils.isBlank(usuario.getNif())) {
+      throw new InsideServiceInternalException("Debe especificar usuario");
+    }
+    return insideStore.getDocumentosMetadatosUnidad(usuario.getNif(), soloUnidadActiva);
+  }
+
+  @Override
   public List<ObjetoInsideDocumentoUnidad> getDocumentosUnidad(ObjetoInsideUsuario usuario,
       boolean soloUnidadActiva) throws InSideServiceException {
     if (usuario == null || StringUtils.isBlank(usuario.getNif())) {
@@ -1903,7 +2045,6 @@ public class InSideServiceImpl implements InSideService {
       throws InSideServiceException {
     return insideStore.getUsuarios(data);
   }
-
 
   @Override
   public ObjetoInsideUsuario altaUsuario(ObjetoInsideUsuario data) throws InSideServiceException {
@@ -1973,7 +2114,6 @@ public class InSideServiceImpl implements InSideService {
     return insideStore.getUnidadesUsuario(idUsuarios, todas);
   }
 
-
   public ObjetoInsideRol getRolUnidadUsuario(String codigoUnidad, String nif)
       throws InSideServiceException {
     // recupero el usuario
@@ -2003,7 +2143,6 @@ public class InSideServiceImpl implements InSideService {
 
     return InsideServiceStoreHibernateConverterInsideRol.toInside(insideRol);
   }
-
 
   @Override
   public boolean comprobarUnidadesOrganicasActivasUsuario(Object usuario)
@@ -2037,22 +2176,6 @@ public class InSideServiceImpl implements InSideService {
   }
 
   @Override
-  public void guardarRespuestaRemisionJusticiaExpediente(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InSideServiceException {
-    insideStore.insertRespuestaRemisionJusticia(objectInsideRespuestaEnvioJusticia,
-        identificadorExpediente, version);
-  }
-
-  @Override
-  public void guardarRespuestaRemisionJusticiaExpedienteNoInside(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InSideServiceException {
-    insideStore.insertRespuestaRemisionJusticiaExpedienteNoInside(
-        objectInsideRespuestaEnvioJusticia, identificadorExpediente, version);
-  }
-
-  @Override
   public ObjetoInsideUnidadAplicacionEeutil getApplicationEeutilByUser(ObjetoInsideUsuario user)
       throws InSideServiceException {
     return insideStore.getApplicationEeutilByUser(user);
@@ -2079,6 +2202,38 @@ public class InSideServiceImpl implements InSideService {
               auxPath));
         } else if (dato instanceof ObjetoExpedienteInsideIndiceContenidoElementoContenedorElementos) {
           retorno.putAll(obtenerDocsExpInside(
+              ((ObjetoExpedienteInsideIndiceContenidoElementoContenedorElementos) dato)
+                  .getElementosIndizados(),
+              path));
+        }
+      }
+    }
+    return retorno;
+  }
+
+  @Override
+  public Map<String, String> obtenerDocsExpAndAlgoritmoHuella(
+      List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> list, String path) {
+    Map<String, String> retorno = new HashMap<String, String>();
+    if (CollectionUtils.isNotEmpty(list)) {
+      for (Object dato : list) {
+        if (dato instanceof ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) {
+          retorno.put(
+              ((ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) dato)
+                  .getIdentificadorDocumento(),
+              ((ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) dato).getFuncionResumen());
+        } else if (dato instanceof ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) {
+          String auxPath = path;
+          if (!path.endsWith("/")) {
+            auxPath += "/";
+          }
+          auxPath += ((ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) dato)
+              .getIdentificadorCarpeta();
+          retorno.putAll(obtenerDocsExpAndAlgoritmoHuella(
+              ((ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) dato).getElementosIndizados(),
+              auxPath));
+        } else if (dato instanceof ObjetoExpedienteInsideIndiceContenidoElementoContenedorElementos) {
+          retorno.putAll(obtenerDocsExpAndAlgoritmoHuella(
               ((ObjetoExpedienteInsideIndiceContenidoElementoContenedorElementos) dato)
                   .getElementosIndizados(),
               path));
@@ -2231,13 +2386,6 @@ public class InSideServiceImpl implements InSideService {
   }
 
   @Override
-  public void guardarSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InSideServiceException {
-    insideStore.saveSolicitudAccesoExpediente(objetoSolicitudAccesoExpediente);
-  }
-
-  @Override
   public List<String> listaNumeroProcedimiento() throws InsideServiceStoreException {
     return insideStore.getNumeroProcedimiento();
   }
@@ -2274,88 +2422,10 @@ public class InSideServiceImpl implements InSideService {
   }
 
   @Override
-  public void saveComunicacionTokenExpediente(
-      ObjetoComunicacionTokenExpediente objetoComunicacionTokenExpediente)
-      throws InsideServiceStoreException {
-    insideStore.saveComunicacionTokenExpediente(objetoComunicacionTokenExpediente);
-
-  }
-
-  @Override
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteActivas(
-      int maximoResultados, int numeroMaximoIntentos) throws InsideServiceStoreException {
-    return insideStore.getComunicacionesTokenExpedienteActivas(maximoResultados,
-        numeroMaximoIntentos);
-  }
-
-  @Override
-  public void saveSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InsideServiceStoreException {
-    insideStore.saveSolicitudAccesoExpediente(objetoSolicitudAccesoExpediente);
-
-  }
-
-  @Override
-  public String getUrlDestinoPeticionAccesoExpediente(String dir3) throws InSideServiceException {
-    return insideStore.getUrlDestinoPeticionAccesoExpediente(dir3);
-  }
-
-  @Override
-  public List<ObjetoSolicitudAccesoExpediente> getSolicitudesAccesoExpediente(
-      ObjetoInsideUsuario objetoInsideUsuario)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException {
-    return insideStore.getSolicitudesAccesoExpediente(objetoInsideUsuario);
-  }
-
-  @Override
-  public List<ObjetoAuditoriaAcceso> getAuditoriaAccesoDocumento(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException {
-    return insideStore.getAuditoriaAccesoDocumento(objetoInsideUsuario);
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpediente(String id)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException {
-    return insideStore.getSolicitudAccesoExpediente(id);
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpedientePorIdPeticion(
-      String idPeticion) throws JAXBException {
-    return insideStore.getSolicitudAccesoExpedientePorIdPeticion(idPeticion);
-  }
-
-  @Override
   public void saveAuditoriaAccesoDocumento(
       ObjetoAuditoriaAccesoDocumento objetoAuditoriaAccesoDocumento)
       throws InsideServiceStoreException {
     insideStore.saveAuditoriaAccesoDocumento(objetoAuditoriaAccesoDocumento);
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpAppUrl saveSolicitudAccesoExpAppUrl(
-      ObjetoSolicitudAccesoExpAppUrl objetoSolicitudAccesoExpAppUrl)
-      throws InsideServiceStoreException {
-    return insideStore.saveSolicitudAccesoExpAppUrl(objetoSolicitudAccesoExpAppUrl);
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpAppUrl getSolicitudAccesoExpAppUrlPorDir3(String dir3Padre)
-      throws InsideServiceStoreException {
-    return insideStore.getSolicitudAccesoExpAppUrlPorDir3(dir3Padre);
-  }
-
-  @Override
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEvioJusticaByCodigoEnvio(
-      ObjectInsideRespuestaEnvioJusticia respuestaEnvioJusticia) throws InSideServiceException {
-    return insideStore.getRespuestaEvioJusticaByCodigoEnvio(respuestaEnvioJusticia);
-  }
-
-  @Override
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEnvioJusticiaByCodigoEnvio(
-      String codigoEnvio) throws InSideServiceException {
-    return insideStore.getRespuestaEnvioJusticiaByCodigoEnvio(codigoEnvio);
   }
 
   @SuppressWarnings({"unchecked"})
@@ -2459,7 +2529,6 @@ public class InSideServiceImpl implements InSideService {
     return insideStore.getInsideRoles();
   }
 
-
   @Override
   public List<ObjetoInsideUsuario> getUsuariosUnidadOrganica(ObjetoInsideUsuario usuarioEnSesion,
       Locale locale) throws InsideServiceStoreException {
@@ -2472,25 +2541,38 @@ public class InSideServiceImpl implements InSideService {
     return insideStore.getNumeroProcedimientoList();
   }
 
-
+  /**
+   * @param usuario
+   * @param soloUnidadActiva
+   * @return
+   * @throws InSideServiceException
+   */
   @Override
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteUnidadOrganicaUsuario(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException {
-    return insideStore.getComunicacionesTokenExpedienteUnidadOrganicaUsuario(objetoInsideUsuario);
+  public List<ObjetoUnidadOrganica> getUnidadesOrganicasUsuariosInside(String texto)
+      throws InSideServiceException {
+
+    return insideStore.getUnidadesOrganicasUsuariosInside(texto);
   }
 
   @Override
-  public ObjetoComunicacionTokenExpediente getComunicacionTokenExpedientePorId(String id)
-      throws InsideServiceStoreException {
-    return insideStore.getComunicacionTokenExpedientePorId(id);
+  public boolean existeUsuarioInsideConDir3(String dir3) throws InsideServiceStoreException {
+    // TODO Auto-generated method stub
+    return insideStore.existeUsuarioInsideConDir3(dir3);
   }
 
-  @Override
-  public List<UnidadOrganicaRolPortales> getlistaUnidadesRolesPortales(String nif)
+  public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
       throws InsideServiceStoreException {
+    return insideStore.getDocumentoUnidad(identificadorDocumento);
+  }
 
+  public ObjetoInsideExpedienteUnidad getExpedienteUnidad(String identificadorExpediente)
+      throws InsideServiceStoreException {
+    return insideStore.getExpedienteUnidad(identificadorExpediente);
+  }
 
-    return consumidorPortales.listaUnidadesOrganicasRolesPortales(nif);
+  public ObjetoInsideUnidad getUnidadOrganica(Object idUnidadOrganica)
+      throws InsideServiceStoreException {
+    return insideStore.getUnidadOrganica(idUnidadOrganica);
   }
 
 }

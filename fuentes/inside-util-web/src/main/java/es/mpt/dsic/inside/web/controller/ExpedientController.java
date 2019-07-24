@@ -12,7 +12,6 @@
 package es.mpt.dsic.inside.web.controller;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
@@ -29,8 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -49,16 +46,21 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -79,22 +81,21 @@ import es.mpt.dsic.inside.model.objetos.ObjetoInsideMetadatoAdicional;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
-import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoElementoContenedorElementos;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoElementoIndizado;
-import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoContenidoBinarioInside;
+import es.mpt.dsic.inside.model.objetos.firmas.FirmaInsideTipoFirmaEnum;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.InsideUtilService;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.auditoria.InSideAuditoriaService;
 import es.mpt.dsic.inside.service.csv.CsvService;
 import es.mpt.dsic.inside.service.eni.EniService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
 import es.mpt.dsic.inside.service.exception.ServiceException;
 import es.mpt.dsic.inside.service.mail.MailService;
@@ -103,21 +104,23 @@ import es.mpt.dsic.inside.service.object.metadatos.validator.impl.MetadatoValida
 import es.mpt.dsic.inside.service.object.signer.InsideServiceSigner;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectNotFoundException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectVinculatedException;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.util.Constantes;
 import es.mpt.dsic.inside.service.util.InsideUtils;
+import es.mpt.dsic.inside.service.util.InsideWSUtils;
+import es.mpt.dsic.inside.service.util.UtilidadDigestInsideImpl;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.service.util.XMLUtils;
-import es.mpt.dsic.inside.service.utilFirma.InsideServiceUtilFirma;
 import es.mpt.dsic.inside.service.utilFirma.exception.InsideServiceUtilFirmaException;
 import es.mpt.dsic.inside.service.visualizacion.InsideServiceVisualizacion;
 import es.mpt.dsic.inside.service.visualizacion.exception.InsideServiceVisualizacionException;
 import es.mpt.dsic.inside.util.xml.JAXBMarshaller;
 import es.mpt.dsic.inside.web.index.IndexActions;
+import es.mpt.dsic.inside.web.object.ComboItem;
 import es.mpt.dsic.inside.web.object.MessageObject;
 import es.mpt.dsic.inside.web.util.ComboUtils;
-import es.mpt.dsic.inside.web.util.InsideWSUtils;
 import es.mpt.dsic.inside.web.util.MetadatosEEMGDE;
 import es.mpt.dsic.inside.web.util.SignatureUtils;
-import es.mpt.dsic.inside.web.util.WebConstants;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
 import es.mpt.dsic.inside.ws.util.InSideDateAdapter;
@@ -141,6 +144,7 @@ import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.TipoOpcionesValida
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionExpedienteInside;
 
 @Controller
+@PropertySource("classpath:config.properties")
 public class ExpedientController {
 
   protected static final Log logger = LogFactory.getLog(ExpedientController.class);
@@ -185,10 +189,16 @@ public class ExpedientController {
   private InSideAuditoriaService inSideAuditoriaService;
 
   @Autowired
-  private InsideServiceUtilFirma utilFirmaService;
+  EniService eniService;
 
   @Autowired
-  EniService eniService;
+  private AutocompleteController autocompleteController;
+
+  @Autowired
+  private UtilidadDigestInsideImpl utilidadDigestInsideImpl;
+
+  @Value("${visualizarContenido.pdfDefault}")
+  private String pdfDefault;
 
   private static final String MENSAJE_USU = "mensajeUsuario";
   private static final String EXPEDIENTES = "expedientes";
@@ -243,7 +253,10 @@ public class ExpedientController {
         .setIdentificador(generateDefaultId(request, false));
 
     modelAndView.addObject("expedienteMetadatos", tipoExpedienteMA);
-
+    modelAndView.addObject("metadatoNombreNatural",
+        MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL.getValue());
+    modelAndView.addObject("metadatoFechaFin",
+        MetadatosEEMGDE.METADATO_FECHAS_FECHA_FIN.getValue());
     modelAndView.addObject(INDICE, convertIndex(tipoExpedienteMA.getExpediente().getIndice()
         .getIndiceContenido().getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada(), true));
 
@@ -260,7 +273,52 @@ public class ExpedientController {
         (ObjetoInsideUsuario) session.getAttribute(WebConstants.USUARIO_SESSION);
     modelAndView.addObject(SHOW_FIRMA_SERVER, insideService.checkSignatureServerByUser(usuario));
 
+    ///// cargar los documentos de la unidad porque el autocomplete de js no
+    ///// funciona en internet Explorer
+    ///// ////////////////////////////////////////
+
+    String listaDocumentosJSON = convertListToJSONString(request, "documento");
+    String listaExpedientesJSON = convertListToJSONString(request, "expediente");
+
+    modelAndView.addObject("listaDocumentosJSON", listaDocumentosJSON);
+    modelAndView.addObject("listaExpedientesJSON", listaExpedientesJSON);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     return modelAndView;
+  }
+
+  private String convertListToJSONString(HttpServletRequest request,
+      String Expediente_o_Documento) {
+    List<ComboItem> lista = null;
+
+    if ("documento".equalsIgnoreCase(Expediente_o_Documento)) {
+      lista = autocompleteController.autocompleteDocumentos(request, "");
+    }
+
+    if ("expediente".equals(Expediente_o_Documento)) {
+      lista = autocompleteController.autocompleteExpedientes(request, true, true, "");
+    }
+
+    ObjectMapper mapper = new ObjectMapper();
+    SerializationConfig config = mapper.getSerializationConfig();
+    config.setSerializationInclusion(Inclusion.NON_NULL);
+    mapper.setSerializationConfig(config);
+
+    String resultadoJSON = "";
+    try {
+      resultadoJSON = mapper.writeValueAsString(lista);
+
+    } catch (JsonGenerationException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    } catch (JsonMappingException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    } catch (IOException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    }
+
+    return resultadoJSON;
+
   }
 
   private String generateDefaultId(HttpServletRequest request, boolean isDocument) {
@@ -353,6 +411,9 @@ public class ExpedientController {
     TipoExpediente expAux;
 
     try {
+
+      String firmarLongeva = request.getParameter("firmarLongevaExpediente");
+
       setData(tipoExpedienteMA.getExpediente(), request);
       validateData(tipoExpedienteMA.getExpediente(), locale);
 
@@ -397,6 +458,19 @@ public class ExpedientController {
                 usuario.getNif());
         insideService.saveAuditoriaFirmaServidor(objetoAuditoriaFirmaServidor);
       }
+      // Tratar firma longeva
+      if (StringUtils.isNotBlank(firmarLongeva) && firmarLongeva.trim().equals("true")) {
+        try {
+          firmaIndice = insideUtilService.tratarFirmaLongevaExpediente(firmaIndice);
+        } catch (Exception e) {
+          logger
+              .warn("Error al intentar ampliar firma " + e.getLocalizedMessage() + e.getMessage());
+          MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
+              messageSource.getMessage(WebConstants.MSG_GENERAR_FIRMA_LONGEVA_ERROR, null, locale));
+          throw new InsideServiceInternalException(mensaje.getMessage());
+        }
+      }
+
       tipoExpedienteMA.getExpediente().getIndice().setFirmas(signatureUtils.setSignaturesExp(
           firmaIndice, tipoExpedienteMA.getExpediente().getMetadatosExp().getIdentificador()));
 
@@ -597,29 +671,6 @@ public class ExpedientController {
     }
   }
 
-  private byte[] transformarExpedienteDescargaCompletoParaValidarFirma(TipoExpediente tExpAdi,
-      String contenido) throws InsideServiceInternalException {
-    // Con nodo firma en base64 a ds signature
-    byte[] expedienteAntesTransformacion = contenido.getBytes();
-    byte[] expedienteDespuesTransformacion = null;
-    try {
-      // Para validar solo el ns7:expediente sin metadatosadicionales
-      byte[] dataConFirmaSinIdentar = insideUtilService.generateExpXmlParaValidar(tExpAdi);
-
-      // sustituye el nodo <ns7:expediente por el dataConFirmaSinIdentar
-      String data = XMLUtils.construirExpedienteENIValido(new String(expedienteAntesTransformacion),
-          new String(dataConFirmaSinIdentar));
-
-      // terminar la transformacion de cambio firmabase64 a dsSignature
-      expedienteDespuesTransformacion =
-          XMLUtils.deFirmaBase64_A_DSSignature(data.getBytes("UTF-8"));
-    } catch (Exception e) {
-      logger.error("Error en transformarExpedienteDescargaCompletoParaValidarFirma", e);
-      throw new InsideServiceInternalException("Error al transformar la firma del expediente", e);
-    }
-    return expedienteDespuesTransformacion;
-  }
-
   @RequestMapping(value = "/descargarExpedienteEniCompleto", method = RequestMethod.POST)
   public ModelAndView descargarExpedienteEniCompleto(HttpSession session,
       @RequestParam("contenido") String contenido,
@@ -633,8 +684,8 @@ public class ExpedientController {
       Map<String, byte[]> ficheros = this.getMapFicherosIndice(indice, false, session);
 
       // Necesario poner la firma en claro en el expENI para que valide
-      byte[] expedienteENIListoParaValidar =
-          transformarExpedienteDescargaCompletoParaValidarFirma(tipoExpediente, contenido);
+      byte[] expedienteENIListoParaValidar = insideUtilService
+          .transformarExpedienteDescargaCompletoParaValidarFirma(tipoExpediente, contenido);
       ficheros.put(identificador, expedienteENIListoParaValidar);
 
       byte[] ficheroZip = InsideUtils.generateZip(ficheros, WebConstants.FORMAT_XML);
@@ -671,7 +722,8 @@ public class ExpedientController {
 
       Map<String, byte[]> ficheros = this.getMapFicherosIndice(indice, true, session);
 
-      byte[] ficheroZip = generateZipFicherosFisicos(ficheros, marshaller, insideService);
+      byte[] ficheroZip = insideUtilService.generateZipFicherosFisicos(ficheros, marshaller,
+          insideService, session.getId());
 
       OutputStream pr = response.getOutputStream();
       response.setContentType("application/zip");
@@ -693,34 +745,6 @@ public class ExpedientController {
       return retorno;
     }
 
-  }
-
-  @SuppressWarnings("rawtypes")
-  public static byte[] generateZipFicherosFisicos(Map<String, byte[]> ficheros,
-      JAXBMarshaller marshaller, InSideService insideService) throws Exception {
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(outputStream);
-    Iterator it = ficheros.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry e = (Map.Entry) it.next();
-      ZipEntry zipEntry;
-      byte[] data = (byte[]) e.getValue();
-      TipoDocumento docEni = marshaller.unmarshallDataDocument(data);
-      ObjetoDocumentoInsideContenido contenido =
-          insideService.getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null);
-      String extension = "." + contenido.getNombreFormato();
-      String llave = e.getKey().toString().substring(e.getKey().toString().indexOf('/') + 1);
-      if (org.apache.commons.lang.StringUtils.isNotBlank(extension)) {
-        zipEntry = new ZipEntry(llave + extension);
-      } else {
-        zipEntry = new ZipEntry(llave);
-      }
-      zos.putNextEntry(zipEntry);
-      zos.write(contenido.getValorBinario());
-      zos.closeEntry();
-    }
-    zos.close();
-    return outputStream.toByteArray();
   }
 
   /**
@@ -1076,8 +1100,20 @@ public class ExpedientController {
 
       boolean resultValidateIdDocument = validateIdDocument(session, locale, id, retorno);
       if (resultValidateIdDocument) {
-        String funcionResumen = "md5";
-        String valorHuella = getValorHuella(docInside);
+
+        // se cambia la funcion resumen y se necesita un mapa con id del
+        // doc y el algoritmo para la nueva
+        // getValorHuellaContenidoAlgoritmo
+        String funcionResumen = es.mpt.dsic.inside.util.InsideUtils.HUELLA_SHA512_LITERAL_URI;
+        Map<String, String> mapaIdAlgoritmo = new HashMap<String, String>();
+        mapaIdAlgoritmo.put(docInside.getIdentificador(), funcionResumen);
+        String valorHuella =
+            utilidadDigestInsideImpl.getValorHuellaContenidoAlgoritmo(docInside, mapaIdAlgoritmo);
+
+        // String funcionResumen = "md5";
+        // String valorHuella =
+        // insideUtilService.getValorHuellaContenido(docInside);
+
         String ordenDocExp = "1";
         String fechaIncorpExp = request.getParameter(FECHA_INCORP_EXP);
 
@@ -1285,8 +1321,14 @@ public class ExpedientController {
         retorno.put(NOMBRE_NATURAL_EXP,
             getNombreNatural(docInside.getMetadatos().getMetadatosAdicionales()));
 
-        String funcionResumen = "md5";
-        String valorHuella = getValorHuella(docInside);
+        // se cambia la funcion resumen y se necesita un mapa con id del
+        // doc y el algoritmo para la nueva
+        // getValorHuellaContenidoAlgoritmo
+        String funcionResumen = es.mpt.dsic.inside.util.InsideUtils.HUELLA_SHA512_LITERAL_URI;
+        Map<String, String> mapaIdAlgoritmo = new HashMap<String, String>();
+        mapaIdAlgoritmo.put(idDocumento, funcionResumen);
+        String valorHuella =
+            utilidadDigestInsideImpl.getValorHuellaContenidoAlgoritmo(docInside, mapaIdAlgoritmo);
         String ordenDocExp = "1";
         String fechaIncorpExp = request.getParameter(FECHA_INCORP_EXP);
 
@@ -1312,25 +1354,6 @@ public class ExpedientController {
       retorno.put(MENSAJE_USU, msg);
     }
     return retorno;
-  }
-
-  public String getValorHuella(ObjetoDocumentoInside docInside) {
-    byte[] bytesToDigest = null;
-
-    // Si tiene valorbinario
-    if (docInside.getContenido().getValorBinario() != null) {
-      bytesToDigest = docInside.getContenido().getValorBinario();
-    } else {// si devuelve la referencia. Hay que ir a la referencia a buscar el contenido para
-            // hacer el hash, no hacer el hash de la cadena de la referencia
-
-      ContenidoFirmaCertificadoContenidoBinarioInside firmaBase64 =
-          (ContenidoFirmaCertificadoContenidoBinarioInside) docInside.getFirmas().get(0)
-              .getContenidoFirma();
-      bytesToDigest = Base64.encodeBase64(firmaBase64.getValorBinario());
-    }
-
-
-    return DigestUtils.md5DigestAsHex(bytesToDigest);
   }
 
   private String getNombreNatural(List<ObjetoInsideMetadatoAdicional> list) {
@@ -1475,13 +1498,23 @@ public class ExpedientController {
           : IndexActions.checkMoveElementNoRepeatInLevel(expedienteEniResultante, identificador,
               pathDestino);
 
-      if (correctMove) {
-        expedienteEniResultante = IndexActions.moveElement(expedienteEniResultante, pathOrigen,
-            identificador, pathDestino, false, orden, session);
+      if (!esPadre(pathOrigen, pathDestino, identificador)) {
+
+        if (correctMove) {
+          expedienteEniResultante = IndexActions.moveElement(expedienteEniResultante, pathOrigen,
+              identificador, pathDestino, false, orden, session);
+        } else {
+          mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, messageSource
+              .getMessage(WebConstants.MSG_GENERAR_EXP_CARPETAS_MISMO_ID, null, locale));
+          retorno.put(MENSAJE_USU, mensaje);
+        }
+
       } else {
-        mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
-            messageSource.getMessage(WebConstants.MSG_GENERAR_EXP_CARPETAS_MISMO_ID, null, locale));
+
+        mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, messageSource
+            .getMessage(WebConstants.MSG_GENERAR_EXP_CARPETAS_PADRE_DENTRO_HIJO, null, locale));
         retorno.put(MENSAJE_USU, mensaje);
+
       }
 
       retorno = setDataIndex(expedienteEniResultante, retorno);
@@ -1494,6 +1527,30 @@ public class ExpedientController {
 
     logger.debug("Finalizado ExpedientController.moverElementoIndice");
     return retorno;
+  }
+
+  /**
+   * Comprueba si el path origen es padre del path destino al mover carpetas del indice del
+   * expediente
+   */
+  private boolean esPadre(String pathOrigen, String pathDestino, String identificador) {
+
+    String splitOrigenAux = pathOrigen + identificador;
+
+    String[] splitPathOrigen = splitOrigenAux.split("/");
+    String[] splitPathDestino = pathDestino.split("/");
+
+    boolean esPadre = false;
+    if (splitPathOrigen.length < splitPathDestino.length) {
+      esPadre = true;
+      for (int i = 0; i < splitPathOrigen.length; i++) {
+        if (!splitPathOrigen[i].equals(splitPathDestino[i])) {
+          esPadre = false;
+        }
+      }
+    }
+
+    return esPadre;
   }
 
   @RequestMapping(value = "/borrarElementoIndice", method = RequestMethod.POST)
@@ -1753,7 +1810,7 @@ public class ExpedientController {
   }
 
   public String validarDocumentoEni(String session, String documento, String format)
-      throws IOException {
+      throws IOException, InSideServiceTemporalDataException {
     String retorno = null;
     byte[] data = temporalDataBusinessService.getFile(session, documento);
 
@@ -1948,7 +2005,8 @@ public class ExpedientController {
   @RequestMapping(value = "/visualizarContenido", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> visualizarContenido(Locale locale, HttpSession session,
-      @RequestParam("idDocumento") String idDocumento) throws InsideValidationDataException {
+      @RequestParam("idDocumento") String idDocumento, HttpServletResponse response)
+      throws InsideValidationDataException {
     Map<String, Object> retorno = new HashMap<String, Object>();
     MessageObject mensaje = null;
     try {
@@ -1970,11 +2028,13 @@ public class ExpedientController {
         retorno.put("contenidoVisualizar",
             serviceVisualizar.visualizarContenidoOriginal(documento));
       } catch (InsideServiceVisualizacionException e) {
-        logger.info("No es posible previsualizar", e);
-        mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO, messageSource
-            .getMessage(WebConstants.MSG_PREVISUALIZACION_NO_DISPONIBLE, null, locale));
-        retorno.put(MENSAJE_USU, mensaje);
-        retorno.put("contenidoVisualizar", null);
+        if (StringUtils.isNotEmpty(documento.getContenido().getReferencia())
+            && (CollectionUtils.isEmpty(documento.getFirmas()) || FirmaInsideTipoFirmaEnum.TF_01
+                .value().equals(documento.getFirmas().get(0).getTipoFirma().value()))) {
+          // pdf default
+          retorno.put("contenidoVisualizar", pdfDefault);
+
+        }
       }
       retorno.put("organos", tDoc.getMetadatos().getOrgano());
       retorno.put("desEstado",
@@ -2039,7 +2099,7 @@ public class ExpedientController {
     return new ModelAndView("expediente/importarExpediente");
   }
 
-  @RequestMapping(value = "/importExpedient", method = RequestMethod.POST)
+  @RequestMapping(value = "/importarExpediente/importExpedient", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> importExpedientPost(Locale locale, HttpServletRequest request,
       HttpSession session) {
@@ -2088,7 +2148,22 @@ public class ExpedientController {
     return listIdDocs;
   }
 
-  @RequestMapping(value = "/importarExpedienteFormatoSIP", method = RequestMethod.POST)
+  private boolean esUnExpediente(byte[] data) {
+    try {
+      TipoExpedienteInsideConMAdicionales texpma =
+          marshaller.unmarshallDataExpedientAditional(data);
+      if (texpma != null && texpma.getExpediente() != null) {
+        return true;
+      }
+    } catch (Exception e) {
+      logger.warn("No es un expediente Eni");
+      return false;
+    }
+    return false;
+  }
+
+  @RequestMapping(value = "/importarExpediente/importarExpedienteFormatoSIP",
+      method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> importExpedienteFormatoSIPPost(Locale locale,
       HttpServletRequest request, HttpSession session) {
@@ -2104,7 +2179,7 @@ public class ExpedientController {
       Map<String, byte[]> ficheros =
           this.insideUtilService.unzip(session.getId(), request.getParameter(ID_EXPEDIENT));
       for (Map.Entry<String, byte[]> entry : ficheros.entrySet()) {
-        if (entry.getKey().contains("EXP")) {
+        if (esUnExpediente(entry.getValue())) {
           objetoExpedienteInside = insideUtilService.validateExpedientImport(entry.getValue());
           if (!insideUtilService
               .esLongitudIdentificadorValido(objetoExpedienteInside.getIdentificador())) {
@@ -2156,7 +2231,7 @@ public class ExpedientController {
     return retorno;
   }
 
-  @RequestMapping(value = "/saveExpedient", method = RequestMethod.POST)
+  @RequestMapping(value = "/editarExpediente/saveExpedient", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> saveExpedientPost(
       @ModelAttribute TipoExpedienteInsideConMAdicionales tipoExpedienteMA, Locale locale,
@@ -2207,7 +2282,7 @@ public class ExpedientController {
     }
   }
 
-  @RequestMapping(value = "/updateExpedient", method = RequestMethod.POST)
+  @RequestMapping(value = "/editarExpediente/updateExpedient", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> updateExpedientPost(
       @ModelAttribute TipoExpedienteInsideConMAdicionales tipoExpedienteMA, Locale locale,
@@ -2280,7 +2355,7 @@ public class ExpedientController {
       if (LIST_IDS_DOCUMENTO.equals(element)) {
         listIdFiles = mapper.readValue(request.getParameter(LIST_IDS_DOCUMENTO), List.class);
       } else if (DOCS.equals(element)) {
-        listIdFiles = getNewDocumentsSession(session);
+        listIdFiles = getNewDocumentsSession(session, (List<String>) session.getAttribute(DOCS));
       }
 
       if (CollectionUtils.isNotEmpty(listIdFiles)) {
@@ -2298,20 +2373,21 @@ public class ExpedientController {
   }
 
   @SuppressWarnings({"unchecked", "rawtypes"})
-  public List<String> getNewDocumentsSession(HttpSession session) {
-    List<String> fileNameNewDocs = new ArrayList<String>();
+  public List<String> getNewDocumentsSession(HttpSession session, List<String> fileNameNewDocs) {
+    // List<String> fileNameNewDocs = new ArrayList<String>();
 
     // Comprobaremos que los nuevos documentos aún estan en en la lista de
     // docs de Session
+    List<String> retorno = new ArrayList<String>();
     Iterator it = ((HashMap<String, String>) session.getAttribute(NEW_DOCS)).entrySet().iterator();
 
     while (it.hasNext()) {
       Map.Entry element = (Map.Entry) it.next();
-      if (((List<String>) session.getAttribute(DOCS)).contains(element.getKey())) {
-        fileNameNewDocs.add((String) element.getValue());
+      if (fileNameNewDocs.contains(element.getKey())) {
+        retorno.add((String) element.getValue());
       }
     }
-    return fileNameNewDocs;
+    return retorno;
   }
 
   @SuppressWarnings("unchecked")
@@ -2408,7 +2484,8 @@ public class ExpedientController {
     return retorno;
   }
 
-  @RequestMapping(value = "/getVersionesExpediente", method = RequestMethod.POST)
+  @RequestMapping(value = "/expedientesAlmacenados/getVersionesExpediente",
+      method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> getVersionesExpediente(HttpServletRequest request) {
     Map<String, Object> retorno = new HashMap<String, Object>();
@@ -2432,7 +2509,50 @@ public class ExpedientController {
     return retorno;
   }
 
-  @RequestMapping(value = "/expedienteGenerarTokenDescarga", method = RequestMethod.POST)
+  @RequestMapping(value = "/expedientesAlmacenados/compruebaMimeDocumentosParaMJU",
+      method = RequestMethod.POST)
+  @ResponseBody
+  public Map<String, Object> compruebaMimeDocumentosParaMJU(Locale locale,
+      HttpServletRequest request) {
+    Map<String, Object> retorno = new HashMap<String, Object>();
+    MessageObject mensaje = null;
+    String identificadorExp = request.getParameter("expediente");
+    String[] valoresPermitidosMJU =
+        new String[] {"PDF", "JPG", "TIFF", "DOC", "XLS", "XLSX", "RTF", "ODT", "ODS"};
+    String versionExp = request.getParameter("version");
+    try {
+      ObjetoExpedienteInside objetoExpediente =
+          insideService.getExpediente(identificadorExp, Integer.valueOf(versionExp), false);
+      List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> listaObjetosIndice =
+          objetoExpediente.getIndice().getIndiceContenido().getElementosIndizados();
+      Map<String, String> mapaDocumentos =
+          insideService.obtenerDocsExpInside(listaObjetosIndice, "/");
+
+      for (Map.Entry<String, String> entry : mapaDocumentos.entrySet()) {
+        ObjetoDocumentoInside objetoDocumento = insideService.getDocumento(entry.getKey());
+        if (!Arrays.asList(valoresPermitidosMJU)
+            .contains(objetoDocumento.getContenido().getNombreFormato())) {
+          retorno.put("formatosNoValidos", true);
+          mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, messageSource
+              .getMessage(WebConstants.MSG_FORMATO_DOCUMENTO_NO_PERMITIDO_MJU, null, locale));
+          retorno.put(MENSAJE_USU, mensaje);
+          return retorno;
+        }
+      }
+      retorno.put("formatosNoValidos", false);
+
+    } catch (InSideServiceException e) {
+      logger.error(
+          "ExpedientController.compruebaMimeDocumentosParaMJU --> Error al comprobar extensiones documentos",
+          e);
+      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, e.getMessage());
+      retorno.put(MENSAJE_USU, mensaje);
+    }
+    return retorno;
+  }
+
+  @RequestMapping(value = "/expedientesAlmacenados/expedienteGenerarTokenDescarga",
+      method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> expedienteGenerarTokenDescarga(Locale locale,
       HttpServletRequest request, HttpSession session) {
@@ -2466,9 +2586,9 @@ public class ExpedientController {
           fechaCaducidadDesdeModal = "Este Credencial de Acceso no caduca";
         }
 
-        ObjetoExpedienteToken objetoExpedienteToken =
-            new ObjetoExpedienteToken(usuario, identificadorExp, csv, uuid, fechaCaducidad,
-                dir3DesdeModal, asuntoDesdeModal, nifsDesdeModal, mailEnvioToken);
+        ObjetoExpedienteToken objetoExpedienteToken = new ObjetoExpedienteToken(usuario,
+            identificadorExp, csv, uuid, expediente.getVersion().getVersion(), fechaCaducidad,
+            dir3DesdeModal, asuntoDesdeModal, nifsDesdeModal, mailEnvioToken);
         insideService.saveToken(objetoExpedienteToken);
 
         String resultadoEnvioCorreo = null;
@@ -2567,6 +2687,22 @@ public class ExpedientController {
           (ObjetoInsideUsuario) session.getAttribute(WebConstants.USUARIO_SESSION);
       retorno.addObject(SHOW_FIRMA_SERVER, insideService.checkSignatureServerByUser(usuario));
 
+      retorno.addObject("metadatoNombreNatural",
+          MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL.getValue());
+      retorno.addObject("metadatoFechaFin", MetadatosEEMGDE.METADATO_FECHAS_FECHA_FIN.getValue());
+
+      ///// cargar los documentos / expedientes de la unidad porque el
+      ///// autocomplete de js no funciona en internet Explorer
+      ///// ////////////////////////////////////////
+
+      String listaDocumentosJSON = convertListToJSONString(request, "documento");
+      String listaExpedientesJSON = convertListToJSONString(request, "expediente");
+
+      retorno.addObject("listaDocumentosJSON", listaDocumentosJSON);
+      retorno.addObject("listaExpedientesJSON", listaExpedientesJSON);
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       logger.debug("Finalizado ExpedientController.editarExpediente");
     } catch (Exception e) {
       logger.error("Se he producido un error al obtener el expediente almacenado: " + identificador
@@ -2609,7 +2745,8 @@ public class ExpedientController {
 
   }
 
-  @RequestMapping(value = "/crearVistaAbiertaExpediente", method = RequestMethod.POST)
+  @RequestMapping(value = "/expedientesAlmacenados/crearVistaAbiertaExpediente",
+      method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> crearVistaAbiertaExpediente(HttpServletRequest request) {
     Map<String, Object> retorno = new HashMap<String, Object>();
@@ -2649,7 +2786,8 @@ public class ExpedientController {
     return retorno;
   }
 
-  @RequestMapping(value = "/crearVistaCerradaExpediente", method = RequestMethod.POST)
+  @RequestMapping(value = "/expedientesAlmacenados/crearVistaCerradaExpediente",
+      method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> crearVistaCerradaExpediente(HttpServletRequest request) {
     Map<String, Object> retorno = new HashMap<String, Object>();
@@ -2766,10 +2904,6 @@ public class ExpedientController {
     MessageObject msg;
     try {
       init(retorno, locale);
-
-      // se pasan los resultados de los envios a justicia
-      retorno.addObject("listaRespuestaEnvioJusticiaLista",
-          exp.getObjectInsideRespuestaEnvioJusticiaLista());
 
       retorno.addObject("version", exp.getVersion().getVersion());
       retorno.addObject("fechaVersion", exp.getVersion().getFechaVersion());
@@ -2929,10 +3063,10 @@ public class ExpedientController {
 
         if (token != null && !tokenCaducado && !tokenInvalidoNif) {
           retorno = new ModelAndView(VIEW_SHOW_EXPEDIENT);
-          ObjetoExpedienteInside exp = getExpedienteInside(identificador, null);
+          ObjetoExpedienteInside exp = getExpedienteInside(identificador,
+              token.getVersionExpediente() != null ? token.getVersionExpediente() + "" : null);
           retorno = loadData(retorno, exp, locale, session);
           retorno.addObject("navegador", navegador);
-          auditAccessWithToken(session, token);
 
         } else {
           String errorToken = (String) result.get("errorToken");

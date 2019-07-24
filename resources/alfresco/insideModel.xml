@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="inside:model" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<description>Modelo de InSide</description>
+	<author>DSIC</author>
+	<version>1.0</version>
+
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+	</imports>
+
+	<namespaces>
+		<namespace uri="http://inside.mpt.es/model/content/1.0" prefix="inside" />
+	</namespaces>
+
+	<types>
+
+		<type name="inside:documento">
+			<title>Documento InSide</title>
+			<parent>cm:content</parent>
+			<archive>true</archive>
+			<properties>
+				<property name="inside:doc_organo">
+					<title>Organo</title>
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<multiple>false</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>true</stored>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+				<property name="inside:doc_identificador">
+					<title>Identificador</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<multiple>false</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>true</stored>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+				<property name="inside:doc_valorCSV">
+					<title>Valor CSV</title>
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<multiple>false</multiple>
+					<index enabled="true">
+						<atomic>true</atomic>
+						<stored>true</stored>
+						<tokenised>false</tokenised>
+					</index>
+				</property>
+			</properties>
+			<mandatory-aspects>
+				<aspect>cm:versionable</aspect>
+			</mandatory-aspects>
+		</type>
+
+	</types>
+</model>

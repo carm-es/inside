@@ -14,7 +14,6 @@ package es.mpt.dsic.inside.service.impl;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
-import javax.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -33,86 +32,55 @@ public class InsideServiceSignerImpl implements InsideServiceSigner {
 
   protected static final Log logger = LogFactory.getLog(InsideServiceSignerImpl.class);
 
-  private boolean activo;
   private static String ACTIVO = "S";
 
   private Properties properties;
   private EeUtilFirmarService port;
   private ApplicationLogin applicationLogin;
 
-  @PostConstruct
-  public void configureSigner() {
+  private boolean activo = false;
 
-    String firmaActivo = properties.getProperty("firma.activo");
+  public boolean configureSigner() {
+    if (!activo) {
+      String firmaActivo = properties.getProperty("firma.activo");
 
-    if (!ACTIVO.contentEquals(firmaActivo)) {
+      if (!ACTIVO.contentEquals(firmaActivo)) {
 
-      logger.info("El WS de FIRMA REMOTA no está activo");
-      activo = false;
+        logger.info("El WS de FIRMA REMOTA no está activo");
+      } else {
 
-    } else {
+        URL url = null;
+        String urlFirma = null;
+        try {
+          urlFirma = properties.getProperty("firma.url");
+          logger.debug(String.format("El WS de firma remota se encuentra en %s", urlFirma));
+          url = new URL(urlFirma);
 
-      URL url = null;
-      String urlFirma = null;
-      try {
-        urlFirma = properties.getProperty("firma.url");
-        logger.debug(String.format("El WS de firma remota se encuentra en %s", urlFirma));
-        url = new URL(urlFirma);
-      } catch (MalformedURLException me) {
-        logger.error("No se puede crear la URL del servicio de firma " + urlFirma, me);
+          EeUtilFirmarServiceImplService ss = new EeUtilFirmarServiceImplService(url);
+
+          port = ss.getEeUtilFirmarServiceImplPort();
+
+          applicationLogin = new ApplicationLogin();
+          applicationLogin.setIdaplicacion(properties.getProperty("firma.idaplicacion"));
+          applicationLogin.setPassword(properties.getProperty("firma.password"));
+
+          logger.debug(String.format("Utilizando idaplicacion/password : %s/%s",
+              properties.getProperty("firma.idaplicacion"),
+              properties.getProperty("firma.password")));
+          activo = true;
+        } catch (MalformedURLException me) {
+          logger.error("No se puede crear la URL del servicio de firma " + urlFirma, me);
+        }
       }
-
-      EeUtilFirmarServiceImplService ss = new EeUtilFirmarServiceImplService(url);
-
-      port = ss.getEeUtilFirmarServiceImplPort();
-
-      applicationLogin = new ApplicationLogin();
-      applicationLogin.setIdaplicacion(properties.getProperty("firma.idaplicacion"));
-      applicationLogin.setPassword(properties.getProperty("firma.password"));
-
-      logger.debug(String.format("Utilizando idaplicacion/password : %s/%s",
-          properties.getProperty("firma.idaplicacion"), properties.getProperty("firma.password")));
-      activo = true;
     }
-
+    return activo;
   }
-
-  /*
-   * @Override public String firmarCadena (String cadena, String algoritmoFirma, String
-   * formatoFirma, String modoFirma) throws InSideServiceSignerException {
-   * 
-   * if (!activo) { throw new InSideServiceSignerException (
-   * "El servicio de firma remota no está activo"); }
-   * 
-   * String firma = null;
-   * 
-   * DatosEntrada de = new DatosEntrada (); de.setContenido(cadena); de.setConvertirB64(true);
-   * de.setAlgoritmoFirma(algoritmoFirma); de.setFormatoFirma(formatoFirma);
-   * de.setModoFirma(modoFirma);
-   * 
-   * DatosSalida salida = null; try { salida = port.firmaContenido(applicationLogin, de); } catch
-   * (Exception e) { throw new InSideServiceSignerException (
-   * "Se ha producido un error en la llamada al servicio de firma remota " , e); }
-   * 
-   * ContenidoSalida cont = salida.getDatosResultado();
-   * 
-   * if (salida.getEstado().equalsIgnoreCase(properties.getProperty( "firma.cadena.ok" ))) {
-   * logger.debug ("Cadena firmada correctamente"); ResultadoFirma resultado = (ResultadoFirma)
-   * cont; firma = resultado.getContenidoFirma(); } else { es.mpt.dsic.firma.cliente.model.Error
-   * error = (es.mpt.dsic.firma.cliente.model.Error) cont; throw new InSideServiceSignerException
-   * ("No se ha firmado correctamente la cadena " + error.getMensaje() + " " + error.getCausa()); }
-   * 
-   * return firma;
-   * 
-   * 
-   * }
-   */
 
   @Override
   public byte[] firmarFichero(byte[] bytesFichero, String algoritmoFirma, String formatoFirma,
       String modoFirma, WSCredentialInside info) throws InSideServiceSignerException {
 
-    if (!activo) {
+    if (!configureSigner()) {
       throw new InSideServiceSignerException("El servicio de firma remota no está activo");
     }
 
@@ -161,7 +129,7 @@ public class InsideServiceSignerImpl implements InsideServiceSigner {
       String formatoFirma, String modoFirma, String nodeToSign, WSCredentialInside info)
       throws InSideServiceSignerException {
 
-    if (!activo) {
+    if (!configureSigner()) {
       throw new InSideServiceSignerException("El servicio de firma remota no está activo");
     }
 

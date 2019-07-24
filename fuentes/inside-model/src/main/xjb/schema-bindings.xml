@@ -283,21 +283,11 @@
       <package name="es.mpt.dsic.inside.xml.inside.ws.expediente.documentos"/>
     </schemaBindings>
   </bindings>
-  <bindings schemaLocation="../xsd/RemisionEnLaNube.xsd">
-   <schemaBindings>
-     <package name="es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube"/>
-   </schemaBindings>
-  </bindings>
   <bindings schemaLocation="../xsd/ContenidoFirma.xsd">
    <schemaBindings>
      <package name="es.mpt.dsic.inside.xml.inside"/>
    </schemaBindings>
   </bindings>
-  <bindings schemaLocation="../xsd/SolicitudAccesoExpAppUrl.xsd">
-   <schemaBindings>
-     <package name="es.mpt.dsic.inside.xml.inside.ws.solicitudAccesoExpAppUrl"/>
-   </schemaBindings>
-  </bindings> 
   <bindings schemaLocation="../xsd/RespuestaEnvioJusticiaInside.xsd">
     <schemaBindings>
       <package name="es.mpt.dsic.inside.xml.inside.ws.respuestaEnvioJusticia"/>
@@ -318,4 +308,11 @@
       <package name="es.mpt.dsic.inside.xml.inside.ws.filter"/>
     </schemaBindings>
   </bindings>
+  <bindings schemaLocation="../xsd/ObjetoEniFile.xsd">
+    <schemaBindings>
+      <package name="es.mpt.dsic.inside.xml.inside.ws.objetoEniXMLBytes"/>
+    </schemaBindings>
+  </bindings>
+
+
 </bindings>

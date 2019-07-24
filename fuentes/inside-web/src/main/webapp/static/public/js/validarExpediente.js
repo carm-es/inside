@@ -48,7 +48,7 @@ function configurarPlUploadValidarExpediente() {
 
 function validarExpediente() {
     $("#contentValidationData").html('');
-    $('#importarVeil').removeClass('hidden');
+    $mf.timer.on();
     $.ajax({
         url : $("#context").val() + '/validarExpediente',
         type : 'POST',
@@ -56,7 +56,7 @@ function validarExpediente() {
         timeout : 999999,
         data : $("#validarExpedienteForm").serialize(),
         success : function(data) {
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
             if (data.mensajeUsuario != null) {
                 $("#tipoMensaje").val(data.mensajeUsuario.level);
                 $("#valorMensaje").val(data.mensajeUsuario.message);
@@ -85,7 +85,7 @@ function validarExpediente() {
             }
         },
         error : function(e) {
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
             console.error(e);
         }
     });

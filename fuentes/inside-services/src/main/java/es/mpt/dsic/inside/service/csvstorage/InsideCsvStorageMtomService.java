@@ -107,4 +107,12 @@ public interface InsideCsvStorageMtomService {
 
   EliminarDocumentoResponse eliminarDocumento(String identificador, String dir3)
       throws CSVStorageException;
+
+  Long obtenerTamanioDocumento(String dir3, String idEni) throws CSVStorageException;
+
+  GuardarDocumentoResponse guardarDocumentoCsvStorageCsv(String dir3, String csv, byte[] contenido,
+      String mimeType) throws CSVStorageException;
+
+  DocumentoMtomResponse obtenerDocumentoCsvStorageCsv(String csv, String dir3)
+      throws CSVStorageException;
 }

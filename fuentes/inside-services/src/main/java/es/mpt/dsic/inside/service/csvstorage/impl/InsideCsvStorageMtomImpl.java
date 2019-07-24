@@ -58,7 +58,6 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
 
   private CSVDocumentMtomService csvDocumentMtomService;
 
-  // @PostConstruct
   public void configure() {
     try {
       if (csvDocumentMtomService == null) {
@@ -76,8 +75,6 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
           binding.setHandlerChain(handlerChain);
         }
       }
-
-
     } catch (MalformedURLException e) {
       logger.error("No se puede crear la URL del servicio de visualizacion "
           + properties.getProperty("csvstorage.url"), e);
@@ -96,6 +93,34 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
       configure();
       GuardarDocumentoMtomRequest guardarDocumentoRequest =
           crearPeticionDocumento(dir3, idEni, contenido, mimeType);
+      GuardarDocumento guardarDocumento = new GuardarDocumento();
+      guardarDocumento.setCredential(getCredentials());
+      guardarDocumento.setGuardarDocumentoRequest(guardarDocumentoRequest);
+
+      response = this.csvDocumentMtomService.guardarDocumento(guardarDocumento);
+
+
+    } catch (Exception e) {
+      logger.error(
+          "No se puede crear la petición al csvStorage " + properties.getProperty("csvstorage.url"),
+          e);
+    }
+    logger.debug("Sale de guardarDocumentoCsvStorage");
+    return response;
+  }
+
+  @Override
+  public GuardarDocumentoResponse guardarDocumentoCsvStorageCsv(String dir3, String csv,
+      byte[] contenido, String mimeType) throws CSVStorageException {
+
+    logger.debug("Entra en guardarDocumentoCsvStorage");
+    // Creamos la peticion que vamos a hacerle a csvStorage para guardar el documento ENI
+    GuardarDocumentoResponse response = null;
+    try {
+
+      configure();
+      GuardarDocumentoMtomRequest guardarDocumentoRequest =
+          crearPeticionDocumentoCsv(dir3, csv, contenido, mimeType);
       GuardarDocumento guardarDocumento = new GuardarDocumento();
       guardarDocumento.setCredential(getCredentials());
       guardarDocumento.setGuardarDocumentoRequest(guardarDocumentoRequest);
@@ -195,6 +220,19 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
     return documentoRecuperado;
   }
 
+  @Override
+  public DocumentoMtomResponse obtenerDocumentoCsvStorageCsv(String csv, String dir3)
+      throws CSVStorageException {
+    logger.debug("Entra en obtenerDocumentoEniCsvStorage");
+    configure();
+    ObtenerDocumentoRequest peticion = this.crearPeticionObtenerDocumentoByDocumentoCsv(csv, dir3);
+
+    DocumentoMtomResponse documentoRecuperado =
+        this.csvDocumentMtomService.obtenerDocumento(getCredentials(), peticion);
+    logger.debug("Sale de obtenerDocumentoEniCsvStorage");
+    return documentoRecuperado;
+  }
+
 
   @Override
   public DocumentoMtomResponse obtenerFirmaCsvStorage(String nombreFirma, String dir3)
@@ -261,12 +299,22 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
   }
 
 
-  private ObtenerDocumentoRequest crearPeticionObtenerDocumentoByDocumento(String nombreFirma,
+  private ObtenerDocumentoRequest crearPeticionObtenerDocumentoByDocumento(String idEni,
       String dir3) {
 
     ObtenerDocumentoRequest obtenerDocumentoRequest = new ObtenerDocumentoRequest();
     obtenerDocumentoRequest.setDir3(dir3);
-    obtenerDocumentoRequest.setIdEni(nombreFirma);
+    obtenerDocumentoRequest.setIdEni(idEni);
+
+    return obtenerDocumentoRequest;
+  }
+
+  private ObtenerDocumentoRequest crearPeticionObtenerDocumentoByDocumentoCsv(String csv,
+      String dir3) {
+
+    ObtenerDocumentoRequest obtenerDocumentoRequest = new ObtenerDocumentoRequest();
+    obtenerDocumentoRequest.setDir3(dir3);
+    obtenerDocumentoRequest.setCsv(csv);
 
     return obtenerDocumentoRequest;
   }
@@ -278,6 +326,23 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
 
     guardarDocumentoRequest.setDir3(dir3);
     guardarDocumentoRequest.setIdEni(idEni);
+
+    ContenidoMtomInfo contenidoMtomInfo = new ContenidoMtomInfo();
+    contenidoMtomInfo.setContenido(new DataHandler(new ByteArrayDataSource(contenido)));
+    contenidoMtomInfo.setTipoMIME(mimeType);
+
+    guardarDocumentoRequest.setContenido(contenidoMtomInfo);
+
+    return guardarDocumentoRequest;
+  }
+
+  private GuardarDocumentoMtomRequest crearPeticionDocumentoCsv(String dir3, String csv,
+      byte[] contenido, String mimeType) {
+
+    GuardarDocumentoMtomRequest guardarDocumentoRequest = new GuardarDocumentoMtomRequest();
+
+    guardarDocumentoRequest.setDir3(dir3);
+    guardarDocumentoRequest.setCsv(csv);
 
     ContenidoMtomInfo contenidoMtomInfo = new ContenidoMtomInfo();
     contenidoMtomInfo.setContenido(new DataHandler(new ByteArrayDataSource(contenido)));
@@ -337,5 +402,29 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
   @Required
   public void setProperties(Properties properties) {
     this.properties = properties;
+  }
+
+  @Override
+  public Long obtenerTamanioDocumento(String dir3, String idEni) throws CSVStorageException {
+    logger.debug("Entra en guardarDocumentoCsvStorage");
+    // Creamos la peticion que vamos a hacerle a csvStorage para guardar el documento ENI
+    Long response = null;
+    try {
+
+      configure();
+      ObtenerDocumentoRequest obtenerDocumentoRequest =
+          crearPeticionObtenerDocumentoByDocumento(idEni, dir3);
+
+      response = this.csvDocumentMtomService.obtenerTamanioDocumento(getCredentials(),
+          obtenerDocumentoRequest);
+
+
+    } catch (Exception e) {
+      logger.error(
+          "No se puede crear la petición al csvStorage " + properties.getProperty("csvstorage.url"),
+          e);
+    }
+    logger.debug("Sale de guardarDocumentoCsvStorage");
+    return response;
   }
 }

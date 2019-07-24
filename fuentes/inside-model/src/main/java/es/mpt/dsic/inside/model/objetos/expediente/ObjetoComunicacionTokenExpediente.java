@@ -11,8 +11,10 @@
 
 package es.mpt.dsic.inside.model.objetos.expediente;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import org.apache.commons.lang.StringUtils;
 
 public class ObjetoComunicacionTokenExpediente {
 
@@ -21,6 +23,8 @@ public class ObjetoComunicacionTokenExpediente {
   private String idPeticion;
   private String usuarioPeticionario;
   private String asunto;
+  private String motivacion;
+  private Date plazoDisponibilidad;
   private String tokenIdExpEni;
   private String tokenCSV;
   private String tokenUUID;
@@ -39,6 +43,17 @@ public class ObjetoComunicacionTokenExpediente {
   private Integer nIntentos;
   private String resultadoNotificado;
   private String codigoErrorInside;
+  private String destinoCargadorMJU;
+
+  public String getNig() {
+    return StringUtils.isEmpty(rJNig) ? "N/D" : rJNig;
+  }
+
+  public String getPlazoDisponibilidadTexto() {
+    return plazoDisponibilidad != null
+        ? new SimpleDateFormat("dd-MM-yyyy").format(plazoDisponibilidad)
+        : "Sin Caducidad";
+  }
 
   public String getCodigoErrorInside() {
     return codigoErrorInside;
@@ -248,6 +263,33 @@ public class ObjetoComunicacionTokenExpediente {
 
   public void setResultadoNotificado(String resultadoNotificado) {
     this.resultadoNotificado = resultadoNotificado;
+  }
+
+  public String getMotivacion() {
+    return motivacion;
+  }
+
+  public void setMotivacion(String motivacion) {
+    if (motivacion != null && motivacion.length() > 255) {
+      motivacion = motivacion.substring(0, 255);
+    }
+    this.motivacion = motivacion;
+  }
+
+  public Date getPlazoDisponibilidad() {
+    return plazoDisponibilidad;
+  }
+
+  public void setPlazoDisponibilidad(Date plazoDisponibilidad) {
+    this.plazoDisponibilidad = plazoDisponibilidad;
+  }
+
+  public String getDestinoCargadorMJU() {
+    return destinoCargadorMJU;
+  }
+
+  public void setDestinoCargadorMJU(String destinoCargadorMJU) {
+    this.destinoCargadorMJU = destinoCargadorMJU;
   }
 
 }

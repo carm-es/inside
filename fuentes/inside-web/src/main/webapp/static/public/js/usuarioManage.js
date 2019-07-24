@@ -71,7 +71,7 @@ function createButtonsDialog(buttons) {
 function comprobarExisteNifInside() {
     var nifABuscar = $("#altaUsuarioWebInsideForm #nif").val();
     $.ajax({
-        url : $("#context").val() + '/altaUsuarioExiteNif',
+        url : $("#context").val() + '/altaUsuarioWebInsidePost/altaUsuarioExiteNif',
         type : 'POST',
         dataType : 'json',
         timeout : 999999,

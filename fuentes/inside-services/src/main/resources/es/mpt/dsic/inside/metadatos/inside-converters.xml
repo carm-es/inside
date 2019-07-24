@@ -58,18 +58,17 @@
 	<!-- Adaptador para almacenamiento por CMIS -->
 	<bean id="cmisAdapter" class="es.mpt.dsic.inside.service.object.converter.impl.cmis.InsideServiceCmisAdapter">
 		<property name="sessionFactory" ref="InsideServiceHibernateSessionFactory" />
-		<property name="properties"> 
- 			<util:properties location="file:${config.path}/csvstorage.properties"/> 
- 		</property> 
 		<property name="cmisAdapter" ref="repoDocIntegration"/>
 		<property name="repoObjectId" value="cmis:objectId"/>
 		<property name="repoVersionLabel" value="cmis:versionLabel"/>
 		<property name="repoPathSeparator" value="/"/>  
-		
-		<property name="documentoObjectTypeId" value="${server.cmis.document.type}"/>
+
+		<property name="dir3Default" value="${storage.cmis.dir3Default}"/>
+		<property name="almacenarFirma" value="${storage.cmis.storeSign}"/>		
 
 	<!-- Opcionalmente se podrá crear un tipo de dato "document" que además de las propiedades cmis tenga las propiedades 
 		dir3 e id_eni. Si no se quieren se pueden dejar comentadas (para CSV Storage estas propiedades son necesarias) -->
+		<property name="documentoObjectTypeId" value="${server.cmis.document.type}"/>
 		<property name="documentoDIR3" value="${server.cmis.document.property.dir3}"/>
 		<property name="documentoIdENI" value="${server.cmis.document.property.idEni}"/>
 		<property name="documentoCSV" value="${server.cmis.document.property.csv}"/>

@@ -33,45 +33,76 @@
 		</sec:authentication-provider>
 	</sec:authentication-manager>
 
- 	<sec:http use-expressions="true" auto-config="true">
+
+	 <sec:http pattern="/accesoBusqueda" use-expressions="true" auto-config="true">
 		
-        <sec:form-login login-page="/login"/>
+        <sec:form-login login-page="/loginJusticia"/>
 					
 		<sec:custom-filter position="PRE_AUTH_FILTER" ref="compositePreAuthFilter"/>
         
 		<sec:logout invalidate-session="true" logout-url="/logout" logout-success-url="/"/>
 
+		<sec:intercept-url pattern="/accesoBusqueda" access="isAuthenticated()"/>
+			
+	</sec:http>
+	
+
+	<sec:http use-expressions="true" auto-config="true" entry-point-ref="authenticationEntryPoint"> 
+ 	
+ 	
+        <sec:form-login login-page="/login"/>
+      
+		<sec:custom-filter position="PRE_AUTH_FILTER" ref="compositePreAuthFilter"/>
+        
+		<sec:logout invalidate-session="true" logout-url="/logout" logout-success-url="/"/>
+
+		<sec:intercept-url pattern="/ws/**" access="permitAll" /> 
 		<sec:intercept-url pattern="/login*" access="permitAll" />
 		<sec:intercept-url pattern="/login/error*" access="permitAll" />
 		<sec:intercept-url pattern="/css/**" access="permitAll" />
 		<sec:intercept-url pattern="/images/**" access="permitAll" />
 		<sec:intercept-url pattern="/js/**" access="permitAll" />
 		<sec:intercept-url pattern="/html/**" access="permitAll" />
-		<sec:intercept-url pattern="/descargarDocumentoEni*" access="isAuthenticated()"/>
- 		<sec:intercept-url pattern="/puestaDisposicion*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/visualizarExpediente*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/busqueda*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/altaUsuarioWebInsidePost*" access="hasRole('ALTA_USUARIOS_ROLE')"/>
+		<sec:intercept-url pattern="/SignatureService" access="permitAll" />
 		
+		<!-- ADMINISTRAR USUARIOS -->
+		<sec:intercept-url pattern="/altaUsuarioWebInsidePost/**" access="hasRole('ALTA_USUARIOS_ROLE')"/>
+		<sec:intercept-url pattern="/modificarUsuarioWebInside/**" access="hasRole('ALTA_USUARIOS_ROLE')"/>
+		<sec:intercept-url pattern="/guardarModificacionUsuarioWebInsidePost*" access="hasRole('ALTA_USUARIOS_ROLE')"/> 
+		<sec:intercept-url pattern="/borrarUsuario*" access="hasRole('ALTA_USUARIOS_ROLE')"/>
+		<sec:intercept-url pattern="/altaUsuarioWebInside*" access="hasRole('ALTA_USUARIOS_ROLE')"/>
+		<sec:intercept-url pattern="/listaUsuariosEnUnidadOrganica*" access="hasRole('ALTA_USUARIOS_ROLE')"/>
 		
-		<sec:intercept-url pattern="/generarExpediente*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/validarExpediente*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/importarExpediente*" access="hasRole('USER_ROLE')"/>
+			
+		<!-- BÚSQUEDA -->
+ 		<sec:intercept-url pattern="/busquedaElastic*" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
+		
+ 
+		<!-- EXPEDIENTES -->
+		<sec:intercept-url pattern="/importarExpediente/**" access="hasRole('USER_ROLE')"/>
 		<sec:intercept-url pattern="/guardarExpediente*" access="hasRole('USER_ROLE')"/>
-		<sec:intercept-url pattern="/editarExpediente*" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
-		<sec:intercept-url pattern="/expedientesAlmacenados*" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
-		<sec:intercept-url pattern="/expedienteGenerarTokenDescarga*" access="hasRole('USER_ROLE')"/>
-		<sec:intercept-url pattern="/expedienteRemitirMJUListaAlamcenadosModal" access="hasRole('USER_ROLE')"/>
+		<sec:intercept-url pattern="/expedientesAlmacenados/expedienteGenerarTokenDescarga*" access="hasRole('USER_ROLE')"/>
+		<sec:intercept-url pattern="/expedientesAlmacenados/crearVista*" access="hasRole('USER_ROLE')"/>
+		<sec:intercept-url pattern="/expedientesAlmacenados/**" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
+	 	<sec:intercept-url pattern="/borrarExpediente*" access="hasRole('USER_ROLE')"/>  
+		<sec:intercept-url pattern="/editarExpediente/**" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
 		
-		
-		<sec:intercept-url pattern="/generarDocumento*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/validarDocumento*" access="isAuthenticated()"/>
-		<sec:intercept-url pattern="/importarDocumento*" access="hasRole('USER_ROLE')"/>
-		<sec:intercept-url pattern="/documentosAlmacenados*" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
-		<sec:intercept-url pattern="/visualizarDocumento*" access="isAuthenticated()"/>
-		
-		<sec:intercept-url pattern="/adminMensajes*" access="hasRole('ADMIN_MENSAJE_ROLE')"/>
+		<!-- DOCUMENTOS -->
+		<sec:intercept-url pattern="/editarDocumento/**" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/>
+ 		<sec:intercept-url pattern="/importarDocumento*" access="hasRole('USER_ROLE')"/>
+		<sec:intercept-url pattern="/documentosAlmacenados*" access="hasAnyRole('USER_ROLE','CONSULTA_ROLE')"/> 
+		<sec:intercept-url pattern="/borrarDocumento*" access="hasRole('USER_ROLE')"/>
+
+ 		<sec:intercept-url pattern="/adminMensajes/**" access="hasRole('ADMIN_MENSAJE_ROLE')"/>
+ 		
+		<sec:intercept-url pattern="/**" access="isAuthenticated()"/>
+				
 	</sec:http>
+	
+	<bean id="authenticationEntryPoint"
+  		class="es.mpt.dsic.inside.web.security.interceptor.AuthenticationEntryPoint">
+		<property name="loginFormUrl" value="/login"/>  		
+	</bean> 
 	
 	<bean id="compositePreAuthFilter" class="org.springframework.web.filter.CompositeFilter">
 	    <property name="filters">
@@ -87,12 +118,12 @@
     	<property name="authenticationSuccessHandler" ref="insideAuthenticationSuccessHandler"></property>
     	<property name="authenticationFailureHandler" ref="insideAuthenticationFailureHandler"></property>
     	<property name="validateUser" value="true"/>
-    	<property name="validarUsuarioEnPortales" value="false"/>
 	</bean>
 	
 	<bean id="insideAuthenticationSuccessHandler" class="es.mpt.dsic.inside.web.security.authentication.InsideAuthenticationSuccessHandler">
     	<property name="url" value="/principal"/>
     	<property name="urlNoRegistrado" value="/principal"/>
+    	<property name="urlAccesoABusquedaPorJuez" value="/busquedaExpedienteNoInside"/>
 	</bean>
 	
 	<bean id="insideAuthenticationFailureHandler" class="es.mpt.dsic.inside.web.security.authentication.InsideAuthenticationFailureHandler">
@@ -104,7 +135,6 @@
     	<property name="authenticationSuccessHandler" ref="insideAuthenticationSuccessHandler"></property>
     	<property name="authenticationFailureHandler" ref="insideAuthenticationFailureHandler"></property>
     	<property name="validateUser" value="true"/>
-    	<property name="validarUsuarioEnPortales" value="false"/>
 	</bean>
-
+	
 </beans>

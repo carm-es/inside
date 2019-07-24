@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
  * <p>
  * Clase Java para RespuestaValidacionENI complex type.
@@ -97,6 +96,10 @@ public class RespuestaValidacionENI {
       detalle = new ArrayList<Detalle>();
     }
     return this.detalle;
+  }
+
+  public void setDetalle(List<Detalle> detalle) {
+    this.detalle = detalle;
   }
 
 }

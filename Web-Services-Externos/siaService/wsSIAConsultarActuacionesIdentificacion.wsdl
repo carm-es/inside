@@ -92,7 +92,7 @@
   </wsdl:binding>
   <wsdl:service name="wsSIAConsultarActuacionesIdentificacion">
     <wsdl:port name="wsSIAConsultarActuacionesIdentificacionSOAP" binding="tns:wsSIAConsultarActuacionesIdentificacionSOAP">
-      <soap:address location="https://pre-sia2.redsara.es/axis2/services/wsSIAConsultarActuacionesIdentificacion?wsdl"/>
+      <soap:address location="http://server:port/WS_SIA2_Consultar_Actuaciones_Identificacion_v3_0/services/wsSIAConsultarActuacionesIdentificacion"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

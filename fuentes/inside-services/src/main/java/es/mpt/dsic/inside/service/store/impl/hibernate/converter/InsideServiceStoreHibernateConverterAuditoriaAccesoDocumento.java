@@ -29,8 +29,10 @@ public class InsideServiceStoreHibernateConverterAuditoriaAccesoDocumento {
     entity.setDir3Peticionario(objetoAuditoriaAccesoDocumento.getDir3Peticionario());
     entity.setFecha(objetoAuditoriaAccesoDocumento.getFecha());
     entity.setIdDocumento(objetoAuditoriaAccesoDocumento.getIdDocumento());
-    entity.setIdPeticion(objetoAuditoriaAccesoDocumento.getIdPeticion());
+    entity.setIdPeticion(objetoAuditoriaAccesoDocumento.getIdPeticion() == null ? ""
+        : objetoAuditoriaAccesoDocumento.getIdPeticion());
     entity.setUsuarioPeticionario(objetoAuditoriaAccesoDocumento.getUsuarioPeticionario());
+    entity.setIdDir3(objetoAuditoriaAccesoDocumento.getIdDir3());
 
     return entity;
 
@@ -48,6 +50,7 @@ public class InsideServiceStoreHibernateConverterAuditoriaAccesoDocumento {
     objetoAuditoriaAccesoDocumento.setIdDocumento(entity.getIdDocumento());
     objetoAuditoriaAccesoDocumento.setIdPeticion(entity.getIdPeticion());
     objetoAuditoriaAccesoDocumento.setUsuarioPeticionario(entity.getUsuarioPeticionario());
+    objetoAuditoriaAccesoDocumento.setIdDir3(entity.getIdDir3());
 
     return objetoAuditoriaAccesoDocumento;
   }

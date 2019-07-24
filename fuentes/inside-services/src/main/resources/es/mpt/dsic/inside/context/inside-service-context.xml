@@ -55,51 +55,18 @@
 	<import resource="./inside-users.xml" />
 	<import resource="./inside-utilFirma.xml" />
 	<import resource="./inside-csvstorage.xml" />
-<!-- 	<import resource="./puntoUnicoJusticia.xml" />  -->
-	
-<!-- 	<bean id="marshallerExpediente" class="org.springframework.oxm.jaxb.Jaxb2Marshaller"> -->
-<!-- 		<property name="contextPath" value="es.mpt.dsic.inside.xml.eni.expediente"/> -->
-<!-- 	</bean> -->
-<!-- 	<bean id="marshallerDocumento" class="org.springframework.oxm.jaxb.Jaxb2Marshaller"> -->
-<!-- 		<property name="contextPath" value="es.mpt.dsic.inside.xml.eni.documento"/> -->
-<!-- 	</bean> -->
 	
 	
 	<!--  si se quieren poner más locations, se tienen que separar por comas -->	
 	<context:property-placeholder location="file:${config.path}/database.properties , file:${config.path}/mailToken.properties"
 											ignore-unresolvable="true"/>
-	
-	
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager"
-		p:entityManagerFactory-ref="entityManagerFactory" />
-
-
-	<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
-		p:dataSource-ref="dataSource" p:jpaVendorAdapter-ref="jpaAdapter"
-		p:persistenceProvider-ref="persistenceProvider" p:packagesToScan="es.mpt"
-		p:jpaDialect-ref="jpaDialect">
-
-
-	</bean>
-	<bean id="persistenceProvider" class="org.hibernate.ejb.HibernatePersistence"></bean>
-	<bean id="jpaAdapter"
-		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="showSql" value="${database.showSql}" />
-		<property name="generateDdl" value="false" />
-		<property name="databasePlatform" value="${database.hibernateDialect}" />
-
-	</bean>
-
-
-	<bean id="jpaDialect" class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
-	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
 
 	<bean id="insideService" class="es.mpt.dsic.inside.service.impl.InSideServiceImpl">
-		<property name="funcionResumenDocumentos" value="MD5"/>
+		<!-- <property name="funcionResumenDocumentos" value="MD5"/>  -->
 	</bean>
 	
+	<bean id="utilidadDigestInside" class="es.mpt.dsic.inside.service.util.UtilidadDigestInsideImpl"/>
+			
 		<!--#Configuración del servicio de Spring: MailSernder -->
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
 	  <property name="host" value="${mail.token.host}"/>

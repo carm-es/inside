@@ -12,6 +12,7 @@
 package es.mpt.dsic.inside.ws.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.jws.WebService;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,22 +26,20 @@ import org.springframework.security.access.annotation.Secured;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaUsuario;
 import es.mpt.dsic.inside.model.converter.InsideConverterBusquedaResultado;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideAplicacion;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideRol;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoElementoIndizado;
 import es.mpt.dsic.inside.model.objetos.filter.ObjetoFilterPageRequest;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.messages.InsideMessageService;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 import es.mpt.dsic.inside.ws.exception.InsideExceptionConverter;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
@@ -53,8 +52,6 @@ import es.mpt.dsic.inside.xml.inside.ws.estructuraCarpeta.EstructuraCarpeta;
 import es.mpt.dsic.inside.xml.inside.ws.estructuraCarpeta.TipoCarpetaIndizada;
 import es.mpt.dsic.inside.xml.inside.ws.filter.FilterPageRequest;
 import es.mpt.dsic.inside.xml.inside.ws.numeroProcedimiento.NumeroProcedimiento;
-import es.mpt.dsic.inside.xml.inside.ws.respuestaEnvioJusticia.RespuestaEnvioJusticia;
-import es.mpt.dsic.inside.xml.inside.ws.solicitudAccesoExpAppUrl.SolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.xml.inside.ws.unidad.Unidad;
 import es.mpt.dsic.inside.xml.inside.ws.unidadAplicacionEeutil.UnidadAplicacionEeutil;
 import es.mpt.dsic.inside.xml.inside.ws.usuario.Usuario;
@@ -99,7 +96,6 @@ public class AdminWebServiceImpl implements AdminWebService {
         }
       }
 
-
       return retorno;
     } catch (InSideServiceException e) {
       throw InsideExceptionConverter.convertToException(e);
@@ -113,41 +109,6 @@ public class AdminWebServiceImpl implements AdminWebService {
       dato.setNombreUnidadOrganicaActiva(unidades.get(0).getNombre());
       dato.setNumeroProcedimiento(unidades.get(0).getNumeroProcedimiento());
     }
-  }
-
-  @Override
-  @Secured("ROLE_ADMINISTRAR_PERMISOS")
-  public RespuestaEnvioJusticia respuestaEnvioJusticia(String codigoEnvio)
-      throws InsideWSException {
-    try {
-      ObjectInsideRespuestaEnvioJusticia aux = new ObjectInsideRespuestaEnvioJusticia();
-      aux.setCodigoEnvio(codigoEnvio);
-
-      ObjectInsideRespuestaEnvioJusticia dato =
-          inSideService.getRespuestaEvioJusticaByCodigoEnvio(aux);
-      RespuestaEnvioJusticia respuesta = convertDataToWSRespuestaEnvioJusticia(dato);
-      return respuesta;
-
-    } catch (InSideServiceException e) {
-      throw InsideExceptionConverter.convertToException(e);
-    }
-  }
-
-  private RespuestaEnvioJusticia convertDataToWSRespuestaEnvioJusticia(
-      ObjectInsideRespuestaEnvioJusticia respuestaObject) {
-    RespuestaEnvioJusticia respuestaEnvioJusticia = new RespuestaEnvioJusticia();
-    respuestaEnvioJusticia.setAuditoriaEsbAplicacion(respuestaObject.getAuditoriaEsb_aplicacion());
-    respuestaEnvioJusticia
-        .setAuditoriaEsbMarcaTiempo(respuestaObject.getAuditoriaEsb_marcaTiempo());
-    respuestaEnvioJusticia.setAuditoriaEsbModulo(respuestaObject.getAuditoriaEsb_modulo());
-    respuestaEnvioJusticia.setAuditoriaEsbServicio(respuestaObject.getAuditoriaEsb_servicio());
-    respuestaEnvioJusticia.setCodigoEnvio(respuestaObject.getCodigoEnvio());
-    respuestaEnvioJusticia
-        .setCodigoUnidadOrganoRemitente(respuestaObject.getCodigoUnidadOrganoRemitente());
-    respuestaEnvioJusticia.setMensaje(respuestaObject.getMensaje());
-    respuestaEnvioJusticia.setAck(respuestaObject.getAck());
-
-    return respuestaEnvioJusticia;
   }
 
   @Override
@@ -495,7 +456,13 @@ public class AdminWebServiceImpl implements AdminWebService {
   @Override
   @Secured("ROLE_ADMINISTRAR_PERMISOS")
   public void actualizarUnidadesDir3() throws InsideWSException {
-    unidadOrganicaController.loadUnidadOrganica();
+    unidadOrganicaController.loadUnidadOrganica(null);
+  }
+
+  @Override
+  @Secured("ROLE_ADMINISTRAR_PERMISOS")
+  public void actualizarUnidadesDir3NovedadesDesdeFecha(Date fechaInicio) throws InsideWSException {
+    unidadOrganicaController.loadUnidadOrganica(fechaInicio);
   }
 
   @Override
@@ -753,88 +720,11 @@ public class AdminWebServiceImpl implements AdminWebService {
     }
   }
 
-  @Override
-  @Secured("ROLE_ADMINISTRAR_PERMISOS")
-  public SolicitudAccesoExpAppUrl altaSolicitudAccesoExpAppUrl(SolicitudAccesoExpAppUrl data)
-      throws InsideWSException {
-    try {
-      if (!validaSolicitudAccesoExpAppUrl(data)) {
-        throw new InsideWSException(InsideWsErrors.CAMPOS_OBLIGATORIOS);
-      }
-
-      if (inSideService.getSolicitudAccesoExpAppUrlPorDir3(data.getDir3Padre()) != null) {
-        throw new InsideWSException(InsideWsErrors.SOLICITUD_ACCESO_EXP_APP_URL_ALREADY_EXISTS);
-      }
-
-      return this.toSolicitudAccesoExpAppUrl(
-          inSideService.saveSolicitudAccesoExpAppUrl(this.toObjetoSolicitudAccesoExpAppUrl(data)));
-
-    } catch (InSideServiceException e) {
-      throw InsideExceptionConverter.convertToException(e);
-    }
-  }
-
-  @Override
-  @Secured("ROLE_ADMINISTRAR_PERMISOS")
-  public SolicitudAccesoExpAppUrl actualizarSolicitudAccesoExpAppUrl(SolicitudAccesoExpAppUrl data)
-      throws InsideWSException {
-    try {
-      if (!validaSolicitudAccesoExpAppUrl(data)) {
-        throw new InsideWSException(InsideWsErrors.CAMPOS_OBLIGATORIOS);
-      }
-      ObjetoSolicitudAccesoExpAppUrl objeto =
-          inSideService.getSolicitudAccesoExpAppUrlPorDir3(data.getDir3Padre());
-      if (objeto == null) {
-        throw new InsideWSException(InsideWsErrors.OBJECT_NOT_FOUND);
-      }
-      int id = objeto.getId();
-      objeto = this.toObjetoSolicitudAccesoExpAppUrl(data);
-      objeto.setId(id);
-      return this.toSolicitudAccesoExpAppUrl(inSideService.saveSolicitudAccesoExpAppUrl(objeto));
-
-    } catch (InSideServiceException e) {
-      throw InsideExceptionConverter.convertToException(e);
-    }
-  }
-
-  /**
-   * Al no validar por xsd según: inside-ws-context.xml
-   * <entry key="schema-validation-enabled" value= "${schema-validation-enabled}" /> se hace aquí.
-   */
-  private boolean validaSolicitudAccesoExpAppUrl(SolicitudAccesoExpAppUrl data) {
-
-    if (StringUtils.isBlank(data.getUrlDestinoPeticion().trim())
-        || StringUtils.isBlank(data.getDir3Padre().trim())) {
-      return false;
-    }
-    return true;
-  }
-
-  private ObjetoSolicitudAccesoExpAppUrl toObjetoSolicitudAccesoExpAppUrl(
-      SolicitudAccesoExpAppUrl data) {
-
-    ObjetoSolicitudAccesoExpAppUrl respuesta = new ObjetoSolicitudAccesoExpAppUrl();
-    respuesta.setDir3Padre(data.getDir3Padre());
-    respuesta.setUrlDestinoPeticion(data.getUrlDestinoPeticion());
-    return respuesta;
-
-  }
-
-
   private ObjetoFilterPageRequest toObjetoFilterPageRequest(FilterPageRequest data) {
 
     ObjetoFilterPageRequest respuesta =
         new ObjetoFilterPageRequest(data.getFiltro(), data.getPagina(), data.getLimite(), null);
 
-    return respuesta;
-
-  }
-
-  private SolicitudAccesoExpAppUrl toSolicitudAccesoExpAppUrl(ObjetoSolicitudAccesoExpAppUrl data) {
-
-    SolicitudAccesoExpAppUrl respuesta = new SolicitudAccesoExpAppUrl();
-    respuesta.setDir3Padre(data.getDir3Padre());
-    respuesta.setUrlDestinoPeticion(data.getUrlDestinoPeticion());
     return respuesta;
 
   }

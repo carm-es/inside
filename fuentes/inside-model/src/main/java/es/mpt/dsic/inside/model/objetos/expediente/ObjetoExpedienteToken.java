@@ -21,6 +21,7 @@ public class ObjetoExpedienteToken {
   private String identificador;
   private String csv;
   private String uuid;
+  private Integer versionExpediente;
 
   private String dir3;
   private String asunto;
@@ -71,6 +72,22 @@ public class ObjetoExpedienteToken {
     this.mailEnvioToken = mail;
   }
 
+  public ObjetoExpedienteToken(ObjetoInsideUsuario usuario, String identificador, String csv,
+      String uuid, Integer versionExpediente, Date fechaCaducidad, String dir3, String asunto,
+      String nifs, String mail) {
+    super();
+    this.usuario = usuario;
+    this.identificador = identificador;
+    this.csv = csv;
+    this.uuid = uuid;
+    this.versionExpediente = versionExpediente;
+    this.fechaCaducidad = fechaCaducidad;
+    this.dir3 = dir3;
+    this.asunto = asunto;
+    this.nifs = nifs;
+    this.mailEnvioToken = mail;
+  }
+
   public String getMailEnvioToken() {
     return mailEnvioToken;
   }
@@ -109,6 +126,14 @@ public class ObjetoExpedienteToken {
 
   public void setUuid(String uuid) {
     this.uuid = uuid;
+  }
+
+  public Integer getVersionExpediente() {
+    return versionExpediente;
+  }
+
+  public void setVersionExpediente(Integer versionExpediente) {
+    this.versionExpediente = versionExpediente;
   }
 
   public String getDir3() {

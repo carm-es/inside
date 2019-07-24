@@ -11,9 +11,11 @@
 
 package es.mpt.dsic.inside.web.controller;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,7 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import es.mpt.dsic.inside.configuration.ConstantsClave;
 import es.mpt.dsic.inside.service.exception.ServiceException;
 import es.mpt.dsic.inside.service.impl.LoginBusinessServiceImpl;
-import es.mpt.dsic.inside.web.util.WebConstants;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import eu.stork.peps.auth.commons.PEPSUtil;
 
 @Controller
@@ -76,18 +78,47 @@ public class LoginController {
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
   public ModelAndView loginGet(@RequestParam(value = "error", required = false) String error,
-      HttpServletRequest request, Locale locale, HttpSession session) {
+      HttpServletRequest request, HttpServletResponse response, Locale locale, HttpSession session)
+      throws IOException {
     ModelAndView retorno = new ModelAndView("login");
+
     if (error != null) {
       ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
       retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
     } else if (session.getAttribute(WebConstants.USUARIO_SESSION) != null) {
       retorno = new ModelAndView("principal");
     }
+
+    boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+
+    if (isAjax) {
+      response.sendError(403, "Forbidden");
+      return null;
+    }
+
     session.setAttribute("versionNumber", versionNumber);
     session.setAttribute("puntounicojusticia", puntounicojusticia);
     return retorno;
   }
+
+  // para el acceso directamente a la pagina de busqueda por uso token de los jueces
+  @RequestMapping(value = "/loginJusticia", method = RequestMethod.GET)
+  public ModelAndView loginJuezGet(@RequestParam(value = "error", required = false) String error,
+      HttpServletRequest request, Locale locale, HttpSession session) {
+    ModelAndView retorno = new ModelAndView("login");
+    if (error != null) {
+      ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+      retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+    } else if (session.getAttribute(WebConstants.USUARIO_SESSION) != null) {
+      retorno = new ModelAndView("busquedaCredencialesExternas");
+    }
+    session.setAttribute("usoTokenJuezRemisionNube", "SI");
+    session.setAttribute("versionNumber", versionNumber);
+    session.setAttribute("puntounicojusticia", puntounicojusticia);
+    return retorno;
+  }
+
+
 
   @RequestMapping(value = "/login", method = RequestMethod.POST)
   public ModelAndView loginPost(@RequestParam(value = "error", required = false) String error,

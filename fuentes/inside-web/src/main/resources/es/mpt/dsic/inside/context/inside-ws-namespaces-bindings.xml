@@ -75,9 +75,7 @@
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e/file" value="documentoEniFileInside"/>
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/file" value="expedienteEniFileInside"/>
 		
-		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube" value="remisionNube"/>
-		
-		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/respuestaConsultaEnvioJusticia" value="respuestaConsultaEnvioJusticia"/>
+		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/objetoEniXMLBytes" value="objetoEniXMLBytes"/>
 		
 	</util:map>
 	

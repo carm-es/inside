@@ -59,18 +59,6 @@
 									<label for="descripcion" th:text="#{altaUsuarioWebInside.descripcion}"></label>
 									<input type="text" id="nombreUnidadOrganicaActiva" name="nombreUnidadOrganicaActiva" th:field="*{nombreUnidadOrganicaActiva}"  th:value="${usuarioAlta.nombreUnidadOrganicaActiva}" maxlength="100" class="large" readonly="readonly"/>
 								</div> 	
-															
-<!-- 								<div class="fld"> -->
-<!-- 									<label for="procedimiento" th:text="#{altaUsuarioWebInside.procedimiento}"></label> -->
-<!-- 									<input type="text" id="numeroProcedimiento" name="numeroProcedimiento" th:field="*{numeroProcedimiento}" maxlength="9" class="large"/> -->
-<!-- 								</div> -->
-								
-		                        <div class="fld">
-		                            <label for="objNumeroProcedimiento" th:text="#{altaUsuarioWebInside.procedimiento}"></label> 
-		                            <select id="objNumeroProcedimiento" name="objNumeroProcedimiento" th:field="*{objNumeroProcedimiento.id}">
-		                                <option th:each="objNumeroProcedimiento,iterationStatus : ${numeroProcedimientosDisponibles}" th:text="${objNumeroProcedimiento.value}" th:value="${objNumeroProcedimiento.key}"></option>
-		                            </select>
-		                        </div>		
 		                        								
 		                        <div class="fld">
 		                            <label class="required" for="rol" th:text="#{altaUsuarioWebInside.rol}"></label> 

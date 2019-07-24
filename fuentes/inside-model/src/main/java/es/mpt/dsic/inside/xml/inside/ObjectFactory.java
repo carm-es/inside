@@ -26,11 +26,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoExpedienteInside }
+   * Create an instance of {@link TipoDocumentoInsideConMAdicionales }
    * 
    */
-  public TipoExpedienteInside createTipoExpedienteInside() {
-    return new TipoExpedienteInside();
+  public TipoDocumentoInsideConMAdicionales createTipoDocumentoInsideConMAdicionales() {
+    return new TipoDocumentoInsideConMAdicionales();
+  }
+
+  /**
+   * Create an instance of {@link ExpedienteInsideMetadatos }
+   * 
+   */
+  public ExpedienteInsideMetadatos createExpedienteInsideMetadatos() {
+    return new ExpedienteInsideMetadatos();
   }
 
   /**
@@ -50,19 +58,19 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoInsideConMAdicionales }
-   * 
-   */
-  public TipoDocumentoInsideConMAdicionales createTipoDocumentoInsideConMAdicionales() {
-    return new TipoDocumentoInsideConMAdicionales();
-  }
-
-  /**
    * Create an instance of {@link CONTENT }
    * 
    */
   public CONTENT createCONTENT() {
     return new CONTENT();
+  }
+
+  /**
+   * Create an instance of {@link TipoDocumentoInside }
+   * 
+   */
+  public TipoDocumentoInside createTipoDocumentoInside() {
+    return new TipoDocumentoInside();
   }
 
   /**
@@ -82,22 +90,6 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoVersionInside }
-   * 
-   */
-  public TipoVersionInside createTipoVersionInside() {
-    return new TipoVersionInside();
-  }
-
-  /**
-   * Create an instance of {@link ExpedienteInsideMetadatos }
-   * 
-   */
-  public ExpedienteInsideMetadatos createExpedienteInsideMetadatos() {
-    return new ExpedienteInsideMetadatos();
-  }
-
-  /**
    * Create an instance of {@link ExpedienteInsideInfo }
    * 
    */
@@ -106,11 +98,19 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoInside }
+   * Create an instance of {@link TipoExpedienteInside }
    * 
    */
-  public TipoDocumentoInside createTipoDocumentoInside() {
-    return new TipoDocumentoInside();
+  public TipoExpedienteInside createTipoExpedienteInside() {
+    return new TipoExpedienteInside();
+  }
+
+  /**
+   * Create an instance of {@link TipoVersionInside }
+   * 
+   */
+  public TipoVersionInside createTipoVersionInside() {
+    return new TipoVersionInside();
   }
 
 }

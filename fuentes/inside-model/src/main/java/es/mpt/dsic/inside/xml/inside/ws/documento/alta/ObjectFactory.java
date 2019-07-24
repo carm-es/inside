@@ -31,11 +31,11 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoDocumentoAltaInside }
+   * Create an instance of {@link TipoDocumentoAltaInside.Csv }
    * 
    */
-  public TipoDocumentoAltaInside createTipoDocumentoAltaInside() {
-    return new TipoDocumentoAltaInside();
+  public TipoDocumentoAltaInside.Csv createTipoDocumentoAltaInsideCsv() {
+    return new TipoDocumentoAltaInside.Csv();
   }
 
   /**
@@ -47,19 +47,19 @@ public class ObjectFactory {
   }
 
   /**
+   * Create an instance of {@link TipoDocumentoAltaInside }
+   * 
+   */
+  public TipoDocumentoAltaInside createTipoDocumentoAltaInside() {
+    return new TipoDocumentoAltaInside();
+  }
+
+  /**
    * Create an instance of {@link TipoDocumentoAsociadoaExpediente }
    * 
    */
   public TipoDocumentoAsociadoaExpediente createTipoDocumentoAsociadoaExpediente() {
     return new TipoDocumentoAsociadoaExpediente();
-  }
-
-  /**
-   * Create an instance of {@link TipoDocumentoAltaInside.Csv }
-   * 
-   */
-  public TipoDocumentoAltaInside.Csv createTipoDocumentoAltaInsideCsv() {
-    return new TipoDocumentoAltaInside.Csv();
   }
 
   /**

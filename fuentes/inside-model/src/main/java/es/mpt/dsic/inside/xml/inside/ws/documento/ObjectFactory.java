@@ -32,19 +32,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoDocumentoEniFileInside }
-   * 
-   */
-  public TipoDocumentoEniFileInside createTipoDocumentoEniFileInside() {
-    return new TipoDocumentoEniFileInside();
-  }
-
-  /**
    * Create an instance of {@link DocumentoInsideInfo }
    * 
    */
   public DocumentoInsideInfo createDocumentoInsideInfo() {
     return new DocumentoInsideInfo();
+  }
+
+  /**
+   * Create an instance of {@link TipoDocumentoEniFileInside }
+   * 
+   */
+  public TipoDocumentoEniFileInside createTipoDocumentoEniFileInside() {
+    return new TipoDocumentoEniFileInside();
   }
 
   /**

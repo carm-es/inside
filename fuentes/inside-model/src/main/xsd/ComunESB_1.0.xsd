@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:ns1="http://justicia.es/esb/comun/xsd-schemas/V1"
+	targetNamespace="http://justicia.es/esb/comun/xsd-schemas/V1"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="AuditoriaEsb" type="ns1:AuditoriaEsbType">
+		<xs:annotation>
+			<xs:documentation>Elemento que representa la estructura requerida
+				para Auditoría ESB para Peticiones y Respuestas</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="AuditoriaEsbType">
+		<xs:annotation>
+			<xs:documentation>Esquema de Datos de Auditoria para ESB
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Aplicacion" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Identificador de Aplicación que va a invocar el
+						servicio</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Modulo" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identificador del Módulo de la aplicación desde
+						el cual se va a invocar al servicio. Es opcional
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Servicio" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identificador del Servicio desde el cual se
+						invoca a este servicio. Es opcional</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MarcaTiempo" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Marca de Tiempo de Mensaje. Es opcional
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Id" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identificador de Mensaje. Es opcional. Se
+						garantiza el mismo Identificado en solicitudes y respuestas
+						síncronas.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Destino" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Identificador de Sistema Destino Final. Es
+						opcional</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

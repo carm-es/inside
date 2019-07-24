@@ -32,19 +32,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoExpedienteValidacionInsideMtom }
-   * 
-   */
-  public TipoExpedienteValidacionInsideMtom createTipoExpedienteValidacionInsideMtom() {
-    return new TipoExpedienteValidacionInsideMtom();
-  }
-
-  /**
    * Create an instance of {@link TipoOpcionesValidacionExpedienteInsideMtom }
    * 
    */
   public TipoOpcionesValidacionExpedienteInsideMtom createTipoOpcionesValidacionExpedienteInsideMtom() {
     return new TipoOpcionesValidacionExpedienteInsideMtom();
+  }
+
+  /**
+   * Create an instance of {@link TipoExpedienteValidacionInsideMtom }
+   * 
+   */
+  public TipoExpedienteValidacionInsideMtom createTipoExpedienteValidacionInsideMtom() {
+    return new TipoExpedienteValidacionInsideMtom();
   }
 
   /**

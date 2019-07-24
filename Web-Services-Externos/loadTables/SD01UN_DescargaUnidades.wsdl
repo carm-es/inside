@@ -50,12 +50,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
   </schema>
  </wsdl:types>
 
-   <wsdl:message name="exportarV2Request">
-
-      <wsdl:part name="unidadesRequest" type="tns1:UnidadesWs"/>
-
-   </wsdl:message>
-
    <wsdl:message name="exportarResponse">
 
       <wsdl:part name="exportarReturn" type="tns1:RespuestaWS"/>
@@ -68,12 +62,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    </wsdl:message>
 
-   <wsdl:message name="exportarV2Response">
-
-      <wsdl:part name="exportarReturn" type="tns1:RespuestaWS"/>
-
-   </wsdl:message>
-
    <wsdl:portType name="SD01UN_DescargaUnidades">
 
       <wsdl:operation name="exportar" parameterOrder="unidadesRequest">
@@ -81,14 +69,6 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
          <wsdl:input message="impl:exportarRequest" name="exportarRequest"/>
 
          <wsdl:output message="impl:exportarResponse" name="exportarResponse"/>
-
-      </wsdl:operation>
-
-      <wsdl:operation name="exportarV2" parameterOrder="unidadesRequest">
-
-         <wsdl:input message="impl:exportarV2Request" name="exportarV2Request"/>
-
-         <wsdl:output message="impl:exportarV2Response" name="exportarV2Response"/>
 
       </wsdl:operation>
 
@@ -116,31 +96,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       </wsdl:operation>
 
-      <wsdl:operation name="exportarV2">
-
-         <wsdlsoap:operation soapAction=""/>
-
-         <wsdl:input name="exportarV2Request">
-
-            <wsdlsoap:body namespace="http://impl.manager.directorio.map.es" use="literal"/>
-
-         </wsdl:input>
-
-         <wsdl:output name="exportarV2Response">
-
-            <wsdlsoap:body namespace="http://impl.manager.directorio.map.es" use="literal"/>
-
-         </wsdl:output>
-
-      </wsdl:operation>
-
    </wsdl:binding>
 
    <wsdl:service name="SD01UN_DescargaUnidadesService">
 
       <wsdl:port binding="impl:SD01UN_DescargaUnidadesSoapBinding" name="SD01UN_DescargaUnidades">
 
-         <wsdlsoap:address location="http://dir3ws.redsara.es/directorio/services/SD01UN_DescargaUnidades"/>
+         <wsdlsoap:address location="http://server:port/directorio/services/SD01UN_DescargaUnidades"/>
 
       </wsdl:port>
 

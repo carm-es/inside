@@ -42,6 +42,8 @@ public class ExpedienteToken implements java.io.Serializable {
   private String csv;
   private String uuid;
 
+  private Integer versionExpediente;
+
   private String dir3;
   private String asunto;
   private String nifs;
@@ -129,6 +131,14 @@ public class ExpedienteToken implements java.io.Serializable {
 
   public void setUuid(String uuid) {
     this.uuid = uuid;
+  }
+
+  public Integer getVersionExpediente() {
+    return versionExpediente;
+  }
+
+  public void setVersionExpediente(Integer versionExpediente) {
+    this.versionExpediente = versionExpediente;
   }
 
   @Column(name = "dir3")

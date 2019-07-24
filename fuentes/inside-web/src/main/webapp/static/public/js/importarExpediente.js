@@ -74,8 +74,8 @@ function configurarPlUploadImportarDocumento() {
     uploaderExp.init();
 
     uploaderDoc = new plupload.Uploader({
-        chunk_size : '10mb',
-        max_file_size : "10gb",
+        chunk_size : '4mb',
+        max_file_size : "8mb",
         browse_button : 'fileDocEni',
         url : $("#context").val() + "/uploadTempData",
         unique_names : false,
@@ -91,6 +91,11 @@ function configurarPlUploadImportarDocumento() {
         console.log("Inicio Error");
         console.log(arguments);
         console.log("Fin Error");
+
+        $("#tipoMensaje").val(4);
+        $("#valorMensaje").val("Error. No se pueden importar un documento mayor de 8MB.");
+        showMessage();
+
     });
 
     uploaderDoc.bind('FilesAdded', function(up, file_plupload) {
@@ -136,6 +141,7 @@ function configurarPlUploadImportarDocumento() {
         console.log("Inicio Error");
         console.log(arguments);
         console.log("Fin Error");
+
     });
 
     uploaderExpSip.bind('FilesAdded', function(up, file_plupload) {
@@ -171,10 +177,10 @@ function importarExpediente(mensajeExp, mensajeDoc) {
 }
 
 function sendDocumento() {
-    $('#importarVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     ocultarMensaje();
     $.ajax({
-        url : $("#context").val() + '/importExpedient',
+        url : $("#context").val() + '/importarExpediente/importExpedient',
         type : 'POST',
         dataType : 'json',
         data : {
@@ -188,11 +194,11 @@ function sendDocumento() {
                 showMessage();
             }
 
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         },
         error : function(xhr) {
             console.error(xhr.responseText);
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         }
     });
 }
@@ -206,10 +212,10 @@ function importarExpedienteSip(mensajeExp) {
 }
 
 function sendExpedienteSip() {
-    $('#importarVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     ocultarMensaje();
     $.ajax({
-        url : $("#context").val() + '/importarExpedienteFormatoSIP',
+        url : $("#context").val() + '/importarExpediente/importarExpedienteFormatoSIP',
         type : 'POST',
         dataType : 'json',
         data : {
@@ -222,11 +228,11 @@ function sendExpedienteSip() {
                 showMessage();
             }
 
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         },
         error : function(xhr) {
             console.error(xhr.responseText);
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         }
     });
 }
@@ -249,7 +255,7 @@ function updateIndexExp(idExpediente, dataSign) {
         },
         error : function(xhr) {
             console.error(xhr.responseText);
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         }
     });
 }

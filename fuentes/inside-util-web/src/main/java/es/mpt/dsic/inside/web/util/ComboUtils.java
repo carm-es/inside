@@ -17,6 +17,7 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.web.object.ComboItem;
 
 public class ComboUtils {
@@ -78,6 +79,8 @@ public class ComboUtils {
         "TD_19", null));
     retorno.add(new ComboItem(messageSource.getMessage("tipoDocumental.TD20", null, locale),
         "TD_20", null));
+    retorno.add(new ComboItem(messageSource.getMessage("tipoDocumental.TD99", null, locale),
+        "TD_99", null));
 
 
     // retorno.add(new ComboItem(messageSource.getMessage("tipoDocumental.TD51", null, locale),

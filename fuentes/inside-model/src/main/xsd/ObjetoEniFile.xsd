@@ -1,0 +1,24 @@
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/objetoEniXMLBytes"
+xmlns:insideeobjetoEniFile="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/objetoEniXMLBytes" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD PARA TIPO OBJETOENIFILE EN BYTES</xsd:documentation>
+	</xsd:annotation>		
+	<xsd:element name="expedienteEniFileXML" type="insideeobjetoEniFile:ObjetoEniXMLBytes">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">Tipo de datos para contener los bytes del XML de un expediente ENI</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ObjetoEniXMLBytes">
+		<xsd:sequence>
+			<xsd:element name="mensaje" type="xsd:string" />
+			<xsd:element name="atributoObjetoEniXMLBytes" type="xsd:base64Binary">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">El contenido en base64 del XML del expediente ENI.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>	
+</xsd:schema>

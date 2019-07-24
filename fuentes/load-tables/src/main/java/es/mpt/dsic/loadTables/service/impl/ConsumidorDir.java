@@ -18,6 +18,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import es.mpt.dsic.loadTables.service.model.FormatoFichero;
 import es.mpt.dsic.loadTables.service.model.RespuestaWS;
 import es.mpt.dsic.loadTables.service.model.SD01UNDescargaUnidades;
@@ -58,8 +61,19 @@ public class ConsumidorDir {
     unidadesRequest.setClave(password);
     unidadesRequest.setFormatoFichero(FormatoFichero.XML);
     unidadesRequest.setTipoConsulta(TipoConsultaUO.COMPLETO);
+    setTimeouts();
+
     RespuestaWS datos = sd01.exportar(unidadesRequest);
     return datos.getFichero();
+  }
+
+  private void setTimeouts() {
+    org.apache.cxf.endpoint.Client client = ClientProxy.getClient(sd01);
+    HTTPConduit http = (HTTPConduit) client.getConduit();
+    HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+    httpClientPolicy.setConnectionTimeout(0);
+    httpClientPolicy.setReceiveTimeout(0);
+    http.setClient(httpClientPolicy);
   }
 
   public String incrementalDatosBasicos(Date fecha) throws IOException {
@@ -72,6 +86,7 @@ public class ConsumidorDir {
     unidadesRequest.setFormatoFichero(FormatoFichero.XML);
     unidadesRequest.setTipoConsulta(TipoConsultaUO.COMPLETO);
     unidadesRequest.setFechaInicio(format.format(fecha));
+    setTimeouts();
     RespuestaWS datos = sd01.exportar(unidadesRequest);
 
     return datos.getFichero();

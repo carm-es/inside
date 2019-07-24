@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -89,7 +89,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   private String estamparPie;
   private String textoPie;
 
-  private boolean activo;
+  private boolean activo = false;
   private static String activoCadena = "S";
 
   @Autowired
@@ -108,68 +108,69 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   private static final String EXP_METADATO_ADICIONAL = "expedienteMetadatoAdicional";
   private static final String ADD_ALL_METADATOS = "metadatoAdicionalTodos";
 
-  @PostConstruct
-  public void configure() {
+  public boolean configure() {
+    if (!activo) {
+      String visualizacionActivo = properties.getProperty("visualizacion.activo");
 
-    String visualizacionActivo = properties.getProperty("visualizacion.activo");
+      if (!activoCadena.contentEquals(visualizacionActivo)) {
+        logger.info("El WS de VISUALIZACIÓN no está activo");
+        activo = false;
+      } else {
 
-    if (!activoCadena.contentEquals(visualizacionActivo)) {
-      logger.info("El WS de VISUALIZACIÓN no está activo");
-      activo = false;
-    } else {
+        URL url = null;
+        String urlVisualizacion = null;
+        try {
+          urlVisualizacion = properties.getProperty("visualizacion.url");
+          logger
+              .debug(String.format("El WS de VISUALIZACION se encuentra en %s", urlVisualizacion));
+          url = new URL(urlVisualizacion);
 
-      URL url = null;
-      String urlVisualizacion = null;
-      try {
-        urlVisualizacion = properties.getProperty("visualizacion.url");
-        logger.debug(String.format("El WS de VISUALIZACION se encuentra en %s", urlVisualizacion));
-        url = new URL(urlVisualizacion);
-      } catch (MalformedURLException me) {
-        logger.error("No se puede crear la URL del servicio de visualizacion " + urlVisualizacion,
-            me);
+          EeUtilServiceImplService ss = new EeUtilServiceImplService(url);
+
+          port = ss.getEeUtilServiceImplPort();
+
+          applicationLogin = new ApplicationLogin();
+          applicationLogin.setIdaplicacion(properties.getProperty("visualizacion.idaplicacion"));
+          applicationLogin.setPassword(properties.getProperty("visualizacion.password"));
+
+          logger.debug(String.format("Utilizando para visualizacion idaplicacion/password : %s/%s",
+              properties.getProperty("visualizacion.idaplicacion"),
+              properties.getProperty("visualizacion.password")));
+
+          filasNombreOrganismo =
+              Arrays.asList(properties.getProperty("visualizacion.nombre.organismo").split(";"));
+
+          logger.debug(String.format("Utilizando nombre de organismo: %s",
+              properties.getProperty("visualizacion.nombre.organismo")));
+
+          estamparPie = properties.getProperty("visualizacion.estamparpie");
+
+          logger.debug(String.format("Utilizando estamparpie: %s",
+              properties.getProperty("visualizacion.estamparpie")));
+
+          textoPie = properties.getProperty("visualizacion.pie");
+
+          logger.debug(
+              String.format("Utilizando pie: %s", properties.getProperty("visualizacion.pie")));
+
+          modeloExpediente = properties.getProperty("visualizacion.modelo.expediente");
+
+          logger.debug(String.format("Utilizando modelo de expediente: %s",
+              properties.getProperty("visualizacion.modelo.expediente")));
+
+          modeloDocumento = properties.getProperty("visualizacion.modelo.documento");
+
+          logger.debug(String.format("Utilizando modelo de documento: %s",
+              properties.getProperty("visualizacion.modelo.documento")));
+
+          activo = true;
+        } catch (MalformedURLException me) {
+          logger.error("No se puede crear la URL del servicio de visualizacion " + urlVisualizacion,
+              me);
+        }
       }
-
-      EeUtilServiceImplService ss = new EeUtilServiceImplService(url);
-
-      port = ss.getEeUtilServiceImplPort();
-
-      applicationLogin = new ApplicationLogin();
-      applicationLogin.setIdaplicacion(properties.getProperty("visualizacion.idaplicacion"));
-      applicationLogin.setPassword(properties.getProperty("visualizacion.password"));
-
-      logger.debug(String.format("Utilizando para visualizacion idaplicacion/password : %s/%s",
-          properties.getProperty("visualizacion.idaplicacion"),
-          properties.getProperty("visualizacion.password")));
-
-      filasNombreOrganismo =
-          Arrays.asList(properties.getProperty("visualizacion.nombre.organismo").split(";"));
-
-      logger.debug(String.format("Utilizando nombre de organismo: %s",
-          properties.getProperty("visualizacion.nombre.organismo")));
-
-      estamparPie = properties.getProperty("visualizacion.estamparpie");
-
-      logger.debug(String.format("Utilizando estamparpie: %s",
-          properties.getProperty("visualizacion.estamparpie")));
-
-      textoPie = properties.getProperty("visualizacion.pie");
-
-      logger
-          .debug(String.format("Utilizando pie: %s", properties.getProperty("visualizacion.pie")));
-
-      modeloExpediente = properties.getProperty("visualizacion.modelo.expediente");
-
-      logger.debug(String.format("Utilizando modelo de expediente: %s",
-          properties.getProperty("visualizacion.modelo.expediente")));
-
-      modeloDocumento = properties.getProperty("visualizacion.modelo.documento");
-
-      logger.debug(String.format("Utilizando modelo de documento: %s",
-          properties.getProperty("visualizacion.modelo.documento")));
-
-      activo = true;
     }
-
+    return activo;
   }
 
   @Override
@@ -180,7 +181,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   public ObjetoExpedienteInside expedienteConVisualizacionIndice(ObjetoExpedienteInside expediente,
       OpcionesVisualizacionIndice opciones) throws InsideServiceVisualizacionException {
 
-    if (!activo) {
+    if (!configure()) {
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
@@ -241,7 +242,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       OpcionesVisualizacionIndice opciones, byte[] bytesContenido)
       throws InsideServiceVisualizacionException {
 
-    if (!activo) {
+    if (!configure()) {
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
@@ -282,7 +283,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   public ResultadoVisualizacionDocumento visualizacionDocumento(ObjetoDocumentoInside documento,
       byte[] bytesContenido) throws InsideServiceVisualizacionException {
 
-    if (!activo) {
+    if (!configure()) {
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
@@ -404,6 +405,14 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
             contenidoDocumento = infoFirma.getContenidoFirmado();
             mimeContenidoDocumento = infoFirma.getMimeContenidoFirmado();
 
+            // Si viene codificado en Base64 empieza por "JVBER" ya que siempre es un pdf.
+            // Lo devuelve codificado si es xades detached generado con Autofirma.
+            // Pendiente de corregir, sabemos que es debido a que el documento firmado con Autofirma
+            // no incluye el atributo Encoding dentro de la etiqueta CONTENT
+            if (new String(contenidoDocumento).substring(0, 5).equalsIgnoreCase("JVBER")) {
+              contenidoDocumento = Base64.decodeBase64(contenidoDocumento);
+            }
+
             // para añadir solo una vez cada firma
             InfoFirmante infoFirmante = infoFirma.getFirmantes().get(indiceFirma);
             Item itemFirma =
@@ -480,7 +489,10 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       }
 
       // CASO 2 - El documento se encuentra implícito en alguna firma
-    } else {
+    } else if (CollectionUtils.isNotEmpty(documento.getFirmas())
+        && StringUtils.isNotEmpty(documento.getContenido().getReferencia())) {
+
+
       // Obtenemos la firma implícita
       FirmaInside firmaImplicita = InsideObjectsUtils.getFirmaInsideByIdentificadorEnDocumento(
           documento.getContenido().getReferencia().replace("#", ""), documento.getFirmas());
@@ -747,9 +759,8 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   /**
    * Obtiene el nombre que se mostrará de un documento Indizado. Si el expediente es externo a
    * InSide (no lo tenemos almacenado), se meterá el identificador del documento. Si el expediente
-   * es interno (lo tenemos almacenado): si el documento tiene el Metadato Adicional
-   * "DescripcionDocumento" se enviará ese, en caso contrario se enviará el identificador del
-   * documento indizado.
+   * es interno (lo tenemos almacenado): si el documento tiene el Metadato Adicional "NombreNatural"
+   * se enviará ese junto al identificador del documento indizado.
    */
   private String getNombreDocumentoIndizado(
       ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado documentoIndizado, boolean externo)
@@ -777,7 +788,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       }
 
       nombreDocumento = InsideObjectsUtils.getMetadatoAdicionalNotNull(metadatosDocumento,
-          "DescripcionDocumento");
+          Constantes.METADATO_NOMBRE_NOMBRE_NATURAL);
       nombreDocumento =
           nombreDocumento + " [" + documentoIndizado.getIdentificadorDocumento() + "]";
     }
@@ -918,7 +929,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   public byte[] visualizarContenidoOriginal(ObjetoDocumentoInside documento)
       throws InsideServiceVisualizacionException {
 
-    if (!activo) {
+    if (!configure()) {
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
@@ -942,6 +953,11 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   @Override
   public List<String> obtenerPlantillas() throws InsideServiceVisualizacionException {
     List<String> retorno = new ArrayList<String>();
+    if (!configure()) {
+      throw new InsideServiceVisualizacionException(
+          "El WS de VISUALIZACION no se encuentra activo");
+    }
+
     try {
       retorno.add(Constantes.TEMPLATE_DEFAULT);
 
@@ -963,6 +979,12 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   public TipoResultadoVisualizacionDocumentoInside visualizacionConPlantilla(String plantilla,
       TipoDocumentoVisualizacionInside tipoDocumentoVisualizacionInside)
       throws InsideServiceVisualizacionException {
+
+    if (!configure()) {
+      throw new InsideServiceVisualizacionException(
+          "El WS de VISUALIZACION no se encuentra activo");
+    }
+
     try {
       TipoResultadoVisualizacionDocumentoInside retorno =
           new TipoResultadoVisualizacionDocumentoInside();

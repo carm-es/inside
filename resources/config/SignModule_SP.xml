@@ -5,8 +5,8 @@
 	<comment>SWModule sign with JKS.</comment>
 	<entry key="keystorePath">almacen.jks</entry>
 	<entry key="keyStorePassword">password</entry>
-	<entry key="keyPassword">XXX</entry>
-	<entry key="issuer">XXX</entry>
-	<entry key="serialNumber">XXX</entry>
+	<entry key="keyPassword">password</entry>
+	<entry key="issuer">OU=xxxx,O=xxx,C=ES</entry>
+	<entry key="serialNumber">xxx</entry>
 	<entry key="keystoreType">JKS</entry>
 </properties>

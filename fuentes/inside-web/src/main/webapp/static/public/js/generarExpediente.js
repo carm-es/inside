@@ -10,7 +10,7 @@ $(document).ready(function() {
     // Autocompletado del campo organo.
     if ($('#organos') != null && $('#organos').length > 0) {
         $('#organos').autocomplete({
-            source : $("#context").val() + '/autocomplete/dir3Vigentes',
+            source : $("#context").val() + '/autocomplete/dir3VTE',
             // autoFocus: true,
             focus : function(event, ui) {
                 $("#organos").val(ui.item.key + " - " + ui.item.value);
@@ -29,7 +29,7 @@ $(document).ready(function() {
     if (document.getElementById("keyMetadatoAdicional")) {
         // Autocompletado del campo expedientes.
         $("#keyMetadatoAdicional").autocomplete({
-            source : $("#context").val() + '/autocomplete/metadatos',
+            source : $("#context").val() + '/autocomplete/metadatosExpediente',
             minLength : 0,
             autoFocus : true,
             select : function(event, ui) {
@@ -49,7 +49,7 @@ $(document).ready(function() {
         };
 
         $("#js-gallery-createDocument #keyMetadatoAdicional").autocomplete({
-            source : $("#context").val() + '/autocomplete/metadatos',
+            source : $("#context").val() + '/autocomplete/metadatosExpediente',
             minLength : 0,
             autoFocus : true,
             select : function(event, ui) {
@@ -80,6 +80,7 @@ $(document).ready(function() {
         }
     }
 
+    $("#checkfirmaLongeva").hide();
     $("#fieldsetDatosEnvio").hide();
 
     $("#init-modal-consultaRemisionMJU").addClass('hidden');
@@ -145,7 +146,7 @@ $(document).ready(function() {
 });
 
 function mostrarDialogIdentificadorExpediente(expediente, mensajeAviso) {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     var divData = $('#init-modal-avisoIdentificador-expediente');
     var data = divData.data();
     var buttons = createButtonsDialog([ {
@@ -165,7 +166,6 @@ function mostrarDialogIdentificadorExpediente(expediente, mensajeAviso) {
 }
 
 function comprobarIdentificadorExpedienteExiste(mensajeAviso) {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
 
     var identificadorExpediente = $("#expedienteForm #identificador").val();
     $.ajax({
@@ -185,22 +185,19 @@ function comprobarIdentificadorExpedienteExiste(mensajeAviso) {
                     $("#tipoMensaje").val(data.mensajeUsuario.level);
                     $("#valorMensaje").val(data.mensajeUsuario.message);
                     showMessage();
-
-                    $('#expedienteVeil').addClass('hidden');
                 } else {
                     saveExpedient(mensajeAviso);
                 }
             }
         },
         error : function(xhr) {
-            $('#expedienteVeil').addClass('hidden');
             console.error(xhr.responseText);
         }
     });
 }
 
 function mostrarDialogIdentificadorExpedienteExisteDesdeGenerarExpInside(expediente, mensajeAviso) {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     var divData = $('#init-modal-avisoIdentificador-expediente');
     var data = divData.data();
     var buttons = createButtonsDialog([ {
@@ -220,8 +217,7 @@ function mostrarDialogIdentificadorExpedienteExisteDesdeGenerarExpInside(expedie
 }
 
 function comprobarIdentificadorExpedienteExisteDesdeGenerarExpInside(mensajeAviso) {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
-
+    $mf.timer.on();
     var identificadorExpediente = $("#expedienteForm #identificador").val();
     $.ajax({
         url : $("#context").val() + '/comprobarIdentificadorExpediente',
@@ -236,13 +232,13 @@ function comprobarIdentificadorExpedienteExisteDesdeGenerarExpInside(mensajeAvis
             if (data.mensajeIdentificador != null) {
                 mostrarDialogIdentificadorExpedienteExisteDesdeGenerarExpInside(identificadorExpediente, mensajeAviso);
             } else {
-                $('#expedienteVeil').addClass('hidden');
+                $mf.timer.off();
 
             }
 
         },
         error : function(xhr) {
-            $('#expedienteVeil').addClass('hidden');
+            $mf.timer.off();
             console.error(xhr.responseText);
         }
     });
@@ -268,12 +264,9 @@ function generateExpedient(operation) {
         } else if ($("input[name=firmaExp][value='server']").is(':checked')) {
             if (dataB64 != "") {
                 fillExpedient(dataB64, '', operation);
-            } else {
-                $('#expedienteVeil').addClass('hidden');
             }
         } else {
             alert('Debe seleccionar un tipo de firma para el expediente. Si no tiene habilitadas opciones contacte con el administrador.');
-            $('#expedienteVeil').addClass('hidden');
         }
     } catch (err) {
         $("#tipoMensaje").val(4);
@@ -281,7 +274,7 @@ function generateExpedient(operation) {
                 .val(
                         'Incongruencia de datos. Se modifico el identificador del expediente después de generar el indice y no coinciden sus identificadores, para solucionarlo realice una modificacion en el indice.');
         showMessage();
-        $('#expedienteVeil').addClass('hidden');
+        $mf.timer.off();
     }
 }
 
@@ -290,7 +283,7 @@ function authenticate(dataB64, callback_method, operation) {
         end_authentication(callback_method, dataB64, operation);
     } else {
         alert('El indice de un expediente no puede estar vacio.');
-        $('#expedienteVeil').addClass('hidden');
+        $mf.timer.off();
     }
 }
 
@@ -312,6 +305,7 @@ function signError(errorType, errorMsg) {
         console.log(errorMsg);
         error = "No se pudo realizar la firma, inténtelo más tarde o contacte con el administrador";
     }
+
 }
 
 function end_authentication(callback_method, dataB64, operation) {
@@ -324,9 +318,18 @@ function end_authentication(callback_method, dataB64, operation) {
     MiniApplet.sign(dataB64, algorithm, format, params, signCorrect, signError);
 }
 
+function checkFirmaLongevaExpediente() {
+    if ($("input[name=firmaLongevaExpediente][value='firmaLongevaExpediente']").is(':checked')) {
+        $('#firmarLongevaExpediente').val('true');
+    } else {
+        $('#firmarLongevaExpediente').val('false');
+    }
+}
+
 function fillExpedient(signature, error, operation) {
     $("#expedienteBytes").val(signature);
     $("#error").val(error);
+    $mf.timer.on();
     $
             .ajax({
                 url : $("#context").val() + operation,
@@ -379,11 +382,13 @@ function fillExpedient(signature, error, operation) {
 
                         }
                     }
-                    $('#expedienteVeil').addClass('hidden');
+                    $mf.timer.off();
+                    habilitarTodosBotonesSuperior();
                 },
                 error : function(e) {
                     console.error(e);
-                    $('#expedienteVeil').addClass('hidden');
+                    $mf.timer.off();
+                    habilitarTodosBotonesSuperior();
                 }
             });
 }
@@ -412,11 +417,11 @@ function habilitarInput(input, prefix, postfix) {
 }
 
 function descargarExpedienteCompleto() {
-    $("#descargarExpedienteEniCompletoForm").submit();
+    descargarConVelo("#descargarExpedienteEniCompletoForm", 10000);
 }
 
 function descargarExpedienteCompletoFisico() {
-    $("#descargarExpedienteEniCompletoFisicoForm").submit();
+    descargarConVelo("#descargarExpedienteEniCompletoFisicoForm", 10000);
 }
 
 function descargarExpediente() {
@@ -428,7 +433,7 @@ function descargarExpediente() {
 //}
 
 function remitirMJUDesdeEditarExpediente() {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     $("#remitirMJUExpedienteEniForm").submit();
 }
 
@@ -573,11 +578,11 @@ function getIndexContent() {
 }
 
 function saveExpedient(mensaje) {
-    generateExpedient('/saveExpedient');
+    generateExpedient('/editarExpediente/saveExpedient');
 }
 
 function updateExpedient(mensaje) {
-    generateExpedient('/updateExpedient');
+    generateExpedient('/editarExpediente/updateExpedient');
 }
 
 function redireccionaExpedientesAlmacenados(mensajeUsuario) {
@@ -604,7 +609,7 @@ function obtenerIdDocumentoPorDefecto() {
 // Modal crear Documento
 function showDialogCreateDocument(e) {
     e.preventDefault();
-    if (elementoSeleccionadoNoEsDocumento('crear documento')) {
+    if (elementoSeleccionadoNoEsDocumento('crear un documento')) {
         // eliminacion datos previos
         obtenerIdDocumentoPorDefecto();
         $('#js-gallery-createDocument #identificadorDocOrigen').val('');
@@ -644,7 +649,7 @@ function showDialogCreateDocument(e) {
 
         // Autocompletado del campo organo.
         $('#js-gallery-createDocument #organos').autocomplete({
-            source : $("#context").val() + '/autocomplete/dir3Vigentes',
+            source : $("#context").val() + '/autocomplete/dir3VTE',
             // autoFocus: true,
             focus : function(event, ui) {
                 $('#js-gallery-createDocument #organos').val(ui.item.key + " - " + ui.item.value);
@@ -1152,7 +1157,7 @@ function configurarPlUploadCreateDoc() {
     // Salta con las cabeceras del la response. Xej. un 500
     uploaderDoc.bind('Error', function(up, err) {
         $("#tipoMensaje").val(4);
-        $("#valorMensaje").val("Error en la subida del fichero al servidor: " + err);
+        $("#valorMensaje").val("Error en la subida del fichero al servidor" + err);
         showMessage();
     });
 
@@ -1184,13 +1189,13 @@ function visualizaDescargarResguardoJusticia() {
     $("#visualizaDescargarResguardoJusticiaForm").submit();
 }
 
-function consultaRemisionJusticia(aplicacion, modulo, servicio, marcaTiempo, codigoEnvio) {
+function consultaRemisionJusticia(aplicacion, modulo, servicio, marcaTiempo, codigoEnvio, organoRemitente) {
     var divData = $('#init-modal-consultaRemisionMJU');
     var data = divData.data();
     data.data = divData.html();
     $mf.my_dialog.appendDialog(data, true, true);
 
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     $(".mf-dialog #modalConsultaRemisionVeil").removeAttr('style').removeClass('hidden');
 
     $
@@ -1203,7 +1208,8 @@ function consultaRemisionJusticia(aplicacion, modulo, servicio, marcaTiempo, cod
                     "modulo" : modulo,
                     "servicio" : servicio,
                     "marcaTiempo" : marcaTiempo,
-                    "codigoEnvio" : codigoEnvio
+                    "codigoEnvio" : codigoEnvio,
+                    "organoRemitente" : organoRemitente
                 },
                 success : function(data) {
 
@@ -1280,13 +1286,13 @@ function consultaRemisionJusticia(aplicacion, modulo, servicio, marcaTiempo, cod
                     $("#tipoMensaje").val(data.mensajeUsuario.level);
                     $("#valorMensaje").val(data.mensajeUsuario.message);
                     showMessage();
-                    $('#expedienteVeil').addClass('hidden');
+                    $mf.timer.off();
                     $(".mf-dialog #modalConsultaRemisionVeil").addClass('hidden');
 
                 },
                 error : function(e) {
                     console.error(e);
-                    $('#expedienteVeil').addClass('hidden');
+                    $mf.timer.off();
                     $(".mf-dialog #modalConsultaRemisionVeil").addClass('hidden');
 
                 }
@@ -1296,49 +1302,63 @@ function consultaRemisionJusticia(aplicacion, modulo, servicio, marcaTiempo, cod
 
 function showDialogImportarDocumento(e) {
     e.preventDefault();
-    var divData = $('#init-modal-importar-documentoInside');
-    var data = divData.data();
-    var buttons = createButtonsDialog([ {
-        clase : 'js-documento-cancelar',
-        texto : 'Cancelar'
-    }, {
-        clase : 'js-documento-crear',
-        texto : 'Adjuntar',
-        submit : true
-    } ]);
+    if (elementoSeleccionadoNoEsDocumento('crear un documento')) {
+        //convertir en objetoJSON la lista creada en expedientController y pasada a stringJSON
+        var listaDocInside = JSON.parse($("#listaDocumentosJSON").val());
 
-    buttons.find('.js-documento-crear').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-        createDocumentInside();
-    });
+        var divData = $('#init-modal-importar-documentoInside');
+        var data = divData.data();
+        var buttons = createButtonsDialog([ {
+            clase : 'js-documento-cancelar',
+            texto : 'Cancelar'
+        }, {
+            clase : 'js-documento-crear',
+            texto : 'Adjuntar',
+            submit : true
+        } ]);
 
-    buttons.find('.js-documento-cancelar').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-    });
+        buttons.find('.js-documento-crear').on('click', function(e) {
 
-    data.buttons = buttons;
-    data.data = divData.html();
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+            $mf.timer.on();
+            deshabilitarTodosBotonesSuperior();
+            createDocumentInside();
+        });
 
-    $mf.my_dialog.appendDialog(data, true, true);
+        buttons.find('.js-documento-cancelar').on('click', function(e) {
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+        });
 
-    // Autocompletado del campo expedientes.
-    $(".mf-dialog #identifier_document").autocomplete({
-        source : $("#context").val() + '/autocomplete/documentos',
-        minLength : 0,
-        autoFocus : true,
-        select : function(event, ui) {
-            $(".mf-dialog #identifier_document").val(ui.item.key);
-            event.preventDefault();
-        }
-    }).bind('focus', function() {
-        $(this).autocomplete("search");
-    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-        return $("<li>").append("<a>" + item.value + "</a>").appendTo(ul);
-    };
+        data.buttons = buttons;
+        data.data = divData.html();
 
-    $("ul[id *= ui-id-]").css('zIndex', 9999);
+        $mf.my_dialog.appendDialog(data, true, true);
+
+        // Autocompletado del campo expedientes.
+        $(".mf-dialog #identifier_document").autocomplete({
+            //source : $("#context").val() + '/autocomplete/documentos',
+            //source : listaDocInside,
+            maxResults : 10,
+            source : function(request, response) {
+                var results = $.ui.autocomplete.filter(listaDocInside, request.term);
+                response(results.slice(0, this.options.maxResults));
+            },
+            minLength : 0,
+            autoFocus : true,
+            select : function(event, ui) {
+                $(".mf-dialog #identifier_document").val(ui.item.key);
+                event.preventDefault();
+            }
+        }).bind('focus', function() {
+            $(this).autocomplete("search");
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>").append("<a>" + item.value + "</a>").appendTo(ul);
+        };
+
+        $("ul[id *= ui-id-]").css('zIndex', 9999);
+    }
 }
 
 function createDocumentInside() {
@@ -1347,7 +1367,7 @@ function createDocumentInside() {
     var idExpediente = $("#expedienteForm #identificador").val();
 
     function salir() {
-        $('#expedienteVeil').addClass('hidden');
+        $mf.timer.off();
         $mf.my_dialog.close_dialog();
     }
 
@@ -1374,53 +1394,59 @@ function createDocumentInside() {
 
 function showDialogImportarExpediente(e) {
     e.preventDefault();
-    var divData = $('#init-modal-importar-subExpediente');
-    var data = divData.data();
-    var buttons = createButtonsDialog([ {
-        clase : 'js-documento-cancelar',
-        texto : 'Cancelar'
-    }, {
-        clase : 'js-documento-crear',
-        texto : 'Adjuntar',
-        submit : true
-    } ]);
+    if (elementoSeleccionadoNoEsDocumento('crear un expediente')) {
+        //convertir en objetoJSON la lista creada en expedientController y pasada a stringJSON
+        var listaExpInside = JSON.parse($("#listaExpedientesJSON").val());
 
-    buttons.find('.js-documento-crear').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-        createSubExpedient();
-    });
+        var divData = $('#init-modal-importar-subExpediente');
+        var data = divData.data();
+        var buttons = createButtonsDialog([ {
+            clase : 'js-documento-cancelar',
+            texto : 'Cancelar'
+        }, {
+            clase : 'js-documento-crear',
+            texto : 'Adjuntar',
+            submit : true
+        } ]);
 
-    buttons.find('.js-documento-cancelar').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-    });
+        buttons.find('.js-documento-crear').on('click', function(e) {
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+            createSubExpedient();
+        });
 
-    data.buttons = buttons;
-    data.data = divData.html();
+        buttons.find('.js-documento-cancelar').on('click', function(e) {
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+        });
 
-    $mf.my_dialog.appendDialog(data, true, true);
+        data.buttons = buttons;
+        data.data = divData.html();
 
-    // Autocompletado del campo expedientes.
-    $(".mf-dialog #identifier_subExpedient").autocomplete({
-        source : $("#context").val() + '/autocomplete/expedientes?allExp=true&uniAct=false',
-        minLength : 0,
-        autoFocus : true,
-        select : function(event, ui) {
-            $(".mf-dialog #identifier_subExpedient").val(ui.item.key);
-            event.preventDefault();
-        }
-    }).bind('focus', function() {
-        $(this).autocomplete("search");
-    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-        return $("<li>").append("<a>" + item.value + "</a>").appendTo(ul);
-    };
+        $mf.my_dialog.appendDialog(data, true, true);
 
-    $("ul[id *= ui-id-]").css('zIndex', 9999);
+        // Autocompletado del campo expedientes.
+        $(".mf-dialog #identifier_subExpedient").autocomplete({
+            //source : $("#context").val() + '/autocomplete/expedientes?allExp=true&uniAct=true',
+            source : listaExpInside,
+            minLength : 0,
+            autoFocus : true,
+            select : function(event, ui) {
+                $(".mf-dialog #identifier_subExpedient").val(ui.item.key);
+                event.preventDefault();
+            }
+        }).bind('focus', function() {
+            $(this).autocomplete("search");
+        }).data("ui-autocomplete")._renderItem = function(ul, item) {
+            return $("<li>").append("<a>" + item.value + "</a>").appendTo(ul);
+        };
+
+        $("ul[id *= ui-id-]").css('zIndex', 9999);
+    }
 }
 
 function createSubExpedient() {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     var idExpedienteDelInput = $("#expedienteForm #identificador").val();
 
     var idExpediente = $(".mf-dialog #identifier_subExpedient").val();
@@ -1443,39 +1469,42 @@ function createSubExpedient() {
 
 function showDialogImportarExpedienteToken(e) {
     e.preventDefault();
-    var divData = $('#init-modal-importar-subExpedienteToken');
-    $('#init-modal-importar-subExpedienteToken #buttonSubmit').hide();
-    // $('#init-modal-importar-subExpedienteToken #contenedorFichero').hide();
 
-    var data = divData.data();
-    var buttons = createButtonsDialog([ {
-        clase : 'js-expediente-cancelar',
-        texto : 'Cancelar'
-    }, {
-        clase : 'js-expediente-crear',
-        texto : 'Adjuntar',
-        submit : true
-    } ]);
+    if (elementoSeleccionadoNoEsDocumento('crear un expediente')) {
+        var divData = $('#init-modal-importar-subExpedienteToken');
+        $('#init-modal-importar-subExpedienteToken #buttonSubmit').hide();
+        // $('#init-modal-importar-subExpedienteToken #contenedorFichero').hide();
 
-    buttons.find('.js-expediente-crear').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-        createSubExpedientToken();
-    });
+        var data = divData.data();
+        var buttons = createButtonsDialog([ {
+            clase : 'js-expediente-cancelar',
+            texto : 'Cancelar'
+        }, {
+            clase : 'js-expediente-crear',
+            texto : 'Adjuntar',
+            submit : true
+        } ]);
 
-    buttons.find('.js-expediente-cancelar').on('click', function(e) {
-        e.preventDefault();
-        $mf.my_dialog.close_dialog();
-    });
+        buttons.find('.js-expediente-crear').on('click', function(e) {
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+            createSubExpedientToken();
+        });
 
-    data.buttons = buttons;
-    data.data = divData.html();
+        buttons.find('.js-expediente-cancelar').on('click', function(e) {
+            e.preventDefault();
+            $mf.my_dialog.close_dialog();
+        });
 
-    $mf.my_dialog.appendDialog(data, true, true);
+        data.buttons = buttons;
+        data.data = divData.html();
+
+        $mf.my_dialog.appendDialog(data, true, true);
+    }
 }
 
 function createSubExpedientToken() {
-    $('#expedienteVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
 
     var idExpediente = $("#expedienteForm #identificador").val();
 

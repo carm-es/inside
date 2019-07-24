@@ -26,6 +26,7 @@ import org.springframework.util.DigestUtils;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
+import es.mpt.dsic.inside.util.InsideUtils;
 import es.mpt.dsic.inside.util.XMLUtils;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoCarpetaIndizadaConversion;
@@ -100,9 +101,9 @@ public abstract class InsideConverterTipoExpedienteMtomConversion {
       retorno.setFechaIncorporacionExpediente(data.getFechaIncorporacionExpediente());
       retorno.setOrdenDocumentoExpediente(data.getOrdenDocumentoExpediente());
 
-      retorno.setFuncionResumen("md5");
+      retorno.setFuncionResumen(InsideUtils.HUELLA_SHA512_LITERAL_URI);
       byte[] datos = IOUtils.toByteArray(data.getContenido().getInputStream());
-      String valorHuella = DigestUtils.md5DigestAsHex(datos);
+      String valorHuella = org.apache.commons.codec.digest.DigestUtils.sha512Hex(datos);
       retorno.setValorHuella(valorHuella);
       try {
         TipoDocumento tDoc = unmarshallRootElement(datos, TipoDocumento.class);

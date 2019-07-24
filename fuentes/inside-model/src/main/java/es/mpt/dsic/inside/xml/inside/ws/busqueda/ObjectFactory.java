@@ -37,19 +37,59 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link ExpedienteResultadoBusqueda }
-   * 
-   */
-  public ExpedienteResultadoBusqueda createExpedienteResultadoBusqueda() {
-    return new ExpedienteResultadoBusqueda();
-  }
-
-  /**
    * Create an instance of {@link SubConsultaWsInside }
    * 
    */
   public SubConsultaWsInside createSubConsultaWsInside() {
     return new SubConsultaWsInside();
+  }
+
+  /**
+   * Create an instance of {@link MetadatoBusquedaWsInside }
+   * 
+   */
+  public MetadatoBusquedaWsInside createMetadatoBusquedaWsInside() {
+    return new MetadatoBusquedaWsInside();
+  }
+
+  /**
+   * Create an instance of {@link DocumentoResultadoBusqueda.Resultados }
+   * 
+   */
+  public DocumentoResultadoBusqueda.Resultados createDocumentoResultadoBusquedaResultados() {
+    return new DocumentoResultadoBusqueda.Resultados();
+  }
+
+  /**
+   * Create an instance of {@link MetadatoBusquedaWsInside.Valor.Between }
+   * 
+   */
+  public MetadatoBusquedaWsInside.Valor.Between createMetadatoBusquedaWsInsideValorBetween() {
+    return new MetadatoBusquedaWsInside.Valor.Between();
+  }
+
+  /**
+   * Create an instance of {@link MetadatoBusquedaWsInside.Valor.DateRange }
+   * 
+   */
+  public MetadatoBusquedaWsInside.Valor.DateRange createMetadatoBusquedaWsInsideValorDateRange() {
+    return new MetadatoBusquedaWsInside.Valor.DateRange();
+  }
+
+  /**
+   * Create an instance of {@link ConsultaWsInside }
+   * 
+   */
+  public ConsultaWsInside createConsultaWsInside() {
+    return new ConsultaWsInside();
+  }
+
+  /**
+   * Create an instance of {@link ExpedienteResultadoBusqueda.Resultados }
+   * 
+   */
+  public ExpedienteResultadoBusqueda.Resultados createExpedienteResultadoBusquedaResultados() {
+    return new ExpedienteResultadoBusqueda.Resultados();
   }
 
   /**
@@ -69,19 +109,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link ExpedienteResultadoBusqueda.Resultados }
+   * Create an instance of {@link ExpedienteResultadoBusqueda }
    * 
    */
-  public ExpedienteResultadoBusqueda.Resultados createExpedienteResultadoBusquedaResultados() {
-    return new ExpedienteResultadoBusqueda.Resultados();
-  }
-
-  /**
-   * Create an instance of {@link MetadatoBusquedaWsInside }
-   * 
-   */
-  public MetadatoBusquedaWsInside createMetadatoBusquedaWsInside() {
-    return new MetadatoBusquedaWsInside();
+  public ExpedienteResultadoBusqueda createExpedienteResultadoBusqueda() {
+    return new ExpedienteResultadoBusqueda();
   }
 
   /**
@@ -90,38 +122,6 @@ public class ObjectFactory {
    */
   public InfoResultadosBusquedaInside createInfoResultadosBusquedaInside() {
     return new InfoResultadosBusquedaInside();
-  }
-
-  /**
-   * Create an instance of {@link DocumentoResultadoBusqueda.Resultados }
-   * 
-   */
-  public DocumentoResultadoBusqueda.Resultados createDocumentoResultadoBusquedaResultados() {
-    return new DocumentoResultadoBusqueda.Resultados();
-  }
-
-  /**
-   * Create an instance of {@link MetadatoBusquedaWsInside.Valor.DateRange }
-   * 
-   */
-  public MetadatoBusquedaWsInside.Valor.DateRange createMetadatoBusquedaWsInsideValorDateRange() {
-    return new MetadatoBusquedaWsInside.Valor.DateRange();
-  }
-
-  /**
-   * Create an instance of {@link MetadatoBusquedaWsInside.Valor.Between }
-   * 
-   */
-  public MetadatoBusquedaWsInside.Valor.Between createMetadatoBusquedaWsInsideValorBetween() {
-    return new MetadatoBusquedaWsInside.Valor.Between();
-  }
-
-  /**
-   * Create an instance of {@link ConsultaWsInside }
-   * 
-   */
-  public ConsultaWsInside createConsultaWsInside() {
-    return new ConsultaWsInside();
   }
 
   /**

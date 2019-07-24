@@ -17,7 +17,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.annotation.PostConstruct;
 import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.commons.lang.SerializationUtils;
@@ -36,6 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import es.mpt.dsic.inside.model.converter.InsideConverterDocumento;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
+import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatos;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatos;
@@ -76,10 +76,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
   protected String documentoIdENI;
   protected String documentoCSV;
 
-  private Properties properties;
-
-  private String dir3default;
-
+  private String dir3Default;
   private String almacenarFirma;
 
   protected CmisAdapterInterface cmisAdapter;
@@ -89,8 +86,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
 
   @PostConstruct
   void config() {
-    dir3default = properties.getProperty("csvstorage.dir3");
-    almacenarFirma = properties.getProperty("csvstorage.almacenarFirma");
+
   }
 
 
@@ -109,7 +105,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
     String dirusuario = getUserDir();
 
     if (dirusuario == null) {
-      dirusuario = dir3default;
+      dirusuario = dir3Default;
     }
 
     Map<String, Object> metadatosRepository = new HashMap<String, Object>();
@@ -155,7 +151,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
       String dirusuario = getUserDir();
 
       if (dirusuario == null) {
-        dirusuario = dir3default;
+        dirusuario = dir3Default;
       }
 
       ObjetoExpedienteInsideMetadatos metadatosEntrada = expediente.getMetadatos();
@@ -216,7 +212,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
     String dirusuario = getUserDir();
 
     if (dirusuario == null) {
-      dirusuario = dir3default;
+      dirusuario = dir3Default;
     }
 
 
@@ -401,10 +397,14 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
               && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside) {
             ContenidoFirmaCertificadoAlmacenableInside contenidoFirmaAlmacenado =
                 (ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma;
-            byte[] bytesFirma =
-                cmisAdapter.getContenidoDoc(contenidoFirmaAlmacenado.getIdentificadorRepositorio())
-                    .getContenido();
-            contenidoFirmaAlmacenado.setValorBinario(bytesFirma);
+
+            if (contenidoFirmaAlmacenado.getIdentificadorRepositorio() != null) {
+
+              byte[] bytesFirma = cmisAdapter
+                  .getContenidoDoc(contenidoFirmaAlmacenado.getIdentificadorRepositorio())
+                  .getContenido();
+              contenidoFirmaAlmacenado.setValorBinario(bytesFirma);
+            }
           }
         }
 
@@ -523,11 +523,14 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
               && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside) {
             ContenidoFirmaCertificadoAlmacenableInside contenidoFirmaAlmacenado =
                 (ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma;
-            logger.debug("contenidoFirmaAlmacenado IdentificadorRepositorio: "
-                + contenidoFirmaAlmacenado.getIdentificadorRepositorio());
 
-            cmisAdapter.borrarDocumento(contenidoFirmaAlmacenado.getIdentificadorRepositorio(),
-                true);
+            if (StringUtils.isNotEmpty(contenidoFirmaAlmacenado.getIdentificadorRepositorio())) {
+
+              logger.debug("contenidoFirmaAlmacenado IdentificadorRepositorio: "
+                  + contenidoFirmaAlmacenado.getIdentificadorRepositorio());
+              cmisAdapter.borrarDocumento(contenidoFirmaAlmacenado.getIdentificadorRepositorio(),
+                  true);
+            }
 
           }
         }
@@ -620,17 +623,6 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
     this.documentoDIR3 = documentoDIR3;
   }
 
-
-  public Properties getProperties() {
-    return properties;
-  }
-
-
-  public void setProperties(Properties properties) {
-    this.properties = properties;
-  }
-
-
   public String getDocumentoCSV() {
     return documentoCSV;
   }
@@ -640,6 +632,57 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
     this.documentoCSV = documentoCSV;
   }
 
+
+  @Override
+  public ObjetoDocumentoInsideContenido getcontenidoByUuid(String uuid, String idSession)
+      throws InsideServiceAdapterException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public long getContentSizeByUuid(String uuid) {
+    return 0;
+  }
+
+
+  @Override
+  public String getValorHuellaDocumento(String uuid, String algoritmo)
+      throws InsideServiceAdapterException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  /**
+   * @return the dir3Default
+   */
+  public String getDir3Default() {
+    return dir3Default;
+  }
+
+
+  /**
+   * @param dir3Default the dir3Default to set
+   */
+  public void setDir3Default(String dir3Default) {
+    this.dir3Default = dir3Default;
+  }
+
+
+  /**
+   * @return the almacenarFirma
+   */
+  public String getAlmacenarFirma() {
+    return almacenarFirma;
+  }
+
+
+  /**
+   * @param almacenarFirma the almacenarFirma to set
+   */
+  public void setAlmacenarFirma(String almacenarFirma) {
+    this.almacenarFirma = almacenarFirma;
+  }
 
 
 }

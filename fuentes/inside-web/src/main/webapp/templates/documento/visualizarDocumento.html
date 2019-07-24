@@ -8,6 +8,7 @@
 <head>
 	<script th:src="|${#httpServletRequest.getContextPath()}/js/visualizarDocumento.js?v=${session.versionNumber}|"></script>
 	
+	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/pdf.js?v=${session.versionNumber}|"></script>
 	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/moxie.js?v=${session.versionNumber}|"></script> 
     <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/plupload.dev.js?v=${session.versionNumber}|"></script> 
     <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/plupload/2/1/2/i18n/es.js?v=${session.versionNumber}|"></script>
@@ -123,15 +124,23 @@
                     	<iframe th:src="${'data:application/pdf;base64,' + data}"></iframe>
                     </span>
                 </fieldset>
-                
-                <fieldset th:if="${data != null and navegador}">
-                    <span>                    	                
-                	    <a href="#!" onclick="visualizaDescargarContenido()" th:if="${data != null and navegador}" th:title="#{generarDocumento.descargarArchivo.title}">
-	                        <span class="mf-icon mf-icon-doc-download"></span>
-	                        <span th:text="#{generarDocumento.descargarArchivo}"></span>
-	                    </a>
-                    </span>
-                </fieldset>
+
+				<fieldset class="fld" th:if="${data != null and navegador}">
+					<div class="fld dsp_b js-pdf-data"
+						th:attr="data-pdfbase64=${data}">
+						<button type="button" class="js-pdf-prev"
+							style="padding: 5px 10px;">
+							<span class="mf-icon mf-icon-arrow3-back"> </span>
+						</button>
+
+						<button type="button" class="js-pdf-next"
+							style="padding: 5px 10px;">
+							<span class="mf-icon mf-icon-arrow3-next"></span>
+						</button>
+					</div>
+					<canvas id="pdfContainer"
+						style="border: 1px solid black; text-align: center; width: 75%; height: 1024px;"></canvas>
+				</fieldset>
 
 
 				<fieldset class="fsubmit"  th:if="${data == null}">

@@ -158,7 +158,7 @@ public class InsideServiceHibernateConverterBusqueda {
           }
           logger.debug("El metadadato buscado " + consultaMetadato.getMetadato().getNombre()
               + " se ecuentra en la tabla de los " + tipo.getName());
-          return metadatoValorToCriterion(nombreMetadato,
+          return metadatoValorToCriterion(consultaMetadato.getMetadato().getNombre(),
               consultaMetadato.getMetadato().getValor());
         }
       }

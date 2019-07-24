@@ -11,12 +11,17 @@
 
 package es.mpt.dsic.inside.service.object.converter.impl.csvstorage;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.annotation.PostConstruct;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +36,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.model.ObtenerInfoContenidoResponse;
 import csvstorage.es.gob.aapp.csvstorage.webservices.documentmtom.v1.CSVStorageException;
 import csvstorage.es.gob.aapp.csvstorage.webservices.documentmtom.v1.model.DocumentoMtomResponse;
 import csvstorage.es.gob.aapp.csvstorage.webservices.documentmtom.v1.model.EliminarDocumentoResponse;
@@ -44,10 +50,15 @@ import es.mpt.dsic.inside.model.objetos.firmas.FirmaInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoAlmacenableInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaInside;
 import es.mpt.dsic.inside.service.csvstorage.InsideCsvStorageMtomService;
+import es.mpt.dsic.inside.service.csvstorage.impl.InsideCsvStorageBigDataServiceImpl;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.object.converter.impl.InsideServiceAdapter;
 import es.mpt.dsic.inside.service.object.converter.impl.InsideServiceAdapterException;
 import es.mpt.dsic.inside.service.store.InsideServiceJta;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.util.Constantes;
+import es.mpt.dsic.inside.service.util.FileUtils;
+import es.mpt.dsic.inside.service.util.InsideUtils;
 import es.mpt.dsic.inside.service.util.JAXBMarshallerDocument;
 import es.mpt.dsic.inside.store.hibernate.entity.InsideWsAplicacion;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadOrganica;
@@ -70,6 +81,9 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
   private InsideCsvStorageMtomService insideCsvStorageMtomService;
 
   @Autowired
+  private InsideCsvStorageBigDataServiceImpl insideCsvStorageBigDataServiceImpl;
+
+  @Autowired
   private InsideServiceJta insideServiceJta;
 
   private SessionFactory sessionFactory;
@@ -78,6 +92,12 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
 
   private String dir3default;
   private String almacenarFirma;
+
+  @Autowired
+  FileUtils fileUtils;
+
+  @Autowired
+  TemporalDataBusinessService temporalDataBusinessService;
 
   @PostConstruct
   void config() {
@@ -151,8 +171,8 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
 
     try {
       logger.debug("IdentificadorRepositorio: " + expediente.getIdentificadorRepositorio());
-      // En el almacenamiento en Alfresco no se está recuperando el solo se están recuperando las
-      // firmas
+      // En el almacenamiento en Alfresco no se está recuperando el solo
+      // se están recuperando las firmas
       if (expediente.getIndice().getFirmas() != null) {
 
         for (FirmaInside firma : expediente.getIndice().getFirmas()) {
@@ -179,7 +199,6 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
                 id = nombreSplit[0];
                 dir3 = dir3default;
               }
-
 
               DocumentoMtomResponse documentoResponse =
                   insideCsvStorageMtomService.obtenerFirmaCsvStorage(id, dir3);
@@ -233,13 +252,15 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
                 && contenidoFirmaAlmacenado.getMime().equals("application/xml")) {
               contenidoFirmaAlmacenado.setMime("text/xml");
             }
-            // El idENI de la firma que almacenamos en el csvstorage lo componemos con el idENI del
-            // expediente + IdentificadorEnDocumento (FIRMA_0, FIRMA_1, etc...)
+            // El idENI de la firma que almacenamos en el csvstorage
+            // lo componemos con el idENI del expediente +
+            // IdentificadorEnDocumento (FIRMA_0, FIRMA_1, etc...)
             String firmaName = idENI + "_" + firma.getIdentificadorEnDocumento();
             logger.debug("firmaName: " + firmaName);
             if (contenidoFirmaAlmacenado.getValorBinario() != null) {
 
-              // El IdentificadorRepositorio se compone del dir3/identificador de la firma
+              // El IdentificadorRepositorio se compone del
+              // dir3/identificador de la firma
               contenidoFirmaAlmacenado.setIdentificadorRepositorio(dir3 + "/" + firmaName);
 
               if (guardar) {
@@ -303,19 +324,20 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
         dirusuario = dir3default;
       }
 
-      GuardarDocumentoResponse response = null;
       logger.debug("IdentificadorRepositorio: " + documento.getIdentificadorRepositorio());
+
+      guardarContenidoDocumento(documento, dirusuario);
 
       TipoDocumento tipoDocumento = InsideConverterDocumento.documentoInsideToEni(documento, null);
 
+      byte[] contentMarshall = null;
       JAXBMarshallerDocument marshaller = new JAXBMarshallerDocument();
       String docMarshall = marshaller.marshallDataDocument(tipoDocumento,
           "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e", "documento",
           "enidoc");
+      contentMarshall = docMarshall.getBytes();
 
-      byte[] contentMarshall = docMarshall.getBytes();
       String mimeType = "application/xml";
-
 
       if (documento.getIdentificadorRepositorio() != null) {
 
@@ -329,38 +351,21 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
           dir3 = dir3default;
         }
 
-        // byte[] contenidoSerializado = SerializationUtils.serialize(documento);
-        response = insideCsvStorageMtomService.modificarDocumentoCsvStorage(dir3,
-            documento.getIdentificador(), contentMarshall, mimeType);
+        GuardarDocumentoResponse responseMtom =
+            insideCsvStorageMtomService.modificarDocumentoCsvStorage(dir3,
+                documento.getIdentificador(), contentMarshall, mimeType);
 
-      } else {
-
-        // El IdentificadorRepositorio se compone del dir3/identificador
-        // del documento
-        documento.setIdentificadorRepositorio(dirusuario + "/" + documento.getIdentificador());
-
-        // byte[] contenidoSerializado = SerializationUtils.serialize(documento);
-        response = insideCsvStorageMtomService.guardarDocumentoCsvStorage(dirusuario,
-            documento.getIdentificador(), contentMarshall, mimeType);
-        // Si el documento ya existe se modifica
-        if (response != null && response.getResponse() != null
-            && response.getResponse().getCodigo().equals(Constantes.csvStorage.YAEXISTE)) {
-          response = insideCsvStorageMtomService.modificarDocumentoCsvStorage(dirusuario,
-              documento.getIdentificador(), contentMarshall, mimeType);
+        if (responseMtom == null || (responseMtom.getResponse() != null && !responseMtom
+            .getResponse().getCodigo().equals(Constantes.csvStorage.GUARDADOCORRECTO))) {
+          documento.setIdentificadorRepositorio(null);
+          throw new InsideServiceAdapterException("No se ha guardado el documento");
         }
-
-
-
-      }
-
-      if (response == null || (response.getResponse() != null
-          && !response.getResponse().getCodigo().equals(Constantes.csvStorage.GUARDADOCORRECTO))) {
-        documento.setIdentificadorRepositorio(null);
-        throw new InsideServiceAdapterException("No se ha guardado el documento");
+      } else {
+        guardarDocumentoEni(documento, contentMarshall, dirusuario, mimeType);
       }
 
       logger.info("Sale de almacenaObjetoDocumentoInside");
-    } catch (CSVStorageException e) {
+    } catch (csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException e) {
       logger.error("Error almacenando el documento: "
           + (documento != null ? documento.getIdentificador() : "") + " Usuario: " + dirusuario);
       throw new InsideServiceAdapterException("Error almacenando el documento");
@@ -398,16 +403,15 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
         dir3 = dir3default;
       }
 
-
-      DataHandler contenido = null;
+      byte[] contenido = null;
 
       try {
         DocumentoMtomResponse documentoRespone =
             insideCsvStorageMtomService.obtenerDocumentoCsvStorage(id, dir3);
-
         if (documentoRespone.getCodigo().equals("0")
             && documentoRespone.getContenido().getContenido() != null) {
-          contenido = documentoRespone.getContenido().getContenido();
+          contenido =
+              IOUtils.toByteArray(documentoRespone.getContenido().getContenido().getInputStream());
         }
 
         if (documento.getContenido() == null) {
@@ -416,14 +420,9 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
         }
 
         if (contenido != null) {
-          byte[] arrayBytes = IOUtils.toByteArray(contenido.getInputStream());
-
-          this.convertDocumentResponseToObjetoDocumentoInside(arrayBytes, documento);
+          this.convertDocumentResponseToObjetoDocumentoInside(contenido, documento);
         }
-      } catch (IOException e) {
-        logger.error("Error al convertir el contenido");
-        throw new InsideServiceAdapterException("Error al convertir el documento");
-      } catch (CSVStorageException e) {
+      } catch (CSVStorageException | IOException e) {
         logger.error("Error al recuperar el contenido");
         throw new InsideServiceAdapterException("Error al recuperar el documento");
       }
@@ -448,11 +447,8 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
     try {
       boolean esValido = false;
       if (contenido != null) {
-
         Object contenidoDeserializado = null;
-
         try {
-
           JAXBMarshallerDocument marshaller = new JAXBMarshallerDocument();
           TipoDocumento tipoDocumento = marshaller.unmarshallDataDocument(contenido);
 
@@ -464,8 +460,8 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
           esValido = true;
         } catch (Exception e) {
           logger.info("El contenido no es un documeto ENI");
-          // Para recuperar documentos de versiones anteriores almacenados como
-          // ObjetoDocumentoInside
+          // Para recuperar documentos de versiones anteriores
+          // almacenados como ObjetoDocumentoInside
           contenidoDeserializado = SerializationUtils.deserialize(contenido);
           if (contenidoDeserializado instanceof ObjetoDocumentoInside) {
 
@@ -512,7 +508,7 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
           insideServiceJta.getAllObjetosCriteria(UnidadUsuario.class, criterias);
 
       if (usuariosUnidad != null && usuariosUnidad.size() > 0) {
-        idUnidad = ((UnidadUsuario) usuariosUnidad.get(0)).getUnidad().getId();
+        idUnidad = usuariosUnidad.get(0).getUnidad().getId();
       }
 
     } else {
@@ -528,10 +524,9 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
           insideServiceJta.getAllObjetosCriteria(UnidadWsAplicacion.class, criterias);
 
       if (aplicacionesUnidad != null && aplicacionesUnidad.size() > 0) {
-        idUnidad = ((UnidadWsAplicacion) aplicacionesUnidad.get(0)).getIdUnidad();
+        idUnidad = aplicacionesUnidad.get(0).getIdUnidad();
       }
     }
-
 
     if (idUnidad != null) {
       Session session = null;
@@ -550,12 +545,10 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
         session.close();
       }
 
-
     }
 
     return dir3;
   }
-
 
   /**
    * Elimina documento inside.
@@ -583,7 +576,6 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
         dir3 = dir3default;
       }
 
-
       try {
         EliminarDocumentoResponse eliminarDocumentoResponse =
             insideCsvStorageMtomService.eliminarDocumento(id, dir3);
@@ -594,7 +586,6 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
               + eliminarDocumentoResponse.getResponse().getCodigo() + " - "
               + eliminarDocumentoResponse.getResponse().getDescripcion());
         }
-
 
       } catch (CSVStorageException e) {
         logger.error("Error al eliminar el documento");
@@ -637,32 +628,32 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
             logger.debug("contenidoFirmaAlmacenado IdentificadorRepositorio: "
                 + contenidoFirmaAlmacenado.getIdentificadorRepositorio());
 
+            if (StringUtils.isNotEmpty(contenidoFirmaAlmacenado.getIdentificadorRepositorio())) {
+              String[] nombreSplit =
+                  contenidoFirmaAlmacenado.getIdentificadorRepositorio().split("/");
 
-            String[] nombreSplit =
-                contenidoFirmaAlmacenado.getIdentificadorRepositorio().split("/");
+              String id = null;
+              String dir3 = null;
 
-            String id = null;
-            String dir3 = null;
+              if (nombreSplit.length > 1) {
+                dir3 = nombreSplit[0];
+                id = nombreSplit[1];
+              } else {
+                id = nombreSplit[0];
+                dir3 = dir3default;
+              }
 
-            if (nombreSplit.length > 1) {
-              dir3 = nombreSplit[0];
-              id = nombreSplit[1];
-            } else {
-              id = nombreSplit[0];
-              dir3 = dir3default;
+              EliminarDocumentoResponse eliminarDocumentoResponse =
+                  insideCsvStorageMtomService.eliminarDocumento(id, dir3);
+
+              if (eliminarDocumentoResponse.getResponse() == null
+                  || !eliminarDocumentoResponse.getResponse().getCodigo().equals("0")) {
+                logger
+                    .warn("La firma del expediente " + id + " no se ha eliminado del repositorio: "
+                        + eliminarDocumentoResponse.getResponse().getCodigo() + " - "
+                        + eliminarDocumentoResponse.getResponse().getDescripcion());
+              }
             }
-
-
-            EliminarDocumentoResponse eliminarDocumentoResponse =
-                insideCsvStorageMtomService.eliminarDocumento(id, dir3);
-
-            if (eliminarDocumentoResponse.getResponse() == null
-                || !eliminarDocumentoResponse.getResponse().getCodigo().equals("0")) {
-              logger.warn("La firma del expediente " + id + " no se ha eliminado del repositorio: "
-                  + eliminarDocumentoResponse.getResponse().getCodigo() + " - "
-                  + eliminarDocumentoResponse.getResponse().getDescripcion());
-            }
-
           }
         }
 
@@ -677,8 +668,6 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
     return expediente;
 
   }
-
-
 
   public SessionFactory getSessionFactory() {
     return sessionFactory;
@@ -700,6 +689,139 @@ public class InsideServiceCsvStorageAdapter implements InsideServiceAdapter {
    */
   public void setProperties(Properties properties) {
     this.properties = properties;
+  }
+
+  private void guardarContenidoDocumento(ObjetoDocumentoInside documento, String dirusuario)
+      throws csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException,
+      InsideServiceAdapterException {
+    csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.model.GuardarDocumentoUuidResponse responsebigData =
+        null;
+    if (StringUtils.isNotEmpty(documento.getContenido().getReferencia())) {
+      File contenido = new File(documento.getContenido().getReferencia());
+      if (contenido.exists()) {
+        String urlReferencia = properties.getProperty("csvstorage.bigData.urlcontent");
+
+        responsebigData = insideCsvStorageBigDataServiceImpl.guardarDocumentoCsvStorage(dirusuario,
+            documento.getIdentificador() + "_CONTENIDO", contenido,
+            documento.getContenido().getMime());
+
+        documento.getContenido()
+            .setReferencia(urlReferencia + responsebigData.getResponseUuid().getUuid());
+
+        // Si el documento ya existe se modifica
+        if (responsebigData != null && responsebigData.getResponseUuid() != null && responsebigData
+            .getResponseUuid().getCodigo().equals(Constantes.csvStorage.YAEXISTE)) {
+
+          csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.model.GuardarDocumentoResponse responseModif;
+          responseModif = insideCsvStorageBigDataServiceImpl.modificarDocumentoCsvStorage(
+              dirusuario, documento.getIdentificador() + "_CONTENIDO", contenido,
+              documento.getContenido().getMime());
+
+          if (responseModif == null || (responseModif.getResponse() != null && !responseModif
+              .getResponse().getCodigo().equals(Constantes.csvStorage.GUARDADOCORRECTO))) {
+            documento.setIdentificadorRepositorio(null);
+            throw new InsideServiceAdapterException("No se ha guardado el contenido del documento");
+          }
+        }
+      }
+    }
+  }
+
+  private void guardarDocumentoEni(ObjetoDocumentoInside documento, byte[] contentMarshall,
+      String dirusuario, String mimeType)
+      throws CSVStorageException, InsideServiceAdapterException {
+    // El IdentificadorRepositorio se compone del dir3/identificador
+    // del documento
+    documento.setIdentificadorRepositorio(dirusuario + "/" + documento.getIdentificador());
+
+    GuardarDocumentoResponse responseMtom = insideCsvStorageMtomService.guardarDocumentoCsvStorage(
+        dirusuario, documento.getIdentificador(), contentMarshall, mimeType);
+
+    // Si el documento ya existe se modifica
+    if (responseMtom != null && responseMtom.getResponse() != null
+        && responseMtom.getResponse().getCodigo().equals(Constantes.csvStorage.YAEXISTE)) {
+      responseMtom = insideCsvStorageMtomService.modificarDocumentoCsvStorage(dirusuario,
+          documento.getIdentificador(), contentMarshall, mimeType);
+    }
+
+    if (responseMtom == null || (responseMtom.getResponse() != null && !responseMtom.getResponse()
+        .getCodigo().equals(Constantes.csvStorage.GUARDADOCORRECTO))) {
+      documento.setIdentificadorRepositorio(null);
+      throw new InsideServiceAdapterException("No se ha guardado el documento");
+    }
+  }
+
+  @Override
+  public ObjetoDocumentoInsideContenido getcontenidoByUuid(String uuid, String idSession)
+      throws InsideServiceAdapterException,
+      csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException {
+    ObjetoDocumentoInsideContenido retorno = new ObjetoDocumentoInsideContenido();
+    InputStream in = null;
+    URL urlStorage = null;
+    HttpURLConnection urlConnection = null;
+    try {
+      ObtenerInfoContenidoResponse data =
+          insideCsvStorageBigDataServiceImpl.obtenerContenidoUuid(uuid);
+      retorno.setMime(data.getContenidoUuidInfo().getTipoMIME());
+      retorno.setNombreFormato(
+          InsideUtils.getNombreFormatoByMime(data.getContenidoUuidInfo().getTipoMIME()));
+      retorno.setIdentificadorEnDocumento(data.getContenidoUuidInfo().getNombre());
+
+      // abrimos la conexion url
+      urlStorage = new URL(data.getContenidoUuidInfo().getUrl());
+      urlConnection = (HttpURLConnection) urlStorage.openConnection();
+
+      urlConnection.setConnectTimeout(1200000);
+
+      String userpass = properties.getProperty("csvstorage.idaplicacion") + ":"
+          + properties.getProperty("csvstorage.password");
+      String basicAuth = "Basic " + new String(new Base64().encode(userpass.getBytes()));
+      urlConnection.setRequestProperty("Authorization", basicAuth);
+
+      // conectacmos al contenido del storage
+      in = urlConnection.getInputStream();
+
+      String path = temporalDataBusinessService.createEmptyFile(idSession, uuid);
+
+      temporalDataBusinessService.fillFile(path, in);
+      retorno.setReferencia(path);
+    } catch (IOException | InSideServiceTemporalDataException e) {
+      throw new InsideServiceAdapterException(e.getMessage(), e);
+    } finally {
+      try {
+        if (in != null) {
+          in.close();
+        }
+        if (urlConnection != null) {
+          urlConnection.disconnect();
+        }
+      } catch (IOException e) {
+        logger.error("No se ha podido descargar el contenido externo:" + e);
+      }
+    }
+
+    return retorno;
+  }
+
+  @Override
+  public long getContentSizeByUuid(String uuid) throws InsideServiceAdapterException {
+    try {
+      return insideCsvStorageBigDataServiceImpl.getContentSizeByUuid(uuid);
+    } catch (csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException e) {
+      logger.error("Error al obtener tamanio de documento:" + uuid);
+      throw new InsideServiceAdapterException(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public String getValorHuellaDocumento(String uuid, String algoritmo)
+      throws InsideServiceAdapterException {
+    try {
+      logger.debug("Entra en getContentSizeByUuid");
+      return insideCsvStorageBigDataServiceImpl.getValorHuellaDocumento(uuid, algoritmo);
+    } catch (csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException e) {
+      throw new InsideServiceAdapterException(e.getMessage(), e);
+    }
   }
 
 }

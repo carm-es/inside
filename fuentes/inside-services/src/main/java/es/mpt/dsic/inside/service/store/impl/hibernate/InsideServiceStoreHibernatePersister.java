@@ -29,7 +29,6 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInside;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideAplicacion;
@@ -48,9 +47,7 @@ import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceSt
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterUsuario;
 import es.mpt.dsic.inside.store.hibernate.entity.AuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.store.hibernate.entity.AuditoriaFirmaServidor;
-import es.mpt.dsic.inside.store.hibernate.entity.AuditoriaRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.store.hibernate.entity.AuditoriaToken;
-import es.mpt.dsic.inside.store.hibernate.entity.ComunicacionTokenExpediente;
 import es.mpt.dsic.inside.store.hibernate.entity.CredencialesEeutil;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInside;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInsideFirmas;
@@ -66,15 +63,11 @@ import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideIndiceFirmas;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideInteresado;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideMetadatosAdicionales;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideOrgano;
-import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideRespuestaEnvioJusticia;
-import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteNoInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteToken;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteUnidad;
 import es.mpt.dsic.inside.store.hibernate.entity.GeneradorIdInside;
 import es.mpt.dsic.inside.store.hibernate.entity.InsideWsAplicacion;
 import es.mpt.dsic.inside.store.hibernate.entity.NumeroProcedimiento;
-import es.mpt.dsic.inside.store.hibernate.entity.SolicitudAccesoExpAppUrl;
-import es.mpt.dsic.inside.store.hibernate.entity.SolicitudAccesoExpediente;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadAplicacionEeutil;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadOrganica;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadUsuario;
@@ -448,15 +441,10 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
     Transaction tx = session.beginTransaction();
     try {
       ExpedienteUnidad expUni = getExpedienteUnidadEntity(identificador);
-      UnidadOrganica unidad = getUnidadEntity(expUni.getIdUnidad(), session);
-      NumeroProcedimiento numeroProcedimiento = expUni.getIdProcedimiento() != null
-          ? getNumeroProcesoEntity(expUni.getIdProcedimiento(), session)
-          : null;
       session.delete(expUni);
 
       List<ExpedienteInside> listExp = recuperaListExpedienteEntity(identificador, null, session);
       for (ExpedienteInside exp : listExp) {
-        deleteExpInsideRespuestaEnvioJustica(exp, unidad, numeroProcedimiento, session);
         deleteExpInsideMetadatosAdicionales(exp, session);
         deleteExpInsideFirmas(exp, session);
         deleteExpInsideOrgano(exp, session);
@@ -469,21 +457,6 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
     } catch (Exception e) {
       tx.rollback();
       throw new InsideServiceStoreException("Excepción eliminando objeto en BBDD", e);
-    }
-  }
-
-  private void deleteExpInsideRespuestaEnvioJustica(ExpedienteInside expedienteEntity,
-      UnidadOrganica unidadOrganica, NumeroProcedimiento numeroProcedimiento, Session session) {
-    for (ExpedienteInsideRespuestaEnvioJusticia envio : expedienteEntity
-        .getExpedienteInsideRespuestaEnvioJusticia()) {
-      AuditoriaRespuestaEnvioJusticia auditoria = new AuditoriaRespuestaEnvioJusticia();
-      auditoria.setIdentificadorExpediente(expedienteEntity.getIdentificador());
-      auditoria.setUnidad(unidadOrganica);
-      auditoria.setNumeroProcedimiento(numeroProcedimiento);
-      auditoria.setAuditoriaEsbMarcaTiempo(envio.getAuditoriaEsb_marcaTiempo());
-      auditoria.setCodigoEnvio(envio.getCodigoEnvio());
-      session.save(auditoria);
-      session.delete(envio);
     }
   }
 
@@ -601,39 +574,12 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
     }
   }
 
-  public void saveComunicacionTokenExpediente(
-      ComunicacionTokenExpediente comunicacionTokenExpediente, Session session)
-      throws InsideServiceStoreException {
-
-    Transaction tx = session.beginTransaction();
-    try {
-      session.saveOrUpdate(comunicacionTokenExpediente);
-      tx.commit();
-    } catch (Exception e) {
-      tx.rollback();
-      throw new InsideServiceStoreException("Excepción almacenando en BBDD", e);
-    }
-  }
-
   public void saveAuditoriaAccesoDocumento(AuditoriaAccesoDocumento auditoriaAccesoDocumento,
       Session session) throws InsideServiceStoreException {
 
     Transaction tx = session.beginTransaction();
     try {
       session.saveOrUpdate(auditoriaAccesoDocumento);
-      tx.commit();
-    } catch (Exception e) {
-      tx.rollback();
-      throw new InsideServiceStoreException("Excepción almacenando en BBDD", e);
-    }
-  }
-
-  public void saveSolicitudAccesoExpediente(SolicitudAccesoExpediente solicitudAccesoExpediente,
-      Session session) throws InsideServiceStoreException {
-
-    Transaction tx = session.beginTransaction();
-    try {
-      session.saveOrUpdate(solicitudAccesoExpediente);
       tx.commit();
     } catch (Exception e) {
       tx.rollback();
@@ -860,86 +806,6 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
     return retorno;
   }
 
-  public void persistRespuestaRemisionJusticiaExpediente(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String idVersion) throws InsideServiceStoreException {
-
-    ExpedienteInside expedienteEntity =
-        recuperaExpedienteEntity(identificadorExpediente, idVersion);
-
-    // convierto el objeto respuestajusticia a entity
-    ExpedienteInsideRespuestaEnvioJusticia respuestaEnvioJusticia =
-        new ExpedienteInsideRespuestaEnvioJusticia();
-    respuestaEnvioJusticia.setExpedienteInside(expedienteEntity);
-    respuestaEnvioJusticia.setAuditoriaEsb_aplicacion(
-        objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_aplicacion());
-    respuestaEnvioJusticia
-        .setAuditoriaEsb_modulo(objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_modulo());
-    respuestaEnvioJusticia
-        .setAuditoriaEsb_servicio(objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_servicio());
-    respuestaEnvioJusticia.setAuditoriaEsb_marcaTiempo(
-        objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_marcaTiempo());
-    respuestaEnvioJusticia.setAck(objectInsideRespuestaEnvioJusticia.getAck());
-    respuestaEnvioJusticia.setCodigoEnvio(objectInsideRespuestaEnvioJusticia.getCodigoEnvio());
-    respuestaEnvioJusticia.setMensaje(objectInsideRespuestaEnvioJusticia.getMensaje());
-    respuestaEnvioJusticia.setCodigoUnidadOrganoRemitente(
-        objectInsideRespuestaEnvioJusticia.getCodigoUnidadOrganoRemitente());
-
-    Session session = sessionFactory.openSession();
-    Transaction tx = session.beginTransaction();
-    try {
-
-      session.saveOrUpdate(respuestaEnvioJusticia);
-      tx.commit();
-
-    } catch (Exception e) {
-      tx.rollback();
-      throw new InsideServiceStoreException("Excepción almacenando respuesta justicia en BBDD", e);
-    } finally {
-      session.close();
-    }
-
-  }
-
-  public void persistRespuestaRemisionJusticiaExpedienteNoInside(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String idVersion) throws InsideServiceStoreException {
-
-    // convierto el objeto respuestajusticia a entity
-    ExpedienteNoInsideRespuestaEnvioJusticia respuestaEnvioJusticia =
-        new ExpedienteNoInsideRespuestaEnvioJusticia();
-    respuestaEnvioJusticia.setId_expediente_envio(identificadorExpediente);
-    respuestaEnvioJusticia.setAuditoriaEsb_aplicacion(
-        objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_aplicacion());
-    respuestaEnvioJusticia
-        .setAuditoriaEsb_modulo(objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_modulo());
-    respuestaEnvioJusticia
-        .setAuditoriaEsb_servicio(objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_servicio());
-    respuestaEnvioJusticia.setAuditoriaEsb_marcaTiempo(
-        objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_marcaTiempo());
-    respuestaEnvioJusticia.setAck(objectInsideRespuestaEnvioJusticia.getAck());
-    respuestaEnvioJusticia.setCodigoEnvio(objectInsideRespuestaEnvioJusticia.getCodigoEnvio());
-    respuestaEnvioJusticia.setMensaje(objectInsideRespuestaEnvioJusticia.getMensaje());
-    respuestaEnvioJusticia.setCodigoUnidadOrganoRemitente(
-        objectInsideRespuestaEnvioJusticia.getCodigoUnidadOrganoRemitente());
-
-    Session session = sessionFactory.openSession();
-    Transaction tx = session.beginTransaction();
-    try {
-
-      session.saveOrUpdate(respuestaEnvioJusticia);
-      tx.commit();
-
-    } catch (Exception e) {
-      tx.rollback();
-      throw new InsideServiceStoreException(
-          "Excepción almacenando respuesta justicia expediente No Inside en BBDD", e);
-    } finally {
-      session.close();
-    }
-
-  }
-
   public List<DocumentoUnidad> getDocumentoUnidadEntity(String identificador) {
     Session session = sessionFactory.openSession();
 
@@ -1027,7 +893,6 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
       Hibernate.initialize(exp.getExpedienteInsideOrganos());
       Hibernate.initialize(exp.getExpedienteInsideInteresados());
       Hibernate.initialize(exp.getExpedienteInsideMetadatosAdicionaleses());
-      Hibernate.initialize(exp.getExpedienteInsideRespuestaEnvioJusticia());
       Hibernate.initialize(exp.getExpedienteInsideIndices());
       for (ExpedienteInsideIndice indice : exp.getExpedienteInsideIndices()) {
         Hibernate.initialize(indice.getExpedienteInsideIndiceCarpetaIndizadas());
@@ -1166,20 +1031,6 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
           "Proceso incompleto. El número de procedimiento no existe en BBDD");
 
     return numeroProcedimiento;
-  }
-
-  public SolicitudAccesoExpAppUrl saveSolicitudAccesoExpAppUrl(SolicitudAccesoExpAppUrl dato,
-      Session session) throws InsideServiceStoreException {
-
-    Transaction tx = session.beginTransaction();
-    try {
-      session.saveOrUpdate(dato);
-      tx.commit();
-    } catch (Exception e) {
-      tx.rollback();
-      throw new InsideServiceStoreException("Excepción almacenando en BBDD", e);
-    }
-    return dato;
   }
 
   public GeneradorIdInside saveDefaultId(GeneradorIdInside idInside, Session session)

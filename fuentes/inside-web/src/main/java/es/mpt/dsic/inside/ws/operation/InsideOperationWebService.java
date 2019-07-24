@@ -186,6 +186,12 @@ public interface InsideOperationWebService {
   public TipoResultadoVisualizacionDocumentoInside visualizarDocumento(String identificador,
       String aplicacion) throws InsideWSException;
 
+  public RespuestaPdfExpediente visualizarExpediente(byte[] expedienteEni) throws InsideWSException;
+
+
   public RespuestaPdfExpediente getPdfExpediente(byte[] expedienteEni) throws InsideWSException;
+
+  public RespuestaPdfExpediente getPdfExpedientePorId(String identificador, String version)
+      throws InsideWSException;
 
 }

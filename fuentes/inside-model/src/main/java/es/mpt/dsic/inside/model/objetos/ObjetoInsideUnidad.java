@@ -14,10 +14,19 @@ package es.mpt.dsic.inside.model.objetos;
 
 public class ObjetoInsideUnidad implements Comparable<ObjetoInsideUnidad> {
 
+  private Integer id;
   private String codigo;
   private String nombre;
   private String numeroProcedimiento;
   private boolean activo;
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
 
   public String getCodigo() {
     return codigo;

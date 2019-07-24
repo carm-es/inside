@@ -17,34 +17,36 @@ import java.util.Date;
 
 public class ObjetoAuditoriaAcceso {
 
-  private String nifPeticionario;
-  private String nifRemitente;
-  private String nifUsuarioAcceso;
+  private String id;
+  private String usuario;
+  private String unidadOrganicaUsuario;
   private String identificador;
+  private String unidadOrganica;
   private Date fechaAcceso;
+  private String idUnidadOrganica;
 
-  public String getNifPeticionario() {
-    return nifPeticionario;
+  public String getId() {
+    return id;
   }
 
-  public void setNifPeticionario(String nifPeticionario) {
-    this.nifPeticionario = nifPeticionario;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public String getNifRemitente() {
-    return nifRemitente;
+  public String getUsuario() {
+    return usuario;
   }
 
-  public void setNifRemitente(String nifRemitente) {
-    this.nifRemitente = nifRemitente;
+  public void setUsuario(String usuario) {
+    this.usuario = usuario;
   }
 
-  public String getNifUsuarioAcceso() {
-    return nifUsuarioAcceso;
+  public String getUnidadOrganicaUsuario() {
+    return unidadOrganicaUsuario;
   }
 
-  public void setNifUsuarioAcceso(String nifUsuarioAcceso) {
-    this.nifUsuarioAcceso = nifUsuarioAcceso;
+  public void setUnidadOrganicaUsuario(String unidadOrganicaUsuario) {
+    this.unidadOrganicaUsuario = unidadOrganicaUsuario;
   }
 
   public String getIdentificador() {
@@ -55,12 +57,28 @@ public class ObjetoAuditoriaAcceso {
     this.identificador = identificador;
   }
 
+  public String getUnidadOrganica() {
+    return unidadOrganica;
+  }
+
+  public void setUnidadOrganica(String unidadOrganica) {
+    this.unidadOrganica = unidadOrganica;
+  }
+
   public Date getFechaAcceso() {
     return fechaAcceso;
   }
 
   public void setFechaAcceso(Date fechaAcceso) {
     this.fechaAcceso = fechaAcceso;
+  }
+
+  public String getIdUnidadOrganica() {
+    return idUnidadOrganica;
+  }
+
+  public void setIdUnidadOrganica(String idUnidadOrganica) {
+    this.idUnidadOrganica = idUnidadOrganica;
   }
 
 }

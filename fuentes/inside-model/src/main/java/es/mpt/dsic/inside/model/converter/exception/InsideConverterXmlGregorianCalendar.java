@@ -11,7 +11,9 @@
 
 package es.mpt.dsic.inside.model.converter.exception;
 
+import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -48,6 +50,15 @@ public class InsideConverterXmlGregorianCalendar {
     GregorianCalendar g = new GregorianCalendar();
     g.setTimeInMillis(fecha.getTimeInMillis());
     return g;
+  }
+
+  public static XMLGregorianCalendar dateToXmlCalendar(Date fecha)
+      throws ParseException, DatatypeConfigurationException {
+    XMLGregorianCalendar retorno = null;
+    GregorianCalendar calender = new GregorianCalendar();
+    calender.setTime(fecha);
+    retorno = DatatypeFactory.newInstance().newXMLGregorianCalendar(calender);
+    return retorno;
   }
 
 }

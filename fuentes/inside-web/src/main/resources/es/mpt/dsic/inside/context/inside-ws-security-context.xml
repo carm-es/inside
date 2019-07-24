@@ -62,10 +62,6 @@
 		
 		<prop key="trustedStore">${trustedStore}</prop>
 		<prop key="trustedStorePassword">${trustedStorePassword}</prop>
-		
-		<prop key="keyStore">${keyStore}</prop>
-		<prop key="keyStorePassword">${keyStorePassword}</prop>
-		<prop key="keyPasswordKey">${keyPasswordKey}</prop>
 
 	</util:properties>
 
@@ -107,6 +103,5 @@
 	<bean id="certificateInterceptor"
 		class="es.mpt.dsic.inside.ws.security.interceptor.CertificateInterceptor">
 	</bean>
-	
 
 </beans>

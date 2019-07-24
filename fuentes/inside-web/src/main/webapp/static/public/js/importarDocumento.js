@@ -1,9 +1,13 @@
 $(document).ready(function() {
     configurarPlUploadImportarDocumento();
 
+    //convertir en objetoJSON la lista creada en expedientController y pasada a stringJSON
+    var listaExpInside = JSON.parse($("#listaExpedientesJSON").val());
+
     // Autocompletado del campo expedientes.
     $("#identificadorExpediente").autocomplete({
-        source : $("#context").val() + '/autocomplete/expedientes?allExp=false&uniAct=true',
+        //source : $("#context").val() + '/autocomplete/expedientes?allExp=false&uniAct=true',
+        source : listaExpInside,
         minLength : 0,
         autoFocus : true,
         select : function(event, ui) {
@@ -21,8 +25,8 @@ $(document).ready(function() {
 
 function configurarPlUploadImportarDocumento() {
     uploader = new plupload.Uploader({
-        chunk_size : '10mb',
-        max_file_size : "10gb",
+        chunk_size : '4mb',
+        max_file_size : "8mb",
         browse_button : 'documento_button',
         url : $("#context").val() + "/uploadTempData",
         unique_names : false,
@@ -38,6 +42,11 @@ function configurarPlUploadImportarDocumento() {
         console.log("Inicio Error");
         console.log(arguments);
         console.log("Fin Error");
+
+        $("#tipoMensaje").val(4);
+        $("#valorMensaje").val("Error. No se pueden importar un documento mayor de 8MB.");
+        showMessage();
+
     });
 
     uploader.bind('FilesAdded', function(up, file_plupload) {
@@ -76,10 +85,10 @@ function importarDocumento() {
 }
 
 function sendDocumento(idExpediente, firmaServidor) {
-    $('#importarVeil').removeAttr('style').removeClass('hidden');
+    $mf.timer.on();
     ocultarMensaje();
     $.ajax({
-        url : $("#context").val() + '/importNewDocumentXml',
+        url : $("#context").val() + '/importarDocumento/importNewDocumentXml',
         type : 'POST',
         dataType : 'json',
         data : {
@@ -97,11 +106,11 @@ function sendDocumento(idExpediente, firmaServidor) {
                     showMessage();
                 }
             }
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         },
         error : function(xhr) {
             console.error(xhr.responseText);
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         }
     });
 }
@@ -159,7 +168,7 @@ function updateIndexExp(idExpediente, expedient, dataSign) {
         },
         error : function(xhr) {
             console.error(xhr.responseText);
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
         }
     });
 }

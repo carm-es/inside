@@ -15,6 +15,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -39,9 +42,13 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+
+
 public class XMLUtils {
 
   private static String nodoARemplazar = null;
+
+  public static final Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
   public static Node getNode(byte[] xml, String tag)
       throws ParserConfigurationException, SAXException, IOException {
@@ -64,28 +71,84 @@ public class XMLUtils {
     return nodo;
   }
 
+
   public static String documentoAdicionalWebToEni(byte[] adicional)
       throws ParserConfigurationException, SAXException, IOException,
       TransformerFactoryConfigurationError, TransformerException {
-    Node nodoEni = getNode(adicional, "ns5:documento");
-    Element nodoEniElem = (Element) nodoEni;
-    nodoEniElem.setAttribute("xmlns:ns2",
-        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos");
-    nodoEniElem.setAttribute("xmlns:ns3",
-        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
-    nodoEniElem.setAttribute("xmlns:ns4", "http://www.w3.org/2000/09/xmldsig#");
-    nodoEniElem.setAttribute("xmlns:ns5",
+
+    // calculamos el prefijo del primer nodo
+    String prefijoDocENI = prefijoNamespaceExpediente(new String(adicional),
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
-    nodoEniElem.setAttribute("xmlns:ns6",
+    Node nodoEni = null;
+    if (prefijoDocENI != null && !prefijoDocENI.trim().equals("")) {
+      String pref = prefijoDocENI.split(":")[1];
+      nodoEni = getNode(adicional, pref + ":documento");
+    } else {
+      nodoEni = getNode(adicional, "ns5:documento");
+    }
+
+
+    Element nodoEniElem = (Element) nodoEni;
+
+    // nodoEniElem.setAttribute("xmlns:ns2",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos");
+    // nodoEniElem.setAttribute("xmlns:ns3",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
+    // nodoEniElem.setAttribute("xmlns:ns4", "http://www.w3.org/2000/09/xmldsig#");
+    // nodoEniElem.setAttribute("xmlns:ns5",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+    // nodoEniElem.setAttribute("xmlns:ns6",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
+    // nodoEniElem.setAttribute("xmlns:ns7",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
+    // nodoEniElem.setAttribute("xmlns:insidews",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
+    // nodoEniElem.setAttribute("xmlns",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
+    // nodoEniElem.setAttribute("xmlns:enidoc",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+
+
+    // recorre los namespaces para recoger los prefijos que utiliza en el xml
+    String prefijo1 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos");
+    String prefijo2 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
+    String prefijo3 =
+        prefijoNamespaceExpediente(new String(adicional), "http://www.w3.org/2000/09/xmldsig#");
+    String prefijo4 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+    String prefijo5 = prefijoNamespaceExpediente(new String(adicional),
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
-    nodoEniElem.setAttribute("xmlns:ns7",
+    String prefijo6 = prefijoNamespaceExpediente(new String(adicional),
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
+    String prefijo7 = prefijoNamespaceExpediente(new String(adicional),
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
+    String prefijo8 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
+    String prefijo9 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+
+
+
+    nodoEniElem.setAttribute("xmlns" + prefijo1,
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos");
+    nodoEniElem.setAttribute("xmlns" + prefijo2,
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
+    nodoEniElem.setAttribute("xmlns" + prefijo3, "http://www.w3.org/2000/09/xmldsig#");
+    nodoEniElem.setAttribute("xmlns" + prefijo4,
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+    nodoEniElem.setAttribute("xmlns" + prefijo5,
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
+    nodoEniElem.setAttribute("xmlns" + prefijo6,
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
     nodoEniElem.setAttribute("xmlns:insidews",
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e");
-    nodoEniElem.setAttribute("xmlns",
+    nodoEniElem.setAttribute("xmlns" + prefijo8,
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
     nodoEniElem.setAttribute("xmlns:enidoc",
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+
     return nodeToString(nodoEni);
   }
 
@@ -157,27 +220,83 @@ public class XMLUtils {
   public static String expedienteAdicionalWebToEni(byte[] adicional)
       throws ParserConfigurationException, SAXException, IOException,
       TransformerFactoryConfigurationError, TransformerException {
-    Node nodoEni = getNode(adicional, "ns7:expediente");
+
+    // calculamos el prefijo del primer nodo
+    String prefijoEXpENI = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e");
+    Node nodoEni = null;
+    if (prefijoEXpENI != null && !prefijoEXpENI.trim().equals("")) {
+      String pref = prefijoEXpENI.split(":")[1];
+      nodoEni = getNode(adicional, pref + ":expediente");
+    } else {
+      nodoEni = getNode(adicional, "ns7:expediente");
+    }
+
     Element nodoEniElem = (Element) nodoEni;
-    nodoEniElem.setAttribute("xmlns:ns2",
+    // nodoEniElem.setAttribute("xmlns:ns2",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e");
+    // nodoEniElem.setAttribute("xmlns",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e/contenido");
+    // nodoEniElem.setAttribute("xmlns:ns4", "http://www.w3.org/2000/09/xmldsig#");
+    // nodoEniElem.setAttribute("xmlns:ns3",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
+    // nodoEniElem.setAttribute("xmlns:insidews",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService");
+    // nodoEniElem.setAttribute("xmlns:ns9",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e");
+    // nodoEniElem.setAttribute("xmlns:ns5",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos");
+    // nodoEniElem.setAttribute("xmlns:ns6",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
+    // nodoEniElem.setAttribute("xmlns:ns7",
+    // "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e");
+    // nodoEniElem.setAttribute("xmlns:ns8",
+    // "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
+
+
+    // recorre los namespaces para recoger los prefijos que utiliza en el xml
+    String prefijo1 = prefijoNamespaceExpediente(new String(adicional),
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e");
-    nodoEniElem.setAttribute("xmlns",
+    String prefijo2 = prefijoNamespaceExpediente(new String(adicional),
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e/contenido");
-    nodoEniElem.setAttribute("xmlns:ns4", "http://www.w3.org/2000/09/xmldsig#");
-    nodoEniElem.setAttribute("xmlns:ns3",
+    String prefijo3 =
+        prefijoNamespaceExpediente(new String(adicional), "http://www.w3.org/2000/09/xmldsig#");
+    String prefijo4 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
+    String prefijo5 = prefijoNamespaceExpediente(new String(adicional),
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService");
+    String prefijo6 = prefijoNamespaceExpediente(new String(adicional),
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e");
+    String prefijo7 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos");
+    String prefijo8 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
+    String prefijo9 = prefijoNamespaceExpediente(new String(adicional),
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e");
+    String prefijo10 = prefijoNamespaceExpediente(new String(adicional),
+        "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
+
+    nodoEniElem.setAttribute("xmlns" + prefijo1,
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e");
+    nodoEniElem.setAttribute("xmlns" + prefijo2,
+        "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e/contenido");
+    nodoEniElem.setAttribute("xmlns" + prefijo3, "http://www.w3.org/2000/09/xmldsig#");
+    nodoEniElem.setAttribute("xmlns" + prefijo4,
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma");
     nodoEniElem.setAttribute("xmlns:insidews",
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService");
-    nodoEniElem.setAttribute("xmlns:ns9",
+    nodoEniElem.setAttribute("xmlns" + prefijo6,
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e");
-    nodoEniElem.setAttribute("xmlns:ns5",
+    nodoEniElem.setAttribute("xmlns" + prefijo7,
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos");
-    nodoEniElem.setAttribute("xmlns:ns6",
+    nodoEniElem.setAttribute("xmlns" + prefijo8,
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido");
-    nodoEniElem.setAttribute("xmlns:ns7",
+    nodoEniElem.setAttribute("xmlns" + prefijo9,
         "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e");
-    nodoEniElem.setAttribute("xmlns:ns8",
+    nodoEniElem.setAttribute("xmlns" + prefijo10,
         "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales");
+
+
     return nodeToString(nodoEni);
   }
 
@@ -289,4 +408,88 @@ public class XMLUtils {
     return result.getOutputStream().toString();
   }
 
+
+
+  public static String prefijoNamespaceExpediente(String stringXMLExpediente,
+      String nameSpaceSearch) throws ParserConfigurationException, SAXException, IOException,
+      TransformerFactoryConfigurationError, TransformerException {
+    // busca el prefijo correspondiente al nodo expediente eni
+    String prefijo = "";
+
+    List<String> listaNameSpaces = XMLUtils.getNameSpacesNodoROOT(stringXMLExpediente);
+
+    prefijo = buscarPrefijoNodoNAMESPACE(listaNameSpaces, nameSpaceSearch);
+
+    // // es quer no lo ha encontrado en el nodo root busca en el siguiente
+    // if("".equals(prefijo))
+    // {
+    // listaNameSpaces.clear();
+    // listaNameSpaces = XMLUtils.getNameSpacesDelHijoDelROOT(stringXMLExpediente);
+    //
+    // prefijo = buscarPrefijoNodoNAMESPACE(listaNameSpaces, nameSpaceSearch);
+    //
+    // }
+
+    return prefijo;
+
+  }
+
+  public static List<String> getNameSpacesNodoROOT(String xml)
+      throws ParserConfigurationException, SAXException, IOException {
+    org.w3c.dom.Node nodoPadre = XMLUtils.getNode(xml.getBytes(XMLUtils.UTF8_CHARSET), "*");// *
+                                                                                            // recoge
+                                                                                            // el
+                                                                                            // primer
+                                                                                            // nodo
+
+    List<String> listaNameSpaces = new ArrayList<String>();
+    for (int i = 0; i < nodoPadre.getAttributes().getLength(); i++) {
+      org.w3c.dom.Node nodoTemp = nodoPadre.getAttributes().item(i);
+      String nameSpace = nodoTemp.getNodeName() + "=" + nodoTemp.getNodeValue();
+      listaNameSpaces.add(nameSpace);
+    }
+    return listaNameSpaces;
+  }
+
+
+  public static List<String> getNameSpacesDelHijoDelROOT(String xml)
+      throws ParserConfigurationException, SAXException, IOException {
+    org.w3c.dom.Node nodoPadre = XMLUtils.getNode(xml.getBytes(XMLUtils.UTF8_CHARSET), "*");// *
+                                                                                            // recoge
+                                                                                            // el
+                                                                                            // primer
+                                                                                            // nodo
+    org.w3c.dom.Node nodoPrimerHijo = nodoPadre.getFirstChild();
+
+    List<String> listaNameSpaces = new ArrayList<String>();
+    for (int i = 0; i < nodoPrimerHijo.getAttributes().getLength(); i++) {
+      org.w3c.dom.Node nodoTemp = nodoPrimerHijo.getAttributes().item(i);
+      String nameSpace = nodoTemp.getNodeName() + "=" + nodoTemp.getNodeValue();
+      listaNameSpaces.add(nameSpace);
+    }
+    return listaNameSpaces;
+  }
+
+
+  private static String buscarPrefijoNodoNAMESPACE(List<String> listaNameSpaces,
+      String NameSpaceABuscar) {
+    String prefijo = "";
+
+    for (int i = 0; i < listaNameSpaces.size(); i++) {
+
+      if (listaNameSpaces.get(i).split("=")[1].equalsIgnoreCase(NameSpaceABuscar)) {
+        String parte1 = listaNameSpaces.get(i).split("=")[0];
+        if (parte1.contains(":")) {
+          prefijo = parte1.split(":")[1];// le añado el dos puntos
+          return ":" + prefijo;
+        } else {
+          return prefijo;// vacio no usa ningun prefijo para el namespace
+        }
+      }
+
+    }
+    return prefijo;
+
+
+  }
 }

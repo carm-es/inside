@@ -13,7 +13,7 @@ package es.mpt.dsic.inside.ws.validation.impl;
 
 import java.util.GregorianCalendar;
 import java.util.List;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterXmlGregorianCalendar;
 import es.mpt.dsic.inside.ws.validation.InsideValidationDataService;
@@ -43,7 +43,7 @@ public class InsideValidationDataServiceImpl implements InsideValidationDataServ
       throw new InsideValidationDataException("No se han enviado los metadatos del documento");
     }
 
-    if (documento.getContenido() == null) {
+    if (documento.getContenido() == null && StringUtils.isEmpty(documento.getContenidoId())) {
       throw new InsideValidationDataException("No se ha enviado el contenido del documento");
     }
 
@@ -207,6 +207,13 @@ public class InsideValidationDataServiceImpl implements InsideValidationDataServ
 
       if (carpetaConversion.getIdentificadorCarpeta() == null) {
         throw new InsideValidationDataException("No se ha enviado el identificador de la carpeta");
+      }
+
+      List<Object> hijos =
+          carpetaConversion.getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada();
+
+      for (Object hijo : hijos) {
+        validaTipoIndiceConversion(hijo, fillEmptyFields);
       }
     }
 

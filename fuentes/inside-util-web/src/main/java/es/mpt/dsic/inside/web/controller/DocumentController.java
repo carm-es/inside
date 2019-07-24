@@ -11,10 +11,13 @@
 
 package es.mpt.dsic.inside.web.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.SocketException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,16 +36,22 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import org.codehaus.jackson.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +63,7 @@ import es.mpt.dsic.inside.model.converter.InsideConverterExpediente;
 import es.mpt.dsic.inside.model.converter.InsideConverterFirmas;
 import es.mpt.dsic.inside.model.converter.InsideConverterMetadatos;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterUtilsException;
+import es.mpt.dsic.inside.model.converter.mime.InsideMimeUtils;
 import es.mpt.dsic.inside.model.objetos.ObjetoAuditoriaFirmaServidor;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideDocumentoUnidad;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideMetadatoAdicional;
@@ -71,17 +81,23 @@ import es.mpt.dsic.inside.model.objetos.firmas.FirmaInsideTipoFirmaEnum;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.InsideUtilService;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
+import es.mpt.dsic.inside.service.object.converter.impl.InsideServiceAdapterException;
+import es.mpt.dsic.inside.service.object.converter.impl.csvstorage.InsideServiceCsvStorageAdapter;
 import es.mpt.dsic.inside.service.object.metadatos.validator.Exception.InSideServiceValidationException;
 import es.mpt.dsic.inside.service.object.signer.InsideServiceSigner;
 import es.mpt.dsic.inside.service.object.validators.exception.InsideServiceObjectValidationException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectNotFoundException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectVinculatedException;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.util.Constantes;
 import es.mpt.dsic.inside.service.util.InsideUtils;
+import es.mpt.dsic.inside.service.util.InsideWSUtils;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.service.util.XMLUtils;
+import es.mpt.dsic.inside.service.utilFirma.InsideServiceUtilFirma;
 import es.mpt.dsic.inside.service.visualizacion.InsideServiceVisualizacion;
 import es.mpt.dsic.inside.service.visualizacion.exception.InsideServiceVisualizacionException;
 import es.mpt.dsic.inside.util.xml.JAXBMarshaller;
@@ -89,12 +105,10 @@ import es.mpt.dsic.inside.web.object.ComboItem;
 import es.mpt.dsic.inside.web.object.MessageObject;
 import es.mpt.dsic.inside.web.object.VisualizacionItem;
 import es.mpt.dsic.inside.web.util.ComboUtils;
-import es.mpt.dsic.inside.web.util.InsideWSUtils;
 import es.mpt.dsic.inside.web.util.MessageUtils;
 import es.mpt.dsic.inside.web.util.MetadatosEEMGDE;
 import es.mpt.dsic.inside.web.util.SignatureUtils;
 import es.mpt.dsic.inside.web.util.VisualizacionUtils;
-import es.mpt.dsic.inside.web.util.WebConstants;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
 import es.mpt.dsic.inside.ws.util.InSideDateAdapter;
@@ -161,6 +175,13 @@ public class DocumentController {
   @Autowired
   VisualizacionUtils visualizacionUtils;
 
+  @Autowired
+  private InsideServiceUtilFirma utilFirmaService;
+
+
+  @Autowired
+  InsideServiceCsvStorageAdapter csvStorageAdapter;
+
   private boolean existDocumentIndex;
 
   private static final String MENSAJE_USU = "mensajeUsuario";
@@ -217,6 +238,9 @@ public class DocumentController {
     retorno.addObject(FORMAT_FIRM, WebConstants.TYPE_CERTIFICATE_DEFAULT);
     retorno.addObject(METADATO_ADICIONALES, new TipoMetadatosAdicionales());
     retorno.addObject(SHOW_MESSAGE, true);
+    retorno.addObject("metadatoNombreNatural",
+        MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL.getValue());
+
     return retorno;
   }
 
@@ -233,7 +257,7 @@ public class DocumentController {
     try {
       retorno.put(ERROR_GUARDAR, true);
       TipoDocumentoInsideConMAdicionales docConvertido = generateDocument(documentoEni, request,
-          locale, metadatosAdicionales, session, retorno, aditionalData);
+          locale, metadatosAdicionales, session, retorno, aditionalData, true);
       if (!insideUtilService.esLongitudIdentificadorValido(docConvertido.getDocumento().getId())) {
         throw new InsideWSException(InsideWsErrors.IDENTIFICADOR_DOCUMENTO_LONGITUD, null, "");
       }
@@ -277,15 +301,27 @@ public class DocumentController {
   public TipoDocumentoInsideConMAdicionales generateDocument(
       TipoDocumentoConversionInside documentoEni, HttpServletRequest request, Locale locale,
       String metadatosAdicionales, HttpSession session, Map<String, Object> retorno,
-      TipoMetadatosAdicionales aditionalData) throws InsideServiceInternalException {
+      TipoMetadatosAdicionales aditionalData, boolean validateContent)
+      throws InsideServiceInternalException {
     TipoDocumentoInsideConMAdicionales tipoDoc = null;
     try {
 
-      validateData(documentoEni, locale, request.getParameter(DOCUMENT_ID));
-      String documentId =
-          temporalDataBusinessService.getPath(session.getId(), request.getParameter(DOCUMENT_ID));
+      validateData(documentoEni, locale, request.getParameter(DOCUMENT_ID), validateContent);
+      String documentId = null;
+      if (validateContent) {
+        documentId =
+            temporalDataBusinessService.getPath(session.getId(), request.getParameter(DOCUMENT_ID));
+      } else {
+        documentId = documentoEni.getContenidoId();
+      }
       String signId = extraerFirmaResultado(request, session);
-      setData(documentoEni, request, documentId, session, signId);
+
+      boolean firmaCsv = false;
+      if (StringUtils.isNotEmpty(request.getParameter("firmaCsv"))) {
+        firmaCsv = true;
+      }
+
+      setData(documentoEni, request, documentId, session, signId, firmaCsv);
       setAdicionales(metadatosAdicionales, aditionalData);
       ObjetoDocumentoInside docInside = getDataSigned(documentoEni, session, signId);
       retorno.put(IDENTIFICADOR, documentoEni.getMetadatosEni().getIdentificador());
@@ -404,6 +440,9 @@ public class DocumentController {
       pr.close();
 
       return null;
+    } catch (SocketException e) {
+      logger.warn(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
+      return null;
     } catch (Exception e) {
       logger.error(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
       MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
@@ -415,28 +454,51 @@ public class DocumentController {
 
   }
 
+
+
   @RequestMapping(value = "/descargarContenidoDocumento", method = RequestMethod.POST)
   public ModelAndView descargarContenidoDocumento(@RequestParam(IDENTIFICADOR) String identificador,
       HttpServletResponse response, Locale locale, HttpSession session) {
+    FileInputStream fin = null;
+    ObjetoDocumentoInsideContenido contenido = null;
     try {
+      // realizar nuevo metodo lazyLoadXmlContentFile que retorne ObjetoDocumentoInsideContenido
+      contenido = insideUtilService.lazyLoadContentFile(session.getId(), identificador);
 
-      byte[] data = insideUtilService.lazyLoadXmlFile(session.getId(), identificador, true);
-      TipoDocumento docEni = jAXBMarshaller.unmarshallDataDocument(data);
-      ObjetoDocumentoInsideContenido contenido =
-          insideService.getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null);
-      byte[] dataBytes = contenido.getValorBinario();
-      String mime = contenido.getMime();
-      String extension = "." + contenido.getNombreFormato();
+      if (contenido.getValorBinario() != null) {
+        String identificadorCompleto = identificador + "." + contenido.getNombreFormato();
 
-      OutputStream pr = response.getOutputStream();
-      response.setContentType(mime);
-      String identificadorCompleto =
-          StringUtils.isNotBlank(extension) ? identificador + extension : identificador;
-      response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME + identificadorCompleto);
+        OutputStream pr = response.getOutputStream();
+        response.setContentType(contenido.getMime());
+        response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME + identificadorCompleto);
 
-      pr.write(dataBytes);
-      pr.close();
+        pr.write(contenido.getValorBinario());
+        pr.close();
+      } else {
+        OutputStream pr = response.getOutputStream();
 
+        contenido = insideUtilService.getExternalContent(identificador, session.getId());
+
+        response.setContentType(contenido.getMime());
+        response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME
+            + contenido.getIdentificadorEnDocumento() + "." + contenido.getNombreFormato());
+        File filedownload = new File(contenido.getReferencia());
+        response.setContentLength((int) filedownload.length());
+
+        fin = new FileInputStream(filedownload);
+
+        byte[] buffer = new byte[4096]; // To hold file contents
+        int bytes_read; // How many bytes in buffer
+        while ((bytes_read = fin.read(buffer)) != -1)
+          // Read until EOF
+          pr.write(buffer, 0, bytes_read); // write
+
+        pr.close();
+      }
+
+      return null;
+    } catch (SocketException e) {
+      logger.warn(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
       return null;
     } catch (Exception e) {
       logger.error(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
@@ -445,8 +507,22 @@ public class DocumentController {
       ModelAndView retorno = new ModelAndView(VIEW_GENERATE_DOC);
       retorno.addObject(MENSAJE_USU, mensaje);
       return retorno;
+    } finally {
+      try {
+        if (fin != null) {
+          fin.close();
+          // borramos el fichero temporal descargado
+          FileUtils.forceDelete(new File(contenido.getReferencia()));
+        }
+      } catch (IOException e) {
+        logger.error(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
+        MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
+            messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale));
+        ModelAndView retorno = new ModelAndView(VIEW_GENERATE_DOC);
+        retorno.addObject(MENSAJE_USU, mensaje);
+        return retorno;
+      }
     }
-
   }
 
   public boolean isFormatTif(String extension, String mime) {
@@ -460,7 +536,8 @@ public class DocumentController {
 
   @RequestMapping(value = "/descargarVisualizar", method = RequestMethod.POST)
   public ModelAndView descargarVisualizar(@RequestParam(IDENTIFICADOR) String identificador,
-      HttpServletResponse response, Locale locale, HttpSession session) {
+      HttpServletResponse response, Locale locale, HttpSession session,
+      HttpServletRequest request) {
     try {
       TipoDocumentoVisualizacionInside visualizar = new TipoDocumentoVisualizacionInside();
       TipoDocumentoEniBinarioOTipo docEniBinario = new TipoDocumentoEniBinarioOTipo();
@@ -479,19 +556,28 @@ public class DocumentController {
           marshaller.unmarshallDataDocumentAditional(docEniBytes);
       visualizar.setMetadatosAdicionales(tDoc.getMetadatosAdicionales());
 
-      TipoResultadoVisualizacionDocumentoInside resultado =
-          insideUtilService.visualizarDocumentoEni(visualizar);
+      if (tDoc.getDocumento().getContenido().getValorBinario() != null) {
+        TipoResultadoVisualizacionDocumentoInside resultado =
+            insideUtilService.visualizarDocumentoEni(visualizar);
 
-      byte[] data = resultado.getContenido();
+        byte[] data = resultado.getContenido();
 
-      OutputStream pr = response.getOutputStream();
-      response.setContentType("application/pdf");
-      response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME + identificador + ".pdf\"");
+        OutputStream pr = response.getOutputStream();
+        response.setContentType("application/pdf");
+        response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME + identificador + ".pdf\"");
 
-      pr.write(data);
-      pr.close();
+        pr.write(data);
+        pr.close();
 
-      return null;
+        return null;
+      } else {
+        logger.warn("Error al descargar visualizar documento:" + ": " + identificador);
+        MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
+            messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale));
+        ModelAndView retorno = new ModelAndView(VIEW_GENERATE_DOC);
+        retorno.addObject(MENSAJE_USU, mensaje);
+        return editarDocumento(locale, identificador, "false", session, request);
+      }
     } catch (Exception e) {
       logger.error(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + identificador, e);
       MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
@@ -540,11 +626,6 @@ public class DocumentController {
       logger.error("DocumentController.validarDocumentoPost --> Error al validar documento", e);
       mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
           messageSource.getMessage(WebConstants.MSG_IMPORTAR_DOC_ID_NO_VALIDO, null, locale));
-      retorno.put(MENSAJE_USU, mensaje);
-    } catch (IOException e2) {
-      logger.warn(ERROR_AL_VALIDAR_DOCUMENTO, e2);
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
-          messageSource.getMessage(WebConstants.MSG_FILE_UPLOAD_ERROR, null, locale));
       retorno.put(MENSAJE_USU, mensaje);
     } catch (InsideServiceInternalException e) {
       logger.warn(ERROR_AL_VALIDAR_DOCUMENTO, e);
@@ -626,8 +707,8 @@ public class DocumentController {
 
       byte[] data = insideUtilService.lazyLoadXmlFile(session.getId(), identificador, true);
       TipoDocumento docEni = jAXBMarshaller.unmarshallDataDocument(data);
-      ObjetoDocumentoInsideContenido contenido =
-          insideService.getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null);
+      ObjetoDocumentoInsideContenido contenido = insideService
+          .getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null, session.getId());
       byte[] dataBytes = contenido.getValorBinario();
       String mime = contenido.getMime();
       String extension = "." + contenido.getNombreFormato();
@@ -660,8 +741,47 @@ public class DocumentController {
     ObjetoInsideUsuario usuario =
         (ObjetoInsideUsuario) session.getAttribute(WebConstants.USUARIO_SESSION);
     retorno.addObject(SHIW_FIRMA_SERVER, insideService.checkSignatureServerByUser(usuario));
+
+    ///// cargar los documentos de la unidad porque el autocomplete de js no funciona en internet
+    ///// Explorer ////////////////////////////////////////
+
+    String listaExpedientesJSON = convertListToJSONString(usuario);
+
+    retorno.addObject("listaExpedientesJSON", listaExpedientesJSON);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     return retorno;
   }
+
+  private String convertListToJSONString(ObjetoInsideUsuario usuario) {
+
+    List<ComboItem> lista = autocompleteController.autocompleteExpedientes(usuario, true, true, "");
+
+
+    ObjectMapper mapper = new ObjectMapper();
+    SerializationConfig config = mapper.getSerializationConfig();
+    config.setSerializationInclusion(Inclusion.NON_NULL);
+    mapper.setSerializationConfig(config);
+
+    String resultadoJSON = "";
+    try {
+      resultadoJSON = mapper.writeValueAsString(lista);
+
+    } catch (JsonGenerationException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    } catch (JsonMappingException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    } catch (IOException e) {
+      logger.error("Error convirtiendo lista a String JSON: " + e.getMessage());
+    }
+
+
+    return resultadoJSON;
+
+  }
+
 
   @RequestMapping(value = "/updateIndexExp", method = RequestMethod.POST)
   @ResponseBody
@@ -758,16 +878,73 @@ public class DocumentController {
     Map<String, Object> retorno = new HashMap<String, Object>();
     TipoMetadatosAdicionales aditionalData = new TipoMetadatosAdicionales();
     try {
+
+      // Si el fichero es mayor de 8 megas y tiene firma(esto es haberlo firmado o ser
+      // previamentefirmado)
+      // se rechaza porque @firma no puede validar las firmas de esos tamanios
+      String rutaDocumentId =
+          temporalDataBusinessService.getPath(session.getId(), request.getParameter(DOCUMENT_ID));
+      String signId = extraerFirmaResultado(request, session);
+      String firmapreviamente = request.getParameter("firma");
+
+      String firmarLongeva = request.getParameter("firmarLongeva");
+      String firmado = null;
+      if ("1".equals(firmapreviamente) || signId != null)
+        firmado = "si";
+      // por defecto tratarlo como fichero grande etc.. si
+      // aceptarFicheroTamanioYFirma(....)devuelkve true se trata como fichero normal
+      boolean tratarComoFicheroNormal = false;
+      tratarComoFicheroNormal =
+          insideUtilService.aceptarFicheroTamanioYFirma(rutaDocumentId, firmado,
+              documentoEni.getMetadatosEni().getEstadoElaboracion().getValorEstadoElaboracion());
+
+
       TipoDocumentoInsideConMAdicionales docConvertido = generateDocument(documentoEni, request,
-          locale, metadatosAdicionales, session, retorno, aditionalData);
+          locale, metadatosAdicionales, session, retorno, aditionalData, true);
+
       insideUtilService.checkNoExistIdDocumentInside(docConvertido.getDocumento().getId(), true);
-      ObjetoDocumentoInside docInside =
-          insideUtilService.validateDocumentImport(insideUtilService.generateDocXml(docConvertido));
+      if (StringUtils.isNotBlank(firmarLongeva) && firmarLongeva.trim().equals("true")) {
+        try {
+          insideUtilService.trataAmpliacionFirmaDocumento(docConvertido);
+        } catch (Exception e) {
+          logger.warn("Error al intentar amliar firma " + e.getLocalizedMessage() + e.getMessage());
+          retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, messageSource
+              .getMessage(WebConstants.MSG_GENERAR_FIRMA_LONGEVA_ERROR, null, locale)));
+          throw new InsideServiceInternalException("Error al ampliar firma");
+        }
+      }
+      ObjetoDocumentoInside docInside = null;
+      if (tratarComoFicheroNormal) {
+        // se aniade parametros por tema laura fichero firmado previamente con certificado caducado
+        // hay que dejarle pasar
+        docInside = insideUtilService.validateDocumentImport(retorno, firmapreviamente,
+            insideUtilService.generateDocXml(docConvertido));
+      } else {
+        docInside = insideUtilService.convertXmlDocumentToDocumentObject(docConvertido);
+      }
+
+
+
       ObjetoInsideUsuario usuario =
           (ObjetoInsideUsuario) request.getSession().getAttribute(WebConstants.USUARIO_SESSION);
 
-      insideService.altaDocumento(docInside, usuario.getNif(), true);
-      retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_GUARDAR_DOC_OK, null, locale));
+      ObjetoDocumentoInside doc = insideService.altaDocumento(docInside, usuario.getNif(), true);
+
+      // si no se ha incluido el mensaje antes se mete este
+      if (retorno.containsKey("mensajeUsuarioPreviamenteFirmado")) {
+        MessageObject mensObjet = (MessageObject) retorno.get("mensajeUsuarioPreviamenteFirmado");
+        String mens = messageSource.getMessage(WebConstants.MSG_GUARDAR_DOC_OK, null, locale) + ". "
+            + mensObjet.getMessage();
+        retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING, mens));
+      } else if (doc.getContenido().getReferencia() != null
+          && doc.getContenido().getReferencia().contains("csvstorage")) {
+        String mens = messageSource.getMessage(WebConstants.MSG_GUARDAR_DOC_OK, null, locale) + ". "
+            + "Expedientes con este documento no se pueden enviar a justicia.";
+        retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING, mens));
+      } else {
+        retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_GUARDAR_DOC_OK, null, locale));
+      }
+
     } catch (InSideServiceValidationException e) {
       logger.warn(MNJ_ERROR_SAVE_DOCU, e);
       retorno.put(ERROR_GUARDAR, true);
@@ -824,7 +1001,8 @@ public class DocumentController {
     }
   }
 
-  @RequestMapping(value = "/updateDocument", method = RequestMethod.POST)
+
+  @RequestMapping(value = "/editarDocumento/updateDocument", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> updateDocumentPost(
       @ModelAttribute TipoDocumentoConversionInside documentoEni, HttpServletRequest request,
@@ -833,8 +1011,31 @@ public class DocumentController {
     Map<String, Object> retorno = new HashMap<String, Object>();
     TipoMetadatosAdicionales aditionalData = new TipoMetadatosAdicionales();
     try {
+      // obtenemos el fichero eni descargado al entrar al modificar
+      byte[] eniBytes = temporalDataBusinessService.getFile(session.getId(),
+          documentoEni.getMetadatosEni().getIdentificador() + ".xml");
+      TipoDocumentoInsideConMAdicionales tipoDoc =
+          marshaller.unmarshallDataDocumentAditional(eniBytes);
+      byte[] bytesContenido;
+      if (tipoDoc.getDocumento().getContenido().getValorBinario() != null) {
+        documentoEni.setContenido(tipoDoc.getDocumento().getContenido().getValorBinario());
+      } else if (StringUtils
+          .isNotEmpty(tipoDoc.getDocumento().getContenido().getReferenciaFichero())
+          && "#FIRMA_0"
+              .equalsIgnoreCase(tipoDoc.getDocumento().getContenido().getReferenciaFichero())) {
+        ObjetoDocumentoInsideContenido contenido = insideService.getDocumentoContenido(
+            documentoEni.getMetadatosEni().getIdentificador(), null, session.getId());
+        documentoEni.setContenido(contenido.getValorBinario());
+      } else {
+
+        // descargamos el contenido del documento
+        ObjetoDocumentoInsideContenido contenido = insideUtilService
+            .getExternalContent(documentoEni.getMetadatosEni().getIdentificador(), session.getId());
+        documentoEni.setContenidoId(contenido.getReferencia());
+      }
+
       TipoDocumentoInsideConMAdicionales docConvertido = generateDocument(documentoEni, request,
-          locale, metadatosAdicionales, session, retorno, aditionalData);
+          locale, metadatosAdicionales, session, retorno, aditionalData, false);
       ObjetoDocumentoInside docInside =
           insideUtilService.validateDocumentImport(insideUtilService.generateDocXml(docConvertido));
       ObjetoInsideUsuario usuario =
@@ -927,7 +1128,24 @@ public class DocumentController {
         addExpReturn(locale, retorno, expediente);
       }
 
-      retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale));
+      // retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null,
+      // locale));
+
+      // si no se ha incluido el mensaje antes se mete este
+      if (retorno.containsKey("mensajeUsuarioPreviamenteFirmado")) {
+        MessageObject mensObjet = (MessageObject) retorno.get("mensajeUsuarioPreviamenteFirmado");
+        String mens = messageSource.getMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale)
+            + ". " + mensObjet.getMessage();
+        retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING, mens));
+      } else if (objDoc.getContenido().getReferencia() != null
+          && objDoc.getContenido().getReferencia().contains("csvstorage")) {
+        String mens = messageSource.getMessage(WebConstants.MSG_GUARDAR_DOC_OK, null, locale) + ". "
+            + "Expedientes con este documento no se pueden enviar a justicia.";
+        retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING, mens));
+      } else {
+        retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale));
+      }
+
     } catch (InSideServiceException e3) {
       logger.warn(MNJ_ERROR_DOCU, e3);
       retorno.put(ERROR_GUARDAR, true);
@@ -944,7 +1162,7 @@ public class DocumentController {
     return retorno;
   }
 
-  @RequestMapping(value = "/importNewDocumentXml", method = RequestMethod.POST)
+  @RequestMapping(value = "/importarDocumento/importNewDocumentXml", method = RequestMethod.POST)
   @ResponseBody
   public Map<String, Object> importNewDocumentXmlPost(Locale locale, HttpServletRequest request,
       HttpSession session) {
@@ -976,7 +1194,19 @@ public class DocumentController {
         insideService.altaDocumento(objDoc, usuario.getNif(), true);
       }
 
-      retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale));
+      // retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null,
+      // locale));
+
+      // si no se ha incluido el mensaje antes se mete este
+      if (retorno.containsKey("mensajeUsuarioPreviamenteFirmado")) {
+        MessageObject mensObjet = (MessageObject) retorno.get("mensajeUsuarioPreviamenteFirmado");
+        String mens = messageSource.getMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale)
+            + ". " + mensObjet.getMessage();
+        retorno.put(MENSAJE_USU, new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING, mens));
+      } else {
+        retorno.put(MENSAJE_USU, getSuccessMessage(WebConstants.MSG_IMPORTAR_DOC_OK, null, locale));
+      }
+
     } catch (InSideServiceException e3) {
       logger.warn(MNJ_ERROR_DOCU, e3);
       if (!retorno.containsKey(MENSAJE_USU))
@@ -997,7 +1227,7 @@ public class DocumentController {
     try {
       ObjectMapper mapper = new ObjectMapper();
       String identificadorDoc = mapper.readValue(request.getParameter(DOCUMENT_ID), String.class);
-      doc = insideUtilService.validateDocumentImport(
+      doc = insideUtilService.validateDocumentImport(retorno, null,
           temporalDataBusinessService.getFile(session.getId(), identificadorDoc));
     } catch (IOException e2) {
       logger.warn(MNJ_ERROR_SAVE_DOCU, e2);
@@ -1078,7 +1308,7 @@ public class DocumentController {
     MessageObject mensaje = null;
     try {
       insideService.deleteDocument(identificador);
-      retorno.addObject(DOCUMENTOS, getDocumentosAlmacenados(session));
+      retorno.addObject(DOCUMENTOS, getDocumentosMetadatosAlmacenados(session));
       mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_SUCCESS,
           messageSource.getMessage(WebConstants.MSG_BAJA_DOC_OK, null, locale));
       retorno.addObject(MENSAJE_USU, mensaje);
@@ -1091,14 +1321,14 @@ public class DocumentController {
       mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
           messageSource.getMessage(WebConstants.MSG_BAJA_DOC_VINCULADO, args, locale));
       retorno.addObject(MENSAJE_USU, mensaje);
-      retorno.addObject(DOCUMENTOS, getDocumentosAlmacenados(session));
+      retorno.addObject(DOCUMENTOS, getDocumentosMetadatosAlmacenados(session));
     } catch (InSideServiceException e) {
       logger.error(
           "DocumentController.borrarDocumento --> Error al borrar el documento: " + identificador,
           e);
       mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, e.getMessage());
       retorno.addObject(MENSAJE_USU, mensaje);
-      retorno.addObject(DOCUMENTOS, getDocumentosAlmacenados(session));
+      retorno.addObject(DOCUMENTOS, getDocumentosMetadatosAlmacenados(session));
     }
     return retorno;
   }
@@ -1115,7 +1345,7 @@ public class DocumentController {
           new MessageObject(Integer.parseInt(nivelMensajeUsuario), textoMensajeUsuario));
     }
     try {
-      retorno.addObject(DOCUMENTOS, getDocumentosAlmacenados(session));
+      retorno.addObject(DOCUMENTOS, getDocumentosMetadatosAlmacenados(session));
     } catch (InSideServiceException e) {
       logger.error(
           "InsideDocumentController.documentosAlmacenados --> Error al obtener los documentos del usuario",
@@ -1134,16 +1364,18 @@ public class DocumentController {
     MessageObject mensaje = null;
     ModelAndView retorno = new ModelAndView("documento/editarDocumento");
     TipoMetadatosAdicionales aditionalData = new TipoMetadatosAdicionales();
-    TipoDocumentoConversionInside documentoEni = new TipoDocumentoConversionInside();
 
     try {
       init(retorno, locale, request);
 
+      // Este objetoDocumentoInside se usa para que en setDocumentContentTemporalBigFile no se
+      // vuelva a pedir
       ObjetoDocumentoInside docInside = insideService.getDocumento(identificador);
       aditionalData = InsideConverterMetadatos
           .metadatosAdicionalesInsideToXml(docInside.getMetadatos().getMetadatosAdicionales());
 
-      documentoEni = InsideConverterDocumento.documentoConversionToInside(docInside);
+      TipoDocumentoConversionInside documentoEni =
+          InsideConverterDocumento.documentoConversionToInside(docInside);
       setDocumentContent(documentoEni, docInside);
 
       boolean firmaSoloCSV = false;
@@ -1156,15 +1388,13 @@ public class DocumentController {
               false, null, docInside);
       if (documentoEni.getMetadatosEni().getTipoDocumental().equals(TipoDocumental.TD_62)
           || documentoEni.getMetadatosEni().getTipoDocumental().equals(TipoDocumental.TD_67)
-          || documentoEni.getMetadatosEni().getTipoDocumental().equals(TipoDocumental.TD_64)
-          || documentoEni.getMetadatosEni().getTipoDocumental().equals(TipoDocumental.TD_99)) {
+          || documentoEni.getMetadatosEni().getTipoDocumental().equals(TipoDocumental.TD_64)) {
         documentoEni.getMetadatosEni().setTipoDocumental(TipoDocumental.TD_20);
       }
       getComboOrganos(documentoEni);
       getDocumentoCertificado(retorno, docInside);
 
       setDocumentEniInTemporal(session, documentoEni, docConvertido);
-      setDocumentContentTemporal(session, retorno, documentoEni);
       setSignatureType(retorno, docInside, firmaSoloCSV);
       setMetadatosDocument(session, retorno, documentoEni, docInside);
       getDisplayDocument(locale, retorno, docInside);
@@ -1178,6 +1408,20 @@ public class DocumentController {
       List<VisualizacionItem> visItems =
           visualizacionUtils.obtenerVisualizacionItems(itemDocumento);
       visualizacionUtils.getFirmas(visItems, retorno);
+
+      ///// cargar los documentos de la unidad porque el autocomplete de js no funciona en internet
+      ///// Explorer ////////////////////////////////////////
+      ObjetoInsideUsuario usuario =
+          (ObjetoInsideUsuario) session.getAttribute(WebConstants.USUARIO_SESSION);
+      String listaExpedientesJSON = convertListToJSONString(usuario);
+
+      retorno.addObject("metadatoNombreNatural",
+          MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL.getValue());
+      retorno.addObject("listaExpedientesJSON", listaExpedientesJSON);
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
     } catch (InsideServiceObjectValidationException e) {
       logger.warn("DocumentController.editarDocumento.validacion: " + identificador);
       mensaje = MessageUtils.contruirMensaje(locale, e, messageSource);
@@ -1222,27 +1466,6 @@ public class DocumentController {
       }
     }
     retorno.addObject(METADATO_ADICIONALES, listMetadatosAdicional);
-  }
-
-  public void setDocumentContentTemporal(HttpSession session, ModelAndView retorno,
-      TipoDocumentoConversionInside documentoEni) throws InsideServiceInternalException {
-    try {
-
-      ObjetoDocumentoInsideContenido contenido = insideService
-          .getDocumentoContenido(documentoEni.getMetadatosEni().getIdentificador(), null);
-
-      String name = "content_" + documentoEni.getMetadatosEni().getIdentificador() + "."
-          + contenido.getNombreFormato();
-      temporalDataBusinessService.escribir(contenido.getValorBinario(), session.getId(), name,
-          true);
-      retorno.addObject(DOCUMENT_ID, name);
-    } catch (Exception e) {
-      logger.error("Error al editar el documento: "
-          + documentoEni.getMetadatosEni().getIdentificador() + " en setDocumentContentTemporal",
-          e);
-      throw new InsideServiceInternalException(
-          "Error al editar documento en setDocumentContentTemporal", e);
-    }
   }
 
   public boolean contentCSVSignature(ObjetoDocumentoInside docInside) {
@@ -1302,36 +1525,65 @@ public class DocumentController {
   public void getDisplayDocument(Locale locale, ModelAndView retorno,
       ObjetoDocumentoInside docInside) {
     MessageObject mensaje;
-    // Tamanio de fichero mayor de 2MB
-    if (isFileTooLarge(docInside)) {
-      String tamanio =
-          FileUtils.byteCountToDisplaySize(docInside.getContenido().getValorBinario().length);
-      String[] argumentos = {tamanio};
-      logger.info("El tamaño del documento es: " + tamanio
-          + " y supera los 2 MB. No es posible previsualizar");
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO,
-          messageSource.getMessage(WebConstants.MSG_TAMANIO_MAS_2_MB, argumentos, locale));
-      retorno.addObject(MENSAJE_USU, mensaje);
-      retorno.addObject(DATA_DOC_BASE64, null);
-    } else {
-      try {
-        retorno.addObject(DATA_DOC_BASE64, Base64
-            .encodeBase64String(insideServiceVisualizacion.visualizarContenidoOriginal(docInside)));
-      } catch (InsideServiceVisualizacionException e) {
-        logger.info("No es posible previsualizar", e);
-        mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO,
-            messageSource.getMessage(WebConstants.MSG_PREVISUALIZACION_NO_DISPONIBLE, null, locale)
-                + "." + e.getMessage());
+    try {
+      // Tamanio de fichero mayor de 2MB
+      if (isFileTooLarge(docInside)) {
+        String tamanio = "0";
+        if (docInside.getContenido().getValorBinario() != null) {
+          tamanio =
+              FileUtils.byteCountToDisplaySize(docInside.getContenido().getValorBinario().length);
+          retorno.addObject("isBigFile", false);
+        } else {
+          String[] referencia = docInside.getContenido().getReferencia().split("/");
+          String uuid = referencia[referencia.length - 1];
+          tamanio = FileUtils.byteCountToDisplaySize(csvStorageAdapter.getContentSizeByUuid(uuid));
+          retorno.addObject("isBigFile", true);
+        }
+
+        if ("0 bytes".equalsIgnoreCase(tamanio)) {
+
+          logger.info("Error al recibir tamanio desde el csvStorage");
+          mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO,
+              "El documento supera los 2 MB. No es posible previsualizar");
+        } else {
+
+          String[] argumentos = {tamanio};
+          logger.info("El tamaño del documento es: " + tamanio
+              + " y supera los 2 MB. No es posible previsualizar");
+          mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO,
+              messageSource.getMessage(WebConstants.MSG_TAMANIO_MAS_2_MB, argumentos, locale));
+
+        }
         retorno.addObject(MENSAJE_USU, mensaje);
         retorno.addObject(DATA_DOC_BASE64, null);
+
+      } else {
+        retorno.addObject("isBigFile", false);
+        retorno.addObject(DATA_DOC_BASE64, Base64
+            .encodeBase64String(insideServiceVisualizacion.visualizarContenidoOriginal(docInside)));
       }
+    } catch (InsideServiceVisualizacionException | InsideServiceAdapterException e) {
+      logger.info("No es posible previsualizar", e);
+      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_INFO,
+          messageSource.getMessage(WebConstants.MSG_PREVISUALIZACION_NO_DISPONIBLE, null, locale)
+              + "." + e.getMessage());
+      retorno.addObject(MENSAJE_USU, mensaje);
+      retorno.addObject(DATA_DOC_BASE64, null);
+      retorno.addObject("isBigFile", true);
     }
   }
 
   public boolean isFileTooLarge(ObjetoDocumentoInside docInside) {
-    return docInside.getContenido().getValorBinario() != null
+    if (docInside.getContenido().getValorBinario() != null
         && (BigInteger.valueOf(docInside.getContenido().getValorBinario().length))
-            .compareTo(DOS_MB) >= 0;
+            .compareTo(DOS_MB) >= 0) {
+      return true;
+    } else if (StringUtils.isNotEmpty(docInside.getContenido().getReferencia())
+        && !"#FIRMA_0".equals(docInside.getContenido().getReferencia())) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private GregorianCalendar getFechaCaptura(TipoDocumentoConversionInside documentoEni) {
@@ -1368,12 +1620,13 @@ public class DocumentController {
     }
   }
 
-  private List<ObjetoInsideDocumentoUnidad> getDocumentosAlmacenados(HttpSession session)
+  private List<ObjetoInsideDocumentoUnidad> getDocumentosMetadatosAlmacenados(HttpSession session)
       throws InSideServiceException {
     ObjetoInsideUsuario usuario =
         (ObjetoInsideUsuario) session.getAttribute(WebConstants.USUARIO_SESSION);
-    return insideService.getDocumentosUnidad(usuario, true);
+    return insideService.getDocumentosMetadatosUnidad(usuario, true);
   }
+
 
   private void init(ModelAndView model, Locale locale, HttpServletRequest request) {
     // Obtener fecha de captura
@@ -1402,15 +1655,13 @@ public class DocumentController {
   }
 
   private void setData(TipoDocumentoConversionInside documentoEni, HttpServletRequest request,
-      String documento, HttpSession session, String signPath)
+      String documento, HttpSession session, String signPath, Boolean firmaCsv)
       throws ParseException, DatatypeConfigurationException, IOException,
       InsideConverterUtilsException, InSideServiceException {
     this.organos = new ArrayList<String>();
     this.organos.addAll(documentoEni.getMetadatosEni().getOrgano());
 
     String fechaCaptura = request.getParameter(FECHA_CAPTURA);
-    String documentoId = documento;
-    byte[] contenidoOriginal = documentoEni.getContenido();
 
     documentoEni.getMetadatosEni().setFechaCaptura(
         InsideWSUtils.stringToXmlCalendar(fechaCaptura, WebConstants.FORMATO_FECHA_DEFECTO));
@@ -1426,6 +1677,23 @@ public class DocumentController {
         || StringUtils.isEmpty(documentoEni.getCsv().getValorCSV())) {
       documentoEni.getCsv().setRegulacionCSV(null);
       documentoEni.getCsv().setValorCSV(null);
+    }
+
+    if (firmaCsv) {
+      boolean generarCSV = false;
+      byte[] data = null;
+      if (StringUtils.isNotEmpty(documentoEni.getContenidoId())) {
+        generarCSV = true;
+        data = IOUtils.toByteArray(new FileInputStream(documentoEni.getContenidoId()));
+      } else if (documentoEni.getContenido() != null) {
+        generarCSV = true;
+        data = documentoEni.getContenido();
+      }
+      if (generarCSV) {
+        documentoEni.getCsv().setRegulacionCSV(REGULACION_CSV);
+        documentoEni.getCsv().setValorCSV(
+            utilFirmaService.generarCSVAmbito("INS", data, InsideMimeUtils.getMimeType(data)));
+      }
     }
 
     List<String> listOrganos = new ArrayList<String>(documentoEni.getMetadatosEni().getOrgano());
@@ -1503,7 +1771,7 @@ public class DocumentController {
   }
 
   private void validateData(TipoDocumentoConversionInside tipoDocumentoConversion, Locale locale,
-      String documento) throws InsideValidationDataException {
+      String documento, boolean validateContent) throws InsideValidationDataException {
     try {
       logger.debug("Inicio GInsideExpedientController.validateData");
 
@@ -1521,7 +1789,7 @@ public class DocumentController {
         }
       }
 
-      if (StringUtils.isEmpty(documento)) {
+      if (validateContent && StringUtils.isEmpty(documento)) {
         throw new InsideValidationDataException(
             messageSource.getMessage(WebConstants.MSG_CONTENT_DOC_NO_VALID, null, locale));
       }
@@ -1557,10 +1825,61 @@ public class DocumentController {
       logger.debug("No es un documento ENI", e);
     } catch (FileNotFoundException e) {
       logger.debug("El fichero no existe", e);
+    } catch (InSideServiceTemporalDataException e) {
+      logger.debug("Error al obtener fichero:" + folder + fileName);
     } catch (Exception e) {
       logger.debug("Se ha producido un error al hacer el unmarshall del documento ENI", e);
     }
     return docInside;
+  }
+
+  @RequestMapping(value = " /descargarContenidoDocumento/{sistema}/{uuid}",
+      method = RequestMethod.GET)
+  public ModelAndView descargarContenidoDocumentoGet(@PathVariable("sistema") String sistema,
+      @PathVariable("uuid") String uuid, HttpServletResponse response, HttpSession session,
+      Locale locale) {
+    FileInputStream fin = null;
+    ObjetoDocumentoInsideContenido contenido = null;
+    try {
+      OutputStream pr = response.getOutputStream();
+
+      contenido = insideUtilService.getExternalContent(sistema, uuid, session.getId());
+
+      response.setContentType(contenido.getMime());
+      response.addHeader(CONTENT_DISPOSITION, ATTACHMENT_FILENAME
+          + contenido.getIdentificadorEnDocumento() + "." + contenido.getNombreFormato());
+      File filedownload = new File(contenido.getReferencia());
+      response.setContentLength((int) filedownload.length());
+
+      fin = new FileInputStream(filedownload);
+
+      byte[] buffer = new byte[4096]; // To hold file contents
+      int bytes_read; // How many bytes in buffer
+      while ((bytes_read = fin.read(buffer)) != -1)
+        // Read until EOF
+        pr.write(buffer, 0, bytes_read); // write
+
+      pr.close();
+
+    } catch (IOException e) {
+      logger.error("No se ha podido descargar el contenido externo:" + e);
+    }
+    try {
+      if (fin != null) {
+        fin.close();
+        // borramos el fichero temporal descargado
+        FileUtils.forceDelete(new File(contenido.getReferencia()));
+      }
+    } catch (IOException e) {
+      logger.error(ERROR_AL_DESCARGAR_DOCUMENTO + ": " + uuid, e);
+      MessageObject mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
+          messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale));
+      ModelAndView retorno = new ModelAndView(VIEW_GENERATE_DOC);
+      retorno.addObject(MENSAJE_USU, mensaje);
+      return retorno;
+    }
+
+    return null;
   }
 
 }

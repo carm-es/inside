@@ -21,7 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import es.mpt.dsic.inside.web.util.WebConstants;
+import es.mpt.dsic.inside.service.util.WebConstants;
 
 public class InsideAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
@@ -29,6 +29,7 @@ public class InsideAuthenticationSuccessHandler implements AuthenticationSuccess
 
   private String url;
   private String urlNoRegistrado;
+  private String urlAccesoABusquedaPorJuez;
 
   private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
@@ -39,12 +40,24 @@ public class InsideAuthenticationSuccessHandler implements AuthenticationSuccess
     logger.debug(request.getSession().getAttribute(WebConstants.USUARIO_SESSION));
 
     String targetUrl;
-    if (((UserAuthentication) authentication).getAuthorities()
-        .contains(new SimpleGrantedAuthority("GUEST_ROLE"))) {
-      targetUrl = urlNoRegistrado;
+
+    String irDirectosPaginaBusquedaPorUsoTokenJuez =
+        (String) request.getSession().getAttribute("usoTokenJuezRemisionNube");
+    if (irDirectosPaginaBusquedaPorUsoTokenJuez != null
+        && !irDirectosPaginaBusquedaPorUsoTokenJuez.isEmpty()
+        && "SI".equalsIgnoreCase(irDirectosPaginaBusquedaPorUsoTokenJuez)) {
+      request.getSession().removeAttribute("usoTokenJuezRemisionNube");
+      targetUrl = urlAccesoABusquedaPorJuez;
     } else {
-      targetUrl = url;
+
+      if (((UserAuthentication) authentication).getAuthorities()
+          .contains(new SimpleGrantedAuthority("GUEST_ROLE"))) {
+        targetUrl = urlNoRegistrado;
+      } else {
+        targetUrl = url;
+      }
     }
+
 
     redirectStrategy.sendRedirect(request, response, targetUrl);
   }
@@ -63,6 +76,14 @@ public class InsideAuthenticationSuccessHandler implements AuthenticationSuccess
 
   public void setUrlNoRegistrado(String urlNoRegistrado) {
     this.urlNoRegistrado = urlNoRegistrado;
+  }
+
+  public String getUrlAccesoABusquedaPorJuez() {
+    return urlAccesoABusquedaPorJuez;
+  }
+
+  public void setUrlAccesoABusquedaPorJuez(String urlAccesoABusquedaPorJuez) {
+    this.urlAccesoABusquedaPorJuez = urlAccesoABusquedaPorJuez;
   }
 
 

@@ -81,9 +81,9 @@ public class PGPDataType {
    * 
    * 
    * <p>
-   * Objects of the following type(s) are allowed in the list {@link Element } {@link Object }
-   * {@link JAXBElement }{@code <}{@link byte[]}{@code >} {@link JAXBElement
-   * }{@code <}{@link byte[]}{@code >}
+   * Objects of the following type(s) are allowed in the list {@link JAXBElement
+   * }{@code <}{@link byte[]}{@code >} {@link JAXBElement }{@code <}{@link byte[]}{@code >}
+   * {@link Element } {@link Object }
    * 
    * 
    */

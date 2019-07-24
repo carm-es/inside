@@ -35,7 +35,7 @@ $(document).ready(function() {
         "bSort" : true,
         "aoColumns" : [ {
             "bSortable" : false,
-            "width" : "25%"
+            "width" : "10%"
         }, {
             "bSortable" : false,
             "width" : "24%"
@@ -44,7 +44,16 @@ $(document).ready(function() {
             "width" : "22%"
         }, {
             "bSortable" : true,
-            "width" : "22%"
+            "iDataSort" : 4,
+            "width" : "15%"
+        }, {
+            "bSortable" : true,
+            "bVisible" : false,
+            "width" : "0%"
+        }, {
+            "bSortable" : true,
+            "iDataSort" : 4,
+            "width" : "15%"
         }, {
             "bSortable" : true,
             "width" : "5%"
@@ -57,7 +66,15 @@ $(document).ready(function() {
 
     showMessage();
 
+    configurarNuevaPagina();
 });
+
+function configurarNuevaPagina() {
+    $('#expedienteForm').on('submit', function(e) {
+        e.preventDefault();
+    });
+
+}
 
 function verExpedienteNoInside(identificador) {
 
@@ -88,6 +105,14 @@ function descargarExpedienteEniNoInside() {
     $("#descargarExpedienteEniNoInsideForm").submit();
 }
 
+function descargarExpedienteCompletoFisicoNoInside() {
+    descargarConVelo("#descargarExpedienteEniCompletoFisicoNoInsideForm", 20000);
+}
+
+function descargarExpedienteCompletoNoInside() {
+    descargarConVelo("#descargarExpedienteEniCompletoNoInsideForm", 20000);
+}
+
 function mostrarVisorDocNoInside(visor, item, idComunicacion) {
 
     var arbol = $('#js-arbol');
@@ -102,14 +127,23 @@ function mostrarVisorDocNoInside(visor, item, idComunicacion) {
         visor.removeClass('hidden').data('id_mostrado', item.attr('id')).width(panel.width()).height(panel.height())
                 .offset(panel.offset());
 
-        $("#descargarDocForm #identificador").val(data.identificador);
-        $("#descargarContenidoDocForm #identificador").val(data.identificador);
+        $("#descargarDocNoInsideForm #identificador").val(data.identificador);
+        $("#descargarDocNoInsideForm #idComunicacion").val(data.idComunicacion);
+        $("#descargarContenidoDocNoInsideForm #identificador").val(data.identificador);
+        $("#descargarContenidoDocNoInsideForm #idComunicacion").val(data.idComunicacion);
         visor.find('.js-gallery-ver--lista-datos-id').html(data.identificador);
         visor.find('.js-gallery-ver--lista-datos-estado').html(data.desEstado);
         visor.find('.js-gallery-ver--lista-datos-organos').html(data.organos.join(', '));
         visor.find('.js-gallery-ver--visor').attr('src', 'data:application/pdf;base64,' + data.contenidoVisualizar);
 
         $('#expedienteVeil').addClass('hidden');
+        $('#expedienteForm').on('submit', function(e) {
+            e.preventDefault();
+        });
+        $('#js-gallery-ver').on('click', '.js-gallery-ver--lista-cancel', function(e) {
+            var $el = $(e.currentTarget);
+            $el.closest('#js-gallery-ver').addClass('hidden');
+        })
     });
 }
 

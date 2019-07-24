@@ -19,7 +19,7 @@
 	<parent>
 		<groupId>es.mpt.dsic</groupId>
 		<artifactId>inside-mvn-base</artifactId>
-		<version>2.0.7</version>
+		<version>2.0.8.3</version>
 		<relativePath>../inside-mvn-base</relativePath>
 	</parent>
 
@@ -216,13 +216,13 @@
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>inside-cliente-firma</artifactId>
-			<version>${project.version}</version>
+			<version>${project.version}</version>			
 		</dependency>
 					
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>csvstorage-client</artifactId>
-			<version>1.0</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<dependency>
@@ -242,6 +242,12 @@
 		  	<artifactId>puntounicojusticia-client</artifactId>
 		  	<version>0.0.1</version>
 		</dependency>
+		
+		<dependency>
+		  	<groupId>es.mpt.dsic</groupId>
+		  	<artifactId>remision-nube-client</artifactId>
+		  	<version>1.1</version>
+		</dependency>		
 		
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
@@ -279,6 +285,14 @@
 			<artifactId>inside-cliente-remision</artifactId>
 			<version>1.1-SNAPSHOT</version>
 		</dependency> -->
+		
+		<!-- BIG DATA TRANSFER -->
+        <dependency>
+            <groupId>es.gob.aapp.eeutil</groupId>
+            <artifactId>bigDataTransfer</artifactId>
+            <version>1.0</version>
+        </dependency>	
+        
 	</dependencies>
 	<build>
 		<plugins>

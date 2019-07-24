@@ -51,8 +51,9 @@
             	<thead>
                     <tr>
                         <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaIdentificador.title}" th:text="#{documentosAlmacenados.tablaIdentificador}"></th>
-                        <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaFecha.title}" th:text="#{documentosAlmacenados.tablaFecha}"></th>
+                        <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaFecha.title}" th:text="#{documentosAlmacenados.tablaFecha}"></th>						
                         <th class="mf-sort-ln" href="·" th:title="#{documentosAlmacenados.tablaAcciones.title}" th:text="#{documentosAlmacenados.tablaAcciones}"></th>
+                        <th hidden="true"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,7 +75,9 @@
 									</a>
                                 </li>
                             </ul>
-                        </td>    
+                        </td>   
+                        <td class="grid-column-articulo_tipo.codigo"
+							th:text="${documento.metAdicionales}" hidden="true"></td> 
                 	</tr>
                 </tbody>
             </table>

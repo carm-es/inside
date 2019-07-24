@@ -47,8 +47,8 @@ public class TipoIndiceConversionWSMtom {
   @XmlSchemaType(name = "dateTime")
   protected XMLGregorianCalendar fechaIndiceElectronico;
   @XmlElements({
-      @XmlElement(name = "CarpetaIndizada", type = TipoCarpetaIndizadaConversionWSMtom.class),
       @XmlElement(name = "DocumentoIndizado", type = TipoDocumentoIndizadoConversionWSMtom.class),
+      @XmlElement(name = "CarpetaIndizada", type = TipoCarpetaIndizadaConversionWSMtom.class),
       @XmlElement(name = "ExpedienteIndizado", type = TipoIndiceConversionWSMtom.class)})
   protected List<Object> documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada;
 
@@ -91,7 +91,7 @@ public class TipoIndiceConversionWSMtom {
    * 
    * <p>
    * Objects of the following type(s) are allowed in the list
-   * {@link TipoCarpetaIndizadaConversionWSMtom } {@link TipoDocumentoIndizadoConversionWSMtom }
+   * {@link TipoDocumentoIndizadoConversionWSMtom } {@link TipoCarpetaIndizadaConversionWSMtom }
    * {@link TipoIndiceConversionWSMtom }
    * 
    * 

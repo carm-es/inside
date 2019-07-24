@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +24,6 @@ import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -38,8 +35,8 @@ import org.hibernate.classic.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -52,7 +49,6 @@ import es.mpt.dsic.inside.model.busqueda.resultado.ExpedienteResultadoBusquedaIn
 import es.mpt.dsic.inside.model.busqueda.resultado.ItemResultadoBusquedaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaUsuario;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoAuditoriaFirmaServidor;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoElastic;
@@ -69,20 +65,16 @@ import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersionComparator;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersionable;
 import es.mpt.dsic.inside.model.objetos.ObjetoNumeroProcedimiento;
+import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAcceso;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoComunicacionTokenExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpAppUrl;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatosEnumeracionEstados;
 import es.mpt.dsic.inside.model.objetos.filter.ObjetoFilterPageRequest;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
-import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.object.definitions.InsideObjectDefinitionsContainer;
 import es.mpt.dsic.inside.service.store.InsideServiceStore;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
@@ -95,50 +87,39 @@ import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceSt
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterAplicacion;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterAuditoriaFirmaServidor;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterComunicacionTokenExpediente;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterDocumento;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterEstructuraCarpeta;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterExpediente;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterExpedienteInsideRespuestaEnvioJusticia;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterExpedienteNoInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterExpedienteToken;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterInsideRol;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterNumeroProcedimiento;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterSolicitudAccesoExpAppUrl;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterUnidad;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterUnidadUsuario;
 import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterUsuario;
-import es.mpt.dsic.inside.service.store.impl.hibernate.converter.InsideServiceStoreHibernateConverterVAuditoriaAccesoNube;
 import es.mpt.dsic.inside.service.util.InsideUtils;
-import es.mpt.dsic.inside.store.hibernate.entity.ComunicacionTokenExpediente;
 import es.mpt.dsic.inside.store.hibernate.entity.CredencialesEeutil;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInside;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInsideMetadatosAdicionales;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInsideOrgano;
+import es.mpt.dsic.inside.store.hibernate.entity.DocumentoMetadatosAdicionales;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoUnidad;
 import es.mpt.dsic.inside.store.hibernate.entity.EstructuraCarpetaInside;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInside;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideIndice;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideMetadatosAdicionales;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideOrgano;
-import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideRespuestaEnvioJusticia;
-import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteNoInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteToken;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteUnidad;
 import es.mpt.dsic.inside.store.hibernate.entity.GeneradorIdInside;
 import es.mpt.dsic.inside.store.hibernate.entity.InsideRol;
 import es.mpt.dsic.inside.store.hibernate.entity.InsideWsAplicacion;
 import es.mpt.dsic.inside.store.hibernate.entity.NumeroProcedimiento;
-import es.mpt.dsic.inside.store.hibernate.entity.SolicitudAccesoExpAppUrl;
-import es.mpt.dsic.inside.store.hibernate.entity.SolicitudAccesoExpediente;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadAplicacionEeutil;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadOrganica;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadUsuario;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadWsAplicacion;
 import es.mpt.dsic.inside.store.hibernate.entity.UsuarioInside;
-import es.mpt.dsic.inside.store.hibernate.entity.VAuditoriaAccesoNube;
 import es.mpt.dsic.inside.xml.inside.MetadatoAdicional;
 import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
 
@@ -164,10 +145,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
   private InsideServiceStoreHibernateConverterUsuario<E> converterUsuario;
 
   private InsideServiceStoreHibernateConverterExpedienteToken converterExpedienteToken;
-
-  private InsideServiceStoreHibernateConverterExpedienteInsideRespuestaEnvioJusticia converterExpedienteInsideRespuestaEnvioJusticia;
-
-  private InsideServiceStoreHibernateConverterExpedienteNoInsideRespuestaEnvioJusticia converterExpedienteNoInsideRespuestaEnvioJusticia;
 
   private InsideServiceStoreHibernateConverterInsideRol converterInsideRol;
 
@@ -353,12 +330,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
           GregorianCalendar cal = new GregorianCalendar();
           cal.setTime(expediente.getFechaVersion());
           ObjetoInsideVersion version = new ObjetoInsideVersion(expediente.getVersion(), cal);
-
-          version.setRemitidoMJU("No");
-          if (expediente.getExpedienteInsideRespuestaEnvioJusticia() != null
-              && !expediente.getExpedienteInsideRespuestaEnvioJusticia().isEmpty())
-            version.setRemitidoMJU("Si");
-
           listVersion.add(version);
         }
       }
@@ -582,26 +553,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
   public void setConverterExpedienteToken(
       InsideServiceStoreHibernateConverterExpedienteToken converterExpedienteToken) {
     this.converterExpedienteToken = converterExpedienteToken;
-  }
-
-  public InsideServiceStoreHibernateConverterExpedienteInsideRespuestaEnvioJusticia getConverterExpedienteInsideRespuestaEnvioJusticia() {
-    return converterExpedienteInsideRespuestaEnvioJusticia;
-  }
-
-  public void setConverterExpedienteInsideRespuestaEnvioJusticia(
-      InsideServiceStoreHibernateConverterExpedienteInsideRespuestaEnvioJusticia converterExpedienteInsideRespuestaEnvioJusticia) {
-    this.converterExpedienteInsideRespuestaEnvioJusticia =
-        converterExpedienteInsideRespuestaEnvioJusticia;
-  }
-
-  public InsideServiceStoreHibernateConverterExpedienteNoInsideRespuestaEnvioJusticia getConverterExpedienteNoInsideRespuestaEnvioJusticia() {
-    return converterExpedienteNoInsideRespuestaEnvioJusticia;
-  }
-
-  public void setConverterExpedienteNoInsideRespuestaEnvioJusticia(
-      InsideServiceStoreHibernateConverterExpedienteNoInsideRespuestaEnvioJusticia converterExpedienteNoInsideRespuestaEnvioJusticia) {
-    this.converterExpedienteNoInsideRespuestaEnvioJusticia =
-        converterExpedienteNoInsideRespuestaEnvioJusticia;
   }
 
   @Override
@@ -1023,34 +974,9 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
           ObjetoExpedienteInsideMetadatosEnumeracionEstados.fromValue(dato.getEstadoExpediente()));
       expedienteUnidad.setIdUnidad(dato.getIdUnidad());
 
-      expedienteUnidad.setRemitidoMJU(estaRemitidoMJUAlgunaVersion(dato.getIdentificador()));
-
       retorno.add(expedienteUnidad);
     }
     return retorno;
-  }
-
-  private String estaRemitidoMJUAlgunaVersion(String identificadorExp)
-      throws InsideServiceStoreException {
-    String remitidoMJU = "No";
-
-    Session session = sessionFactory.openSession();
-    try {
-      Criteria crit = session.createCriteria(ExpedienteInside.class);
-      crit.add(Restrictions.eq(IDENTIFICADOR, identificadorExp));
-      crit.add(Restrictions.isNotEmpty("expedienteInsideRespuestaEnvioJusticia"));
-
-      List<ExpedienteInside> listExpedientes = crit.list();
-      if (!listExpedientes.isEmpty()) {
-        remitidoMJU = "Si";
-      }
-
-      return remitidoMJU;
-
-    } finally {
-      session.close();
-    }
-
   }
 
   @SuppressWarnings("unchecked")
@@ -1083,6 +1009,36 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     return retorno;
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<ObjetoInsideDocumentoUnidad> getDocumentosMetadatosUnidad(String nif,
+      boolean soloUnidadActiva) throws InsideServiceStoreException {
+    List<ObjetoInsideDocumentoUnidad> retorno = null;
+    Session session = sessionFactory.openSession();
+    List<ObjetoInsideUnidadUsuario> unidades;
+
+    try {
+      // buscamos las unidades asociadas al usuario
+      unidades = getUnidadesOrganicasAsociadas(nif, true, soloUnidadActiva, session);
+
+      if (!unidades.isEmpty()) {
+        Criteria crit = session.createCriteria(DocumentoMetadatosAdicionales.class);
+        Disjunction disjunction = getElementToFind(unidades);
+        crit.add(disjunction);
+        crit.add(Restrictions.isNotNull(FECHA_VERSION));
+        crit.addOrder(Order.desc(FECHA_VERSION));
+        List<DocumentoMetadatosAdicionales> datos = crit.list();
+
+        if (CollectionUtils.isNotEmpty(datos)) {
+          retorno = obtenerDocumentoMetadatos(datos);
+        }
+      }
+    } finally {
+      session.close();
+    }
+    return retorno;
+  }
+
   public Disjunction getElementToFind(List<ObjetoInsideUnidadUsuario> unidades) {
     Disjunction disjunction = Restrictions.disjunction();
     for (ObjetoInsideUnidadUsuario unidad : unidades) {
@@ -1094,6 +1050,27 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
       }
     }
     return disjunction;
+  }
+
+  public List<ObjetoInsideDocumentoUnidad> obtenerDocumentoMetadatos(
+      List<DocumentoMetadatosAdicionales> datos) throws InsideServiceStoreException {
+    List<ObjetoInsideDocumentoUnidad> retorno = new ArrayList<ObjetoInsideDocumentoUnidad>();
+    List<String> eliminarIdsDuplicados = new ArrayList<String>();
+    for (DocumentoMetadatosAdicionales dato : datos) {
+      ObjetoInsideDocumentoUnidad documentoUnidad = new ObjetoInsideDocumentoUnidad();
+      String identificadorDocumento = dato.getIdentificador();
+      if (!eliminarIdsDuplicados.contains(identificadorDocumento)) {
+        documentoUnidad.setIdentificador(dato.getIdentificador());
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(dato.getFechaVersion());
+        documentoUnidad.setFechaVersion(cal);
+        documentoUnidad.setIdUnidad(dato.getIdUnidad());
+        documentoUnidad.setMetAdicionales(dato.getNombreValor());
+        eliminarIdsDuplicados.add(identificadorDocumento);
+        retorno.add(documentoUnidad);
+      }
+    }
+    return retorno;
   }
 
   public List<ObjetoInsideDocumentoUnidad> obtenerDocumento(List<DocumentoUnidad> datos)
@@ -1162,22 +1139,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
   }
 
   @Override
-  public void saveComunicacionTokenExpediente(
-      ObjetoComunicacionTokenExpediente objetoComunicacionTokenExpediente)
-      throws InsideServiceStoreException {
-    logger.debug("Inicio saveComunicacionTokenExpediente");
-    Session session = sessionFactory.openSession();
-    try {
-      persister.saveComunicacionTokenExpediente(
-          InsideServiceStoreHibernateConverterComunicacionTokenExpediente
-              .toEntity(objetoComunicacionTokenExpediente),
-          session);
-    } finally {
-      session.close();
-    }
-  }
-
-  @Override
   public void saveAuditoriaAccesoDocumento(
       ObjetoAuditoriaAccesoDocumento objetoAuditoriaAccesoDocumento)
       throws InsideServiceStoreException {
@@ -1192,274 +1153,11 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     }
   }
 
-  @Override
-  public void saveSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InsideServiceStoreException {
-    logger.debug("Inicio saveSolicitudAccesoExpediente");
-    Session session = sessionFactory.openSession();
-    try {
-      persister.saveSolicitudAccesoExpediente(
-          InsideServiceStoreHibernateConverterSolicitudAccesoExpediente
-              .toEntity(objetoSolicitudAccesoExpediente),
-          session);
-    } finally {
-      session.close();
-    }
-  }
-
-  /**
-   * Se recuperan las peticiones que: - No han sido correctas o tienen el campo correcto a nulo, el
-   * job no las ha tratado todavía. - La fecha del próximo intento es mayor al momento de lanzarse
-   * el job. - Los intentos no han pasado del máximo establecido. Un máximo de maximoResultados.
-   * Primero las más antiguas.
-   */
-  @Override
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteActivas(
-      int maximoResultados, int numeroMaximoIntentos) throws InsideServiceStoreException {
-    logger.debug("Inicio getComunicacionesTokenExpedienteActivas");
-    Session session = sessionFactory.openSession();
-    List<ObjetoComunicacionTokenExpediente> retorno =
-        new ArrayList<ObjetoComunicacionTokenExpediente>();
-    try {
-      Criteria crit = session.createCriteria(ComunicacionTokenExpediente.class);
-      crit.add(Restrictions.like("dir3Destino", "J", MatchMode.START));
-      crit.add(Restrictions.or(Restrictions.ne("Correcto", "S"), Restrictions.isNull("Correcto")));
-      crit.add(Restrictions.or(Restrictions.lt("NIntentos", numeroMaximoIntentos),
-          Restrictions.isNull("NIntentos")));
-      crit.add(Restrictions.lt("FechaProximoIntento", new Date()));
-      crit.addOrder(Order.asc("FechaPeticion"));
-      crit.setMaxResults(maximoResultados);
-      List<ComunicacionTokenExpediente> datos = crit.list();
-      if (CollectionUtils.isNotEmpty(datos)) {
-        for (ComunicacionTokenExpediente comunicacionTokenExpediente : datos) {
-          retorno.add(InsideServiceStoreHibernateConverterComunicacionTokenExpediente
-              .toInside(comunicacionTokenExpediente));
-        }
-      }
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  public ObjetoComunicacionTokenExpediente getComunicacionTokenExpedientePorId(String id)
-      throws InsideServiceStoreException {
-    logger.debug("Inicio getComunicacionesTokenExpedientePorId");
-    Session session = sessionFactory.openSession();
-    ObjetoComunicacionTokenExpediente retorno = new ObjetoComunicacionTokenExpediente();
-    try {
-      Criteria crit = session.createCriteria(ComunicacionTokenExpediente.class);
-      crit.add(Restrictions.eq("id", new Integer(id)));
-      ComunicacionTokenExpediente datos = (ComunicacionTokenExpediente) crit.uniqueResult();
-      if (datos != null) {
-        retorno = InsideServiceStoreHibernateConverterComunicacionTokenExpediente.toInside(datos);
-      }
-    } finally {
-      session.close();
-    }
-    logger.debug("Fin getComunicacionesTokenExpedientePorId");
-    return retorno;
-  }
-
-  /**
-   * Se recuperan los token recibidos para la unidad orgánica activa del usuario
-   * 
-   * @throws InsideServiceStoreException
-   */
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteUnidadOrganicaUsuario(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException {
-    logger.debug("Inicio getComunicacionesTokenExpedienteUnidadOrganicaUsuario");
-    List<ObjetoComunicacionTokenExpediente> retorno =
-        getComunicacionesTokenExpedienteUnidadOrganicaDestino(
-            objetoInsideUsuario.getUnidadOrganicaActiva().substring(0,
-                objetoInsideUsuario.getUnidadOrganicaActiva().indexOf(" -")));
-    logger.debug("Fin getComunicacionesTokenExpedienteUnidadOrganicaUsuario");
-    return retorno;
-  }
-
-  /**
-   * Se recuperan los token recibidos para la unidad orgánica destino
-   * 
-   * @throws InsideServiceStoreException
-   */
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteUnidadOrganicaDestino(
-      String dir3Destino) throws InsideServiceStoreException {
-    logger.debug("Inicio getComunicacionesTokenExpedienteUnidadOrganicaDestino");
-    Session session = sessionFactory.openSession();
-    List<ObjetoComunicacionTokenExpediente> retorno =
-        new ArrayList<ObjetoComunicacionTokenExpediente>();
-    try {
-      Criteria crit = session.createCriteria(ComunicacionTokenExpediente.class);
-      crit.add(Restrictions.eq("dir3Destino", dir3Destino));
-      crit.addOrder(Order.desc("FechaPeticion"));
-      List<ComunicacionTokenExpediente> datos = crit.list();
-      if (CollectionUtils.isNotEmpty(datos)) {
-        for (ComunicacionTokenExpediente comunicacionTokenExpediente : datos) {
-          retorno.add(InsideServiceStoreHibernateConverterComunicacionTokenExpediente
-              .toInside(comunicacionTokenExpediente));
-        }
-      }
-    } finally {
-      session.close();
-    }
-    logger.debug("Fin getComunicacionesTokenExpedienteUnidadOrganicaDestino");
-    return retorno;
-  }
-
-  /**
-   * Se recuperan las peticiones que tienen el resultado nulo. Un máximo de maximoResultados.
-   * Primero las más antiguas. Si el campo resultado contiene información quiere decir que se envió
-   * (o intentó) a su destinatario.
-   * 
-   * @throws XMLStreamException
-   * @throws JAXBException
-   */
-  @Override
-  public List<ObjetoSolicitudAccesoExpediente> getSolicitudesAccesoExpediente(
-      ObjetoInsideUsuario objetoInsideUsuario)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException {
-    logger.debug("Inicio getSolicitudesAccesoExpedienteActivas");
-    Session session = sessionFactory.openSession();
-    List<ObjetoSolicitudAccesoExpediente> retorno =
-        new ArrayList<ObjetoSolicitudAccesoExpediente>();
-    List<ObjetoInsideExpedienteUnidad> expedientesUnidadUsuario =
-        getExpedientesUnidad(objetoInsideUsuario.getNif(), true);
-    String unidadUsuario = objetoInsideUsuario.getUnidadOrganicaActiva().substring(0,
-        objetoInsideUsuario.getUnidadOrganicaActiva().indexOf(" -"));
-    String[] arrayExpedientes = null;
-    List<String> idesExpedeintes = new ArrayList<String>();
-    for (ObjetoInsideExpedienteUnidad objetoInsideExpedienteUnidad : expedientesUnidadUsuario) {
-      idesExpedeintes.add(objetoInsideExpedienteUnidad.getIdentificador());
-    }
-    arrayExpedientes = idesExpedeintes.toArray(new String[0]);
-    try {
-      Criteria crit = session.createCriteria(SolicitudAccesoExpediente.class);
-      crit.add(Restrictions.or(Restrictions.in("IdExpedienteSolicitado", arrayExpedientes),
-          Restrictions.ilike("Dir3ExpedienteSolicitado", unidadUsuario)));
-      crit.addOrder(Order.asc("FechaPeticion"));
-      List<SolicitudAccesoExpediente> datos = crit.list();
-      if (CollectionUtils.isNotEmpty(datos)) {
-        for (SolicitudAccesoExpediente solicitudAccesoExpediente : datos) {
-          retorno.add(InsideServiceStoreHibernateConverterSolicitudAccesoExpediente
-              .toInside(solicitudAccesoExpediente));
-        }
-      }
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  /**
-   * Se recuperan las peticiones que tienen el resultado nulo. Un máximo de maximoResultados.
-   * Primero las más antiguas. Si el campo resultado contiene información quiere decir que se envió
-   * (o intentó) a su destinatario.
-   */
-  @Override
-  public List<ObjetoAuditoriaAcceso> getAuditoriaAccesoDocumento(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException {
-    logger.debug("Inicio getAuditoriaAccesoDocumento");
-    Session session = sessionFactory.openSession();
-    List<ObjetoAuditoriaAcceso> retorno = new ArrayList<ObjetoAuditoriaAcceso>();
-    List<ObjetoInsideExpedienteUnidad> expedientesUnidadUsuario =
-        getExpedientesUnidad(objetoInsideUsuario.getNif(), false);
-    List<ObjetoInsideDocumentoUnidad> documentosUnidadUsuario =
-        getDocumentosUnidad(objetoInsideUsuario.getNif(), false);
-    String[] arrayDocumentos = null;
-    List<String> idesDocumentos = new ArrayList<String>();
-    for (ObjetoInsideExpedienteUnidad objetoInsideExpedienteUnidad : expedientesUnidadUsuario) {
-      idesDocumentos.add(objetoInsideExpedienteUnidad.getIdentificador());
-    }
-    for (ObjetoInsideDocumentoUnidad objetoInsideDocumentoUnidad : documentosUnidadUsuario) {
-      idesDocumentos.add(objetoInsideDocumentoUnidad.getIdentificador());
-    }
-    arrayDocumentos = idesDocumentos.toArray(new String[0]);
-    try {
-      Criteria crit = session.createCriteria(VAuditoriaAccesoNube.class);
-      // crit.add(Restrictions.in("identificador", arrayDocumentos));
-      crit.addOrder(Order.asc("fechaAcceso"));
-      List<VAuditoriaAccesoNube> datos = crit.list();
-      if (CollectionUtils.isNotEmpty(datos)) {
-        for (VAuditoriaAccesoNube vAuditoriaAccesoNube : datos) {
-          retorno.add(InsideServiceStoreHibernateConverterVAuditoriaAccesoNube
-              .toInside(vAuditoriaAccesoNube));
-        }
-      }
-
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpediente(String id)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException {
-    logger.debug("Inicio getSolicitudAccesoExpediente");
-    Session session = sessionFactory.openSession();
-    ObjetoSolicitudAccesoExpediente retorno = new ObjetoSolicitudAccesoExpediente();
-    try {
-      Criteria crit = session.createCriteria(SolicitudAccesoExpediente.class);
-      crit.add(Restrictions.idEq(Integer.valueOf(id)));
-      SolicitudAccesoExpediente datos = (SolicitudAccesoExpediente) crit.uniqueResult();
-      retorno = InsideServiceStoreHibernateConverterSolicitudAccesoExpediente.toInside(datos);
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpedientePorIdPeticion(
-      String idPeticion) throws JAXBException {
-    logger.debug("Inicio getSolicitudAccesoExpedientePorIdPeticion");
-    Session session = sessionFactory.openSession();
-    ObjetoSolicitudAccesoExpediente retorno = new ObjetoSolicitudAccesoExpediente();
-    try {
-      Criteria crit = session.createCriteria(SolicitudAccesoExpediente.class);
-      crit.add(Restrictions.eq("IdPeticion", idPeticion.trim()));
-      SolicitudAccesoExpediente datos = (SolicitudAccesoExpediente) crit.uniqueResult();
-      retorno = InsideServiceStoreHibernateConverterSolicitudAccesoExpediente.toInside(datos);
-    } catch (Exception e) {
-      logger.debug("No se encontró petición con id " + idPeticion);
-      return null;
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  public String getUrlDestinoPeticionAccesoExpediente(String dir3) throws InSideServiceException {
-    logger.debug("Inicio getUrlDestinoPeticionAccesoExpediente");
-    Session session = sessionFactory.openSession();
-    String resultado = null;
-    try {
-      SolicitudAccesoExpAppUrl dato = this.getSolicitudAccesoExpAppUrl(dir3, session);
-      if (dato != null) {
-        resultado = dato.getUrlDestinoPeticion();
-      }
-    } finally {
-      session.close();
-    }
-    return resultado;
-  }
-
   private List<String> getOrganosPadres(String dir3, Session session) {
     Query query = session.createSQLQuery("CALL DevuelveDir3Padres(:id)").setParameter("id", dir3);
 
     List<String> result = query.list();
     return result;
-  }
-
-  private SolicitudAccesoExpAppUrl getSolicitudAccesoExpAppUrl(String dir3, Session session) {
-    List<String> padres = getOrganosPadres(dir3, session);
-    if (padres.isEmpty()) {
-      return null;
-    }
-    Criteria critSolicitudAcceso = session.createCriteria(SolicitudAccesoExpAppUrl.class);
-    critSolicitudAcceso.add(Restrictions.in("Dir3Padre", padres));
-    return (SolicitudAccesoExpAppUrl) critSolicitudAcceso.uniqueResult();
   }
 
   @Override
@@ -1543,8 +1241,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
           }
         }
 
-
-
       }
       // criteria.setFirstResult(data.getOffset());
       // criteria.setMaxResults(data.getPageSize())
@@ -1617,26 +1313,12 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     Session session = sessionFactory.openSession();
     try {
       NumeroProcedimiento numeroProcedimiento = null;
-      Integer idProcedimiento = null;
       data.setActivo(true);
       UnidadOrganica unidad = getUnidadEntity(data.getUnidadOrganicaActiva(), session);
-      if (StringUtils.isNotEmpty(data.getNumeroProcedimiento())) {
-        numeroProcedimiento = getNumeroProcesoEntity(data.getNumeroProcedimiento(), session);
-        idProcedimiento = numeroProcedimiento.getId();
-      }
 
-      // el cero es el vacio metido en el usuarioManager
-      if (data.getObjNumeroProcedimiento() != null
-          && data.getObjNumeroProcedimiento().getId() > 0) {
-        numeroProcedimiento =
-            getNumeroProcesoEntity(data.getObjNumeroProcedimiento().getId(), session);
-        idProcedimiento = numeroProcedimiento.getId();
-      }
-
-      ObjetoInsideUsuario usuario = persister.saveUser(data, unidad, idProcedimiento, session);
+      ObjetoInsideUsuario usuario = persister.saveUser(data, unidad, null, session);
       usuario.setUnidadOrganicaActiva(unidad.getCodigoUnidadOrganica());
-      if (numeroProcedimiento != null)
-        usuario.setNumeroProcedimiento(numeroProcedimiento.getNumProcedimiento());
+
       return usuario;
     } finally {
       session.close();
@@ -1679,7 +1361,8 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     }
   }
 
-  // Si al eliminar la unidad del usuario no tiene mas asignadas, ponemos inactivo al usuario
+  // Si al eliminar la unidad del usuario no tiene mas asignadas, ponemos
+  // inactivo al usuario
   private void compruebaRestoUnidades(UsuarioInside usuario, Integer idUnidad, Session session) {
     Criteria criUnidadUsuario = session.createCriteria(UnidadUsuario.class);
     criUnidadUsuario.add(Restrictions.eq("idUsuario", usuario.getId()));
@@ -1963,7 +1646,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     return rolEntity;
   }
 
-
   public NumeroProcedimiento getNumeroProcesoEntity(Object numeroProc, Session session)
       throws InsideServiceStoreException {
     NumeroProcedimiento numeroProcedimiento;
@@ -2211,26 +1893,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     } finally {
       session.close();
     }
-  }
-
-  @Override
-  public void insertRespuestaRemisionJusticia(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InsideServiceStoreException {
-
-    persister.persistRespuestaRemisionJusticiaExpediente(objectInsideRespuestaEnvioJusticia,
-        identificadorExpediente, version);
-
-  }
-
-  @Override
-  public void insertRespuestaRemisionJusticiaExpedienteNoInside(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InsideServiceStoreException {
-
-    persister.persistRespuestaRemisionJusticiaExpedienteNoInside(objectInsideRespuestaEnvioJusticia,
-        identificadorExpediente, version);
-
   }
 
   @Override
@@ -2558,42 +2220,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
   }
 
   @Override
-  public ObjetoSolicitudAccesoExpAppUrl saveSolicitudAccesoExpAppUrl(
-      ObjetoSolicitudAccesoExpAppUrl objetoSolicitudAccesoExpAppUrl)
-      throws InsideServiceStoreException {
-    logger.debug("Inicio saveSolicitudAccesoExpAppUrl");
-    Session session = sessionFactory.openSession();
-    SolicitudAccesoExpAppUrl respuesta = null;
-    try {
-      respuesta = persister
-          .saveSolicitudAccesoExpAppUrl(InsideServiceStoreHibernateConverterSolicitudAccesoExpAppUrl
-              .toEntity(objetoSolicitudAccesoExpAppUrl), session);
-    } finally {
-      session.close();
-    }
-    return InsideServiceStoreHibernateConverterSolicitudAccesoExpAppUrl.toInside(respuesta);
-  }
-
-  @Override
-  public ObjetoSolicitudAccesoExpAppUrl getSolicitudAccesoExpAppUrlPorDir3(String dir3Padre)
-      throws InsideServiceStoreException {
-    ObjetoSolicitudAccesoExpAppUrl retorno = null;
-    Session session = sessionFactory.openSession();
-    try {
-      Criteria crit = session.createCriteria(SolicitudAccesoExpAppUrl.class);
-      crit.add(Restrictions.eq("Dir3Padre", dir3Padre.trim()));
-      SolicitudAccesoExpAppUrl datos = (SolicitudAccesoExpAppUrl) crit.uniqueResult();
-      if (datos != null) {
-        retorno = InsideServiceStoreHibernateConverterSolicitudAccesoExpAppUrl.toInside(datos);
-      }
-
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  @Override
   public void updateDocumentoUnidad(ObjetoDocumentoInside object, String usuario, boolean online)
       throws InsideServiceStoreException {
     Session session = sessionFactory.openSession();
@@ -2603,68 +2229,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     } finally {
       session.close();
     }
-  }
-
-  @Override
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEvioJusticaByCodigoEnvio(
-      ObjectInsideRespuestaEnvioJusticia respuestaEnvioJusticia) throws InSideServiceException {
-    ObjectInsideRespuestaEnvioJusticia retorno = null;
-    Session session = sessionFactory.openSession();
-    try {
-
-      Criteria crit = session.createCriteria(ExpedienteInsideRespuestaEnvioJusticia.class);
-      crit.add(Restrictions.eq("codigoEnvio", respuestaEnvioJusticia.getCodigoEnvio()));
-
-      ExpedienteInsideRespuestaEnvioJusticia datosRecogidos =
-          (ExpedienteInsideRespuestaEnvioJusticia) crit.uniqueResult();
-
-      if (datosRecogidos != null) {
-        retorno = converterExpedienteInsideRespuestaEnvioJusticia.toInside(datosRecogidos);
-      } else {
-        ObjectInsideRespuestaEnvioJusticia ningunResultado =
-            new ObjectInsideRespuestaEnvioJusticia();
-        ningunResultado.setMensaje(
-            "NO EXISTE REGISTRO EN LA TABLA ExpedienteInsideRespuestaEnvioJusticia CON EL CODIGO DE ENVIO ="
-                + respuestaEnvioJusticia.getCodigoEnvio());
-        return ningunResultado;
-      }
-
-    } finally {
-      session.close();
-    }
-    return retorno;
-  }
-
-  @Override
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEnvioJusticiaByCodigoEnvio(
-      String codigoEnvio) throws InSideServiceException {
-    ObjectInsideRespuestaEnvioJusticia retorno = null;
-    Session session = sessionFactory.openSession();
-    try {
-
-      Criteria crit = session.createCriteria(ExpedienteInsideRespuestaEnvioJusticia.class);
-      crit.add(Restrictions.eq("codigoEnvio", codigoEnvio));
-
-      ExpedienteInsideRespuestaEnvioJusticia datosRecogidos =
-          (ExpedienteInsideRespuestaEnvioJusticia) crit.uniqueResult();
-
-      if (datosRecogidos != null) {
-        retorno = converterExpedienteInsideRespuestaEnvioJusticia.toInside(datosRecogidos);
-      } else {
-        crit = session.createCriteria(ExpedienteNoInsideRespuestaEnvioJusticia.class);
-        crit.add(Restrictions.eq("codigoEnvio", codigoEnvio));
-        ExpedienteNoInsideRespuestaEnvioJusticia datosNoInsideRecogidos =
-            (ExpedienteNoInsideRespuestaEnvioJusticia) crit.uniqueResult();
-        if (datosNoInsideRecogidos != null) {
-          retorno =
-              converterExpedienteNoInsideRespuestaEnvioJusticia.toInside(datosNoInsideRecogidos);
-        }
-      }
-
-    } finally {
-      session.close();
-    }
-    return retorno;
   }
 
   @Override
@@ -2728,8 +2292,10 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     return objetosElastic;
   }
 
+  @SuppressWarnings("unchecked")
   private List<ObjetoElastic> getDocumentosInsideOrgano(String organo, Session session) {
     List<DocumentoInsideOrgano> datos;
+    List<String> data = new ArrayList<>();
     List<ObjetoElastic> objetosElastic = new ArrayList<ObjetoElastic>();
     Criteria crit = session.createCriteria(DocumentoInsideOrgano.class);
     crit.add(Restrictions.eq("organo", organo));
@@ -2737,30 +2303,35 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     datos = crit.list();
 
     for (DocumentoInsideOrgano documentoInsideOrgano : datos) {
-      ObjetoElastic objetoElastic = new ObjetoElastic();
-      objetoElastic.setTipoObjeto("Documento");
-      objetoElastic.setIdentificador(documentoInsideOrgano.getDocumentoInside().getIdentificador());
-      objetoElastic.setMetadatos(new HashMap<String, String>());
-      objetoElastic.getMetadatos().put("VersionNTI",
-          documentoInsideOrgano.getDocumentoInside().getVersionNti());
-      objetoElastic.getMetadatos().put("Identificador",
-          documentoInsideOrgano.getDocumentoInside().getIdentificador());
-      objetoElastic.getMetadatos().put("Organo", documentoInsideOrgano.getOrgano());
-      objetoElastic.getMetadatos().put("FechaCaptura", new SimpleDateFormat("dd/MM/yyyy")
-          .format(documentoInsideOrgano.getDocumentoInside().getFechaCaptura()));
-      objetoElastic.getMetadatos().put("OrigenCiudadanoAdministracion",
-          documentoInsideOrgano.getDocumentoInside().getOrigenCiudadanoAdministracion()
-              ? "Ciudadano"
-              : "Admon");
-      objetoElastic.getMetadatos().put("EstadoElaboracion",
-          documentoInsideOrgano.getDocumentoInside().getEstadoElaboracion());
-      objetosElastic.add(objetoElastic);
+      if (!data.contains(documentoInsideOrgano.getDocumentoInside().getIdentificador())) {
+        ObjetoElastic objetoElastic = new ObjetoElastic();
+        objetoElastic.setTipoObjeto("Documento");
+        objetoElastic
+            .setIdentificador(documentoInsideOrgano.getDocumentoInside().getIdentificador());
+        objetoElastic.setMetadatos(new HashMap<String, String>());
+        objetoElastic.getMetadatos().put("VersionNTI",
+            documentoInsideOrgano.getDocumentoInside().getVersionNti());
+        objetoElastic.getMetadatos().put("Identificador",
+            documentoInsideOrgano.getDocumentoInside().getIdentificador());
+        objetoElastic.getMetadatos().put("Organo", documentoInsideOrgano.getOrgano());
+        objetoElastic.getMetadatos().put("FechaCaptura", new SimpleDateFormat("dd/MM/yyyy")
+            .format(documentoInsideOrgano.getDocumentoInside().getFechaCaptura()));
+        objetoElastic.getMetadatos().put("OrigenCiudadanoAdministracion",
+            documentoInsideOrgano.getDocumentoInside().getOrigenCiudadanoAdministracion()
+                ? "Ciudadano"
+                : "Admon");
+        objetoElastic.getMetadatos().put("EstadoElaboracion",
+            documentoInsideOrgano.getDocumentoInside().getEstadoElaboracion());
 
-      objetoElastic.setMetadatosAdicionales(new HashMap<String, String>());
-      for (DocumentoInsideMetadatosAdicionales metadatosAdicional : documentoInsideOrgano
-          .getDocumentoInside().getDocumentoInsideMetadatosAdicionaleses()) {
-        objetoElastic.getMetadatosAdicionales().put(metadatosAdicional.getNombre(),
-            metadatosAdicional.getValor());
+        objetoElastic.setMetadatosAdicionales(new HashMap<String, String>());
+        for (DocumentoInsideMetadatosAdicionales metadatosAdicional : documentoInsideOrgano
+            .getDocumentoInside().getDocumentoInsideMetadatosAdicionaleses()) {
+          objetoElastic.getMetadatosAdicionales().put(metadatosAdicional.getNombre(),
+              metadatosAdicional.getValor());
+        }
+
+        objetosElastic.add(objetoElastic);
+        data.add(documentoInsideOrgano.getDocumentoInside().getIdentificador());
       }
     }
 
@@ -2849,9 +2420,8 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     this.converterInsideRol = converterInsideRol;
   }
 
-
-
-  // private boolean contieneUnidadOrganica(Object[] listaUnidades, UnidadOrganica unidad)
+  // private boolean contieneUnidadOrganica(Object[] listaUnidades,
+  // UnidadOrganica unidad)
   // {
   // boolean contiene = false;
   //
@@ -2868,7 +2438,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
   //
   // return contiene;
   // }
-
 
   private UnidadUsuario contieneUnidadOrganica(Object[] listaUnidades, UnidadOrganica unidad) {
     for (int i = 0; i < listaUnidades.length; i++) {
@@ -2923,12 +2492,10 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
               obj.setObjNumeroProcedimiento(new ObjetoNumeroProcedimiento());
             }
 
-
             InsideRol insideRol = getInsideRolEntity(unidadBuscada.getIdRol(), session);
             obj.setRol(InsideServiceStoreHibernateConverterInsideRol.toInside(insideRol));
             obj.getRol().setDescripcionLargaTraducida(
                 messageSource.getMessage(insideRol.getDescripcionLarga(), null, locale));
-
 
             retorno.add(obj);
           }
@@ -2940,7 +2507,6 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     }
     return retorno;
   }
-
 
   @Override
   public List<ObjetoNumeroProcedimiento> getNumeroProcedimientoList()
@@ -2962,6 +2528,117 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
     return retorno;
   }
 
+  @Override
+  public List<ObjetoUnidadOrganica> getUnidadesOrganicasUsuariosInside(String texto)
+      throws InsideServiceStoreException {
+    logger.debug("Inicio getUnidadesOrganicasUsuariosInside");
+    Session session = sessionFactory.openSession();
+    List<ObjetoUnidadOrganica> retorno = new ArrayList<ObjetoUnidadOrganica>();
+    try {
+      Criteria crit = session.createCriteria(UnidadUsuario.class);
+      List<Integer> results = session.createCriteria(UnidadUsuario.class).setProjection(
+          Projections.projectionList().add(Projections.distinct(Projections.property("unidad.id"))))
+          .list();
+      if (CollectionUtils.isNotEmpty(results)) {
+        List<UnidadOrganica> unidades = session.createCriteria(UnidadOrganica.class)
+            .add(Restrictions.and(Restrictions.in("id", results),
+                Restrictions.or(Restrictions.like("nombreUnidadOrganica", "%" + texto + "%"),
+                    Restrictions.like("codigoUnidadOrganica", "%" + texto + "%"))))
+            .list();
+        for (UnidadOrganica unidadUsuario : unidades) {
+          ObjetoUnidadOrganica objetoUnidadOrganica = new ObjetoUnidadOrganica();
+          objetoUnidadOrganica.setCodigoUnidadOrganica(unidadUsuario.getCodigoUnidadOrganica());
+          objetoUnidadOrganica.setNombreUnidadOrganica(unidadUsuario.getNombreUnidadOrganica());
+          retorno.add(objetoUnidadOrganica);
+        }
+      }
+    } finally {
+      session.close();
+    }
+    return retorno;
+  }
 
+  @Override
+  public boolean existeUsuarioInsideConDir3(String dir3) {
+    logger.debug("Inicio getUnidadOrganica");
+    Session session = sessionFactory.openSession();
+    boolean retorno = false;
+    try {
+      List results = session.createQuery(
+          "select a.id from UnidadUsuario a where a.unidad.codigoUnidadOrganica like :parametro")
+          .setParameter("parametro", dir3).list();
+
+      if (CollectionUtils.isNotEmpty(results)) {
+        retorno = true;
+      } else {
+        retorno = false;
+      }
+    } finally {
+      session.close();
+    }
+    return retorno;
+  }
+
+  public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
+      throws InsideServiceStoreException {
+
+    ObjetoInsideDocumentoUnidad retorno = new ObjetoInsideDocumentoUnidad();
+    Session session = sessionFactory.openSession();
+    try {
+      Criteria crit = session.createCriteria(DocumentoUnidad.class);
+      crit.add(Restrictions.eq("identificador", identificadorDocumento));
+      DocumentoUnidad datos = (DocumentoUnidad) crit.uniqueResult();
+      retorno.setIdentificador(datos.getIdentificador());
+      retorno.setIdUnidad(datos.getIdUnidad());
+    } finally {
+      session.close();
+    }
+    return retorno;
+  }
+
+  public ObjetoInsideExpedienteUnidad getExpedienteUnidad(String identificadorExpediente)
+      throws InsideServiceStoreException {
+
+    ObjetoInsideExpedienteUnidad retorno = new ObjetoInsideExpedienteUnidad();
+    Session session = sessionFactory.openSession();
+    try {
+      Criteria crit = session.createCriteria(ExpedienteUnidad.class);
+      crit.add(Restrictions.eq("identificador", identificadorExpediente));
+      ExpedienteUnidad datos = (ExpedienteUnidad) crit.uniqueResult();
+      retorno.setIdentificador(datos.getIdentificador());
+      retorno.setIdUnidad(datos.getIdUnidad());
+    } finally {
+      session.close();
+    }
+    return retorno;
+  }
+
+  @Override
+  public ObjetoInsideUnidad getUnidadOrganica(Object idUnidadOrganica)
+      throws InsideServiceStoreException {
+    UnidadOrganica unidad;
+    // Recuperamos la unidad orgánica
+    Session session = sessionFactory.openSession();
+    try {
+      Criteria critUnidad = session.createCriteria(UnidadOrganica.class);
+      if (idUnidadOrganica instanceof String) {
+        critUnidad.add(Restrictions.eq("codigoUnidadOrganica", idUnidadOrganica));
+      } else if (idUnidadOrganica instanceof Integer) {
+        critUnidad.add(Restrictions.eq("id", idUnidadOrganica));
+      } else {
+        throw new InsideServiceStoreException(
+            "Proceso incompleto. No se pudo obtener unidad orgánica no existe en BBDD");
+      }
+      unidad = (UnidadOrganica) critUnidad.uniqueResult();
+
+      if (unidad == null)
+        throw new InsideServiceStoreException(
+            "Proceso incompleto. La unidad orgánica no existe en BBDD");
+    } finally {
+      session.close();
+    }
+
+    return InsideServiceStoreHibernateConverterUnidad.toInside(unidad, null, true);
+  }
 
 }

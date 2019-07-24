@@ -68,6 +68,9 @@ public class GInsideOperationWebServiceImpl implements GInsideOperationWebServic
       throws InsideWSException {
     try {
       logger.debug("Inicio GInSideWebServiceImpl.convertirDocumentoAEni");
+      if (contenido != null && contenido.length == 0) {
+        contenido = null;
+      }
       DocumentoEniFileInside retorno = new DocumentoEniFileInside();
       TipoDocumento tDoc = insideUtilService.convertirDocumentoAEni(documento, contenido,
           BooleanUtils.toBoolean(firmar), credentialUtil);
@@ -98,6 +101,9 @@ public class GInsideOperationWebServiceImpl implements GInsideOperationWebServic
       throws InsideWSException {
     try {
       logger.debug("Inicio GInSideWebServiceImpl.convertirDocumentoAEniConMAdicionales");
+      if (contenido != null && contenido.length == 0) {
+        contenido = null;
+      }
       DocumentoEniFileInsideConMAdicionales retorno = new DocumentoEniFileInsideConMAdicionales();
       TipoDocumentoInsideConMAdicionales tDocAdicionales =
           insideUtilService.convertirDocumentoAEniConMAdicionales(documento, metadatosAdicionales,
@@ -148,6 +154,7 @@ public class GInsideOperationWebServiceImpl implements GInsideOperationWebServic
       String contenidoFirma, WSCredentialInside credentialUtil) throws InsideWSException {
     try {
       logger.debug("Inicio GInSideWebServiceImpl.convertirExpedienteAEni");
+      insideUtilService.contieneCarpetasVacias(expediente);
       ExpedienteEniFileInside retorno = new ExpedienteEniFileInside();
       TipoExpediente tExp = insideUtilService.convertirExpedienteAEni(expediente, contenidoFirma,
           true, credentialUtil);
@@ -180,6 +187,7 @@ public class GInsideOperationWebServiceImpl implements GInsideOperationWebServic
       String contenidoFirma, WSCredentialInside credentialUtil) throws InsideWSException {
     try {
       logger.debug("Inicio GInSideWebServiceImpl.convertirExpedienteAEniConMAdicionales");
+      insideUtilService.contieneCarpetasVacias(expediente);
       ExpedienteEniFileInsideConMAdicionales retorno = new ExpedienteEniFileInsideConMAdicionales();
 
 

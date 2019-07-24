@@ -26,14 +26,6 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link Aplicacion }
-   * 
-   */
-  public Aplicacion createAplicacion() {
-    return new Aplicacion();
-  }
-
-  /**
    * Create an instance of {@link Roles }
    * 
    */
@@ -47,6 +39,14 @@ public class ObjectFactory {
    */
   public InfAdicional createInfAdicional() {
     return new InfAdicional();
+  }
+
+  /**
+   * Create an instance of {@link Aplicacion }
+   * 
+   */
+  public Aplicacion createAplicacion() {
+    return new Aplicacion();
   }
 
   /**

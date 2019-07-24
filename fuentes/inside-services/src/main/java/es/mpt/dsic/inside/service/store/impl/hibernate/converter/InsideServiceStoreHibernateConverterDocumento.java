@@ -35,6 +35,7 @@ import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsid
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.firmas.FirmaInside;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
+import es.mpt.dsic.inside.service.util.InsideUtils;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInside;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInsideFirmas;
 import es.mpt.dsic.inside.store.hibernate.entity.DocumentoInsideMetadatosAdicionales;
@@ -113,7 +114,8 @@ public class InsideServiceStoreHibernateConverterDocumento
 
       if (documento.getContenido() != null) {
         entity.setTipoMime(documento.getContenido().getMime());
-        entity.setNombreFormato(documento.getContenido().getNombreFormato());
+        entity.setNombreFormato(
+            InsideUtils.getNombreFormatoByMime(documento.getContenido().getMime()));
         entity.setIdentificadorEnDocumento(documento.getContenido().getIdentificadorEnDocumento());
         entity.setReferencia(documento.getContenido().getReferencia());
       }
@@ -222,7 +224,8 @@ public class InsideServiceStoreHibernateConverterDocumento
 
     documento.setContenido(new ObjetoDocumentoInsideContenido());
     documento.getContenido().setMime(entity.getTipoMime());
-    documento.getContenido().setNombreFormato(entity.getNombreFormato());
+    documento.getContenido()
+        .setNombreFormato(InsideUtils.getNombreFormatoByMime(entity.getTipoMime()));
     documento.getContenido().setIdentificadorEnDocumento(entity.getIdentificadorEnDocumento());
     documento.getContenido().setReferencia(entity.getReferencia());
 

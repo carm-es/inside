@@ -40,6 +40,7 @@ public class InsideServiceStoreHibernateConverterSolicitudAccesoExpediente {
     entity.setEndpointRemitente(objetoSolicitudAccesoExpediente.getEndpointRemitente());
     entity.setDir3Peticionario(objetoSolicitudAccesoExpediente.getDir3Peticionario());
     entity.setAsunto(objetoSolicitudAccesoExpediente.getAsunto());
+    entity.setMotivacion(objetoSolicitudAccesoExpediente.getMotivacion());
     entity.setFechaPeticion(objetoSolicitudAccesoExpediente.getFechaPeticion());
     entity.setIdPeticion(objetoSolicitudAccesoExpediente.getIdPeticion());
     entity.setResultado(objetoSolicitudAccesoExpediente.getResultado());
@@ -69,6 +70,7 @@ public class InsideServiceStoreHibernateConverterSolicitudAccesoExpediente {
     objetoSolicitudAccesoExpediente.setEndpointRemitente(entity.getEndpointRemitente());
     objetoSolicitudAccesoExpediente.setDir3Peticionario(entity.getDir3Peticionario());
     objetoSolicitudAccesoExpediente.setAsunto(entity.getAsunto());
+    objetoSolicitudAccesoExpediente.setMotivacion(entity.getMotivacion());
     objetoSolicitudAccesoExpediente.setFechaPeticion(entity.getFechaPeticion());
     objetoSolicitudAccesoExpediente.setIdPeticion(entity.getIdPeticion());
     objetoSolicitudAccesoExpediente.setResultado(entity.getResultado());

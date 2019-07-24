@@ -40,11 +40,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo }
+   * Create an instance of {@link TipoOpcionesVisualizacionDocumento }
    * 
    */
-  public TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo createTipoOpcionesVisualizacionDocumentoFilasNombreOrganismo() {
-    return new TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo();
+  public TipoOpcionesVisualizacionDocumento createTipoOpcionesVisualizacionDocumento() {
+    return new TipoOpcionesVisualizacionDocumento();
   }
 
   /**
@@ -64,11 +64,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoOpcionesVisualizacionDocumento }
+   * Create an instance of {@link TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo }
    * 
    */
-  public TipoOpcionesVisualizacionDocumento createTipoOpcionesVisualizacionDocumento() {
-    return new TipoOpcionesVisualizacionDocumento();
+  public TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo createTipoOpcionesVisualizacionDocumentoFilasNombreOrganismo() {
+    return new TipoOpcionesVisualizacionDocumento.FilasNombreOrganismo();
   }
 
   /**

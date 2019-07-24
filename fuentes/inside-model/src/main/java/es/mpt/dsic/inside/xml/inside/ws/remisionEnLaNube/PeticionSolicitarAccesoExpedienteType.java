@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
+ * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
+ * (at your option) any later version as soon as they are approved by the European Commission.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and more details. You
+ * should have received a copy of the EUPL1.1 license along with this program; if not, you may find
+ * it at http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ */
+
 
 package es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube;
 
@@ -25,6 +36,7 @@ import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
  *       &lt;sequence>
  *         &lt;element name="peticion" type="{https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube}PeticionType"/>
  *         &lt;element name="asunto" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="motivacion" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="adjunto" type="{http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido}TipoContenido" minOccurs="0"/>
  *         &lt;element name="id_exped_pedido" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="codigo_sia" type="{http://www.w3.org/2001/XMLSchema}int"/>
@@ -40,13 +52,14 @@ import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PeticionSolicitarAccesoExpedienteType", propOrder = {"peticion", "asunto",
-    "adjunto", "idExpedPedido", "codigoSia", "metadatos", "endpointPeticionario"})
+    "motivacion", "adjunto", "idExpedPedido", "codigoSia", "metadatos", "endpointPeticionario"})
 public class PeticionSolicitarAccesoExpedienteType {
 
   @XmlElement(required = true)
   protected PeticionType peticion;
   @XmlElement(required = true)
   protected String asunto;
+  protected String motivacion;
   protected TipoContenido adjunto;
   @XmlElement(name = "id_exped_pedido")
   protected String idExpedPedido;
@@ -94,6 +107,26 @@ public class PeticionSolicitarAccesoExpedienteType {
    */
   public void setAsunto(String value) {
     this.asunto = value;
+  }
+
+  /**
+   * Gets the value of the motivacion property.
+   * 
+   * @return possible object is {@link String }
+   * 
+   */
+  public String getMotivacion() {
+    return motivacion;
+  }
+
+  /**
+   * Sets the value of the motivacion property.
+   * 
+   * @param value allowed object is {@link String }
+   * 
+   */
+  public void setMotivacion(String value) {
+    this.motivacion = value;
   }
 
   /**

@@ -11,7 +11,11 @@
 
 package es.mpt.dsic.inside.service.object.converter.impl;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
+import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 
 public interface InsideServiceAdapter {
@@ -31,5 +35,13 @@ public interface InsideServiceAdapter {
       throws InsideServiceAdapterException;
 
   ObjetoExpedienteInside eliminaExpedienteInside(ObjetoExpedienteInside expediente)
+      throws InsideServiceAdapterException;
+
+  ObjetoDocumentoInsideContenido getcontenidoByUuid(String uuid, String idSession)
+      throws InsideServiceAdapterException, CSVStorageException, MalformedURLException, IOException;
+
+  long getContentSizeByUuid(String uuid) throws InsideServiceAdapterException;
+
+  String getValorHuellaDocumento(String uuid, String algoritmo)
       throws InsideServiceAdapterException;
 }

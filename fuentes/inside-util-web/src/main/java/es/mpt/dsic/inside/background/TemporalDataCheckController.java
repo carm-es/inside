@@ -20,7 +20,7 @@ import org.quartz.SchedulerContext;
 import org.quartz.SchedulerException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 
 public class TemporalDataCheckController extends QuartzJobBean {
 

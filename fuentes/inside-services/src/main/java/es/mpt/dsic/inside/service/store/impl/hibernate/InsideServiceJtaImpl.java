@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import es.mpt.dsic.inside.service.store.InsideServiceJta;
@@ -85,6 +86,22 @@ public class InsideServiceJtaImpl implements InsideServiceJta {
     Session session = (Session) this.em.getDelegate();
     session.delete(bean);
     return bean;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  @Transactional(readOnly = true)
+  public <T> List<T> getAllObjetosCriteriaOrder(Class<T> bean, List<Criterion> criterias,
+      List<Order> orders) {
+    Session session = (Session) this.em.getDelegate();
+    Criteria crit = session.createCriteria(bean);
+    for (Criterion criteria : criterias) {
+      crit.add(criteria);
+    }
+    for (Order order : orders) {
+      crit.addOrder(order);
+    }
+    return crit.list();
   }
 
 }

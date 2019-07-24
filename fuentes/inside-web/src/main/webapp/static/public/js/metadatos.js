@@ -3,6 +3,44 @@ function addMetadatoExp(metadatoName, metadatoValue) {
         if (typeof (metadatosAdded) === 'undefined') {
             window.metadatosAdded = 2;
         }
+
+        // Inicio validación nombre y valor no repetidos
+        var metadatosAdicionales = document.getElementById("listMetadatosAdicionalesExp");
+        var inputsMetadatosAdicionales = metadatosAdicionales.getElementsByTagName("input");
+
+        var metadatoAdicionalRepetido = false;
+        var keyMetadatoAdicional = document.getElementById("keyMetadatoAdicional").value;
+        var valueMetadatoAdicional = document.getElementById("valueMetadatoAdicional").value;
+
+        var metadatoNombreNatural = document.getElementById("metadatoNombreNatural").value;
+        var metadatoFechaFin = document.getElementById("metadatoFechaFin").value;
+
+        if (keyMetadatoAdicional == metadatoNombreNatural) {
+            alert("Debe usar el campo Nombre Natural para asignar un valor a este metadato adicional");
+            return;
+        }
+
+        if (keyMetadatoAdicional == metadatoFechaFin) {
+            alert("Debe usar el campo Fecha Fin para asignar un valor a este metadato adicional");
+            return;
+        }
+
+        for (i = 0; i < inputsMetadatosAdicionales.length && !metadatoAdicionalRepetido; i++) {
+            var nombre = inputsMetadatosAdicionales[i].value;
+            i++;
+            var valor = inputsMetadatosAdicionales[i].value;
+
+            if (nombre == keyMetadatoAdicional && valor == valueMetadatoAdicional) {
+                metadatoAdicionalRepetido = true;
+            }
+        }
+
+        if (metadatoAdicionalRepetido) {
+            alert("Ya existe un metadato adicional con ese nombre y valor");
+            return;
+        }
+        // Fin validación nombre y valor no repetidos
+
         //se añade un input key y otro input valor de metadato 
         var key_input = document.createElement("input");
         var value_input = document.createElement("input");

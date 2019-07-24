@@ -14,6 +14,7 @@ package es.mpt.dsic.loadTables.controller;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
@@ -49,6 +50,12 @@ public class UnidadOrganicaController extends QuartzJobBean {
   private String ficheroZipTemporal;
   private String pathDescompresion;
 
+  /**
+   * 
+   * Este job comprueba la fecha de la última actualización de dir3 (campo created_at de
+   * UnidadOrganica). Con esta fecha se pregunta a sw de dir3 por las novedades para esa fecha. Si
+   * las hay las carga.
+   */
   @Override
   protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
     try {
@@ -58,25 +65,40 @@ public class UnidadOrganicaController extends QuartzJobBean {
 
       UnidadOrganicaController controller =
           (UnidadOrganicaController) appCtx.getBean("unidadOrganicaController");
-      controller.loadUnidadOrganica();
+      controller.loadUnidadOrganica(null);
     } catch (SchedulerException e) {
       logger.error("Error al cargar datos");
     }
   }
 
-  public void loadUnidadOrganica() {
+  /**
+   * El job llamará a este método con el parámetro fechaInicio a nulo. La operación
+   * actualizarUnidadesDir3NovedadesDesdeFecha lo llama para preguntar al sw de dir3 por novedades
+   * para una fecha en concreto. Esto sirve por si se quedó algun dir3 sin cargar. Se ha comprobado
+   * que si se intenta cargar una unidad orgánica ya existente se actualiza. Se mantiene la
+   * integridad de la BBDD.
+   */
+  public void loadUnidadOrganica(Date fechaInicio) {
     try {
-      logger.debug("Inicio Load Tablas UnidadOrganica");
-
       // Comprueba que finalice en barra, si no, se la pone
-      if (!rutaTemp.endsWith(Constantes.FILE_SEPARATOR))
+      if (!rutaTemp.endsWith(Constantes.FILE_SEPARATOR)) {
         rutaTemp = rutaTemp + Constantes.FILE_SEPARATOR;
-
-      // obtener fecha ultima sincronizacion
-      Date unidadOrganicaSyncDate = unidadOrganicaService.geLastSync();
-
-      String base64 = "";
+      }
+      String base64;
+      Date unidadOrganicaSyncDate;
       String file = rutaTemp + pathDescompresion + Constantes.FILE_SEPARATOR + "Unidades.xml";
+      SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd");
+      if (fechaInicio != null) {
+        logger.debug("Inicio Load Tablas UnidadOrganica cargamos novedades desde "
+            + dt.format(fechaInicio) + " hasta el dia de hoy");
+        unidadOrganicaSyncDate = fechaInicio;
+      } else {
+        logger.debug("Inicio Load Tablas UnidadOrganica");
+
+        // obtener fecha ultima sincronizacion
+        unidadOrganicaSyncDate = unidadOrganicaService.geLastSync();
+
+      }
       if (unidadOrganicaSyncDate == null) {
         base64 = consumer.volcadoDatosBasicos();
       } else {
@@ -87,7 +109,6 @@ public class UnidadOrganicaController extends QuartzJobBean {
       if (!StringUtils.isEmpty(base64)) {
         inserData(file, base64);
       }
-
 
     } catch (FileNotFoundException e) {
       logger.error("Error al cargar datos: " + e.getMessage());

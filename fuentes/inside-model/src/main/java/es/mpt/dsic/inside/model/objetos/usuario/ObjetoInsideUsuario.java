@@ -11,6 +11,7 @@
 
 package es.mpt.dsic.inside.model.objetos.usuario;
 
+import org.apache.commons.lang.StringUtils;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideRol;
 // import es.mpt.dsic.inside.store.hibernate.entity.InsideRol;
 import es.mpt.dsic.inside.model.objetos.ObjetoNumeroProcedimiento;
@@ -29,7 +30,17 @@ public class ObjetoInsideUsuario implements Comparable<ObjetoInsideUsuario> {
 
   private ObjetoNumeroProcedimiento objNumeroProcedimiento;
 
+  /**
+   * Si es usuario invitado tiene rol asignado GUEST_ROL, entra en modo GInside
+   */
+  public boolean isUsuarioInvitado() {
+    return StringUtils.isBlank(unidadOrganicaActiva);
+  }
 
+  public String getUnidadOrganicaActivaDir3() {
+    return this.getUnidadOrganicaActiva().substring(0,
+        this.getUnidadOrganicaActiva().indexOf(" - "));
+  }
 
   public String getNif() {
     return nif;

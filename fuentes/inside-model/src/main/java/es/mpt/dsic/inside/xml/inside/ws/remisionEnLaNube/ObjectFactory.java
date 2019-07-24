@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
+ * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
+ * (at your option) any later version as soon as they are approved by the European Commission.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and more details. You
+ * should have received a copy of the EUPL1.1 license along with this program; if not, you may find
+ * it at http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ */
+
 
 package es.mpt.dsic.inside.xml.inside.ws.remisionEnLaNube;
 
@@ -26,11 +37,11 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link RespuestaAccesoDocumentoExpedienteType }
+   * Create an instance of {@link PeticionSolicitarAccesoExpedienteType }
    * 
    */
-  public RespuestaAccesoDocumentoExpedienteType createRespuestaAccesoDocumentoExpedienteType() {
-    return new RespuestaAccesoDocumentoExpedienteType();
+  public PeticionSolicitarAccesoExpedienteType createPeticionSolicitarAccesoExpedienteType() {
+    return new PeticionSolicitarAccesoExpedienteType();
   }
 
   /**
@@ -42,43 +53,27 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link RespuestaComunicacionTokenExpedienteType }
+   * Create an instance of {@link PeticionComunicacionResultadoEnvioMJUType }
    * 
    */
-  public RespuestaComunicacionTokenExpedienteType createRespuestaComunicacionTokenExpedienteType() {
-    return new RespuestaComunicacionTokenExpedienteType();
+  public PeticionComunicacionResultadoEnvioMJUType createPeticionComunicacionResultadoEnvioMJUType() {
+    return new PeticionComunicacionResultadoEnvioMJUType();
   }
 
   /**
-   * Create an instance of {@link RespuestaComunicacionResultadoEnvioMJUType }
+   * Create an instance of {@link RespuestaAccesoDocumentoExpedienteType }
    * 
    */
-  public RespuestaComunicacionResultadoEnvioMJUType createRespuestaComunicacionResultadoEnvioMJUType() {
-    return new RespuestaComunicacionResultadoEnvioMJUType();
+  public RespuestaAccesoDocumentoExpedienteType createRespuestaAccesoDocumentoExpedienteType() {
+    return new RespuestaAccesoDocumentoExpedienteType();
   }
 
   /**
-   * Create an instance of {@link RespuestaType }
+   * Create an instance of {@link RespuestaSolicitarAccesoExpedienteType }
    * 
    */
-  public RespuestaType createRespuestaType() {
-    return new RespuestaType();
-  }
-
-  /**
-   * Create an instance of {@link DatosRemisionJusticiaType }
-   * 
-   */
-  public DatosRemisionJusticiaType createDatosRemisionJusticiaType() {
-    return new DatosRemisionJusticiaType();
-  }
-
-  /**
-   * Create an instance of {@link RespuestaInformarAccesoExpedienteType }
-   * 
-   */
-  public RespuestaInformarAccesoExpedienteType createRespuestaInformarAccesoExpedienteType() {
-    return new RespuestaInformarAccesoExpedienteType();
+  public RespuestaSolicitarAccesoExpedienteType createRespuestaSolicitarAccesoExpedienteType() {
+    return new RespuestaSolicitarAccesoExpedienteType();
   }
 
   /**
@@ -90,11 +85,27 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link PeticionComunicacionResultadoEnvioMJUType }
+   * Create an instance of {@link StringTokenType }
    * 
    */
-  public PeticionComunicacionResultadoEnvioMJUType createPeticionComunicacionResultadoEnvioMJUType() {
-    return new PeticionComunicacionResultadoEnvioMJUType();
+  public StringTokenType createStringTokenType() {
+    return new StringTokenType();
+  }
+
+  /**
+   * Create an instance of {@link ParametrosRemision }
+   * 
+   */
+  public ParametrosRemision createParametrosRemision() {
+    return new ParametrosRemision();
+  }
+
+  /**
+   * Create an instance of {@link RespuestaComunicacionResultadoEnvioMJUType }
+   * 
+   */
+  public RespuestaComunicacionResultadoEnvioMJUType createRespuestaComunicacionResultadoEnvioMJUType() {
+    return new RespuestaComunicacionResultadoEnvioMJUType();
   }
 
   /**
@@ -122,14 +133,6 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link RespuestaRemisionAJusticiaType }
-   * 
-   */
-  public RespuestaRemisionAJusticiaType createRespuestaRemisionAJusticiaType() {
-    return new RespuestaRemisionAJusticiaType();
-  }
-
-  /**
    * Create an instance of {@link PeticionAccesoDocumentoExpedienteType }
    * 
    */
@@ -138,19 +141,19 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link ParametrosRemision }
+   * Create an instance of {@link RespuestaRemisionAJusticiaType }
    * 
    */
-  public ParametrosRemision createParametrosRemision() {
-    return new ParametrosRemision();
+  public RespuestaRemisionAJusticiaType createRespuestaRemisionAJusticiaType() {
+    return new RespuestaRemisionAJusticiaType();
   }
 
   /**
-   * Create an instance of {@link StringTokenType }
+   * Create an instance of {@link RespuestaType }
    * 
    */
-  public StringTokenType createStringTokenType() {
-    return new StringTokenType();
+  public RespuestaType createRespuestaType() {
+    return new RespuestaType();
   }
 
   /**
@@ -162,19 +165,35 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link PeticionSolicitarAccesoExpedienteType }
+   * Create an instance of {@link RespuestaInformarAccesoExpedienteType }
    * 
    */
-  public PeticionSolicitarAccesoExpedienteType createPeticionSolicitarAccesoExpedienteType() {
-    return new PeticionSolicitarAccesoExpedienteType();
+  public RespuestaInformarAccesoExpedienteType createRespuestaInformarAccesoExpedienteType() {
+    return new RespuestaInformarAccesoExpedienteType();
   }
 
   /**
-   * Create an instance of {@link RespuestaSolicitarAccesoExpedienteType }
+   * Create an instance of {@link DatosRemisionJusticiaType }
    * 
    */
-  public RespuestaSolicitarAccesoExpedienteType createRespuestaSolicitarAccesoExpedienteType() {
-    return new RespuestaSolicitarAccesoExpedienteType();
+  public DatosRemisionJusticiaType createDatosRemisionJusticiaType() {
+    return new DatosRemisionJusticiaType();
+  }
+
+  /**
+   * Create an instance of {@link ConsultaPeticionRemisionType }
+   * 
+   */
+  public ConsultaPeticionRemisionType createConsultaPeticionRemisionType() {
+    return new ConsultaPeticionRemisionType();
+  }
+
+  /**
+   * Create an instance of {@link RespuestaComunicacionTokenExpedienteType }
+   * 
+   */
+  public RespuestaComunicacionTokenExpedienteType createRespuestaComunicacionTokenExpedienteType() {
+    return new RespuestaComunicacionTokenExpedienteType();
   }
 
 }

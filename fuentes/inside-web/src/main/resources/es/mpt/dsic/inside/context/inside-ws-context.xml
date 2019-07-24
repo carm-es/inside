@@ -23,22 +23,20 @@
 						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd 
                         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd"
+    xmlns:soap="http://cxf.apache.org/bindings/soap">
 
 	<context:annotation-config />
-	<context:component-scan base-package="es.mpt.dsic.inside, es.mpt.dsic.inside.remisionnube.*" />
+	<context:component-scan base-package="es.mpt.dsic.inside" />
 	
 	<import resource="classpath:es/mpt/dsic/loadTables/context/loadTables-context.xml" />
 	
 	<import resource="quartz-temporalData.xml" />
 	
 	<import resource="classpath:es/mpt/dsic/inside/context/inside-service-context.xml" />
-	
-	<import resource="classpath:es/mpt/dsic/justicia/context/puntoUnicoJusticia.xml" />
-	
-	<bean id="PuntoUnicoRemisionNubeService" class="es.mpt.dsic.inside.remisionnube.service.impl.PuntoUnicoRemisionNubeServiceImpl">
- 	</bean>
-	
+
+    <import resource="classpath:/bigDataTransfer-context.xml"/>
+
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
 	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 	
@@ -104,7 +102,6 @@
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
-			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
 		</jaxws:schemaLocations>		
@@ -162,7 +159,7 @@
 	<jaxws:endpoint id="insideUserTokenWs" 
 					address="/InsideUserTokenService">
 		<jaxws:implementor>
-			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideUserTokenWebServiceImpl"/>
+			<bean class="es.mpt.dsic.inside.ws.service.impl.InsideUserTokenWebServiceImpl" />
 		</jaxws:implementor>
 		<jaxws:features>
 			<bean class="org.apache.cxf.feature.LoggingFeature" />
@@ -213,7 +210,6 @@
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
-			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaConsultaEnvioJusticiaInside.xsd</jaxws:schemaLocation>
@@ -328,7 +324,6 @@
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoMetadatosAdicionales.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoVersionInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/TipoDocumentoVisualizacionInside.xsd</jaxws:schemaLocation>
-			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RemisionEnLaNube.xsd</jaxws:schemaLocation>	
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/DocumentoEniFileInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaPdfExpedienteInside.xsd</jaxws:schemaLocation>			
@@ -367,7 +362,6 @@
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/UnidadAplicacionEeutilInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/NumeroProcedimientoInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/EstructuraCarpetaInside.xsd</jaxws:schemaLocation>
-			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/SolicitudAccesoExpAppUrl.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/RespuestaEnvioJusticiaInside.xsd</jaxws:schemaLocation>
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/FilterPageRequest.xsd</jaxws:schemaLocation>
 		</jaxws:schemaLocations>
@@ -542,5 +536,6 @@
 			<jaxws:schemaLocation>src/main/resources/es/mpt/dsic/inside/xsd/ExpedienteEniFileInside.xsd</jaxws:schemaLocation>
 		</jaxws:schemaLocations>
 	</jaxws:endpoint>
+	
 	
 </beans>

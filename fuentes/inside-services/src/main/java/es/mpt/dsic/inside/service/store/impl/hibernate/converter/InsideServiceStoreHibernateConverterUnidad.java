@@ -26,6 +26,7 @@ public class InsideServiceStoreHibernateConverterUnidad<E extends Object> {
     ObjetoInsideUnidad retorno = null;
     if (entity != null) {
       retorno = new ObjetoInsideUnidad();
+      retorno.setId(entity.getId());
       retorno.setCodigo(entity.getCodigoUnidadOrganica());
       retorno.setNombre(entity.getNombreUnidadOrganica());
       retorno.setNumeroProcedimiento(numeroProcedimiento);

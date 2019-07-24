@@ -16,7 +16,6 @@ import java.net.URL;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.annotation.PostConstruct;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.soap.SOAPBinding;
 import org.apache.axiom.attachments.ByteArrayDataSource;
@@ -25,12 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
 import es.mpt.dsic.eeutil.client.model.DatosFirmados;
 import es.mpt.dsic.eeutil.client.operFirma.model.ApplicationLogin;
+import es.mpt.dsic.eeutil.client.operFirma.model.ConfiguracionAmpliarFirma;
 import es.mpt.dsic.eeutil.client.operFirma.model.DatosFirmadosMtom;
 import es.mpt.dsic.eeutil.client.operFirma.model.EeUtilServiceMtom;
 import es.mpt.dsic.eeutil.client.operFirma.model.EeUtilServiceMtomImplService;
 import es.mpt.dsic.eeutil.client.operFirma.model.InSideException;
 import es.mpt.dsic.eeutil.client.operFirma.model.InformacionFirma;
 import es.mpt.dsic.eeutil.client.operFirma.model.OpcionesObtenerInformacionFirma;
+import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoAmpliarFirmaMtom;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidacionInfo;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidarCertificado;
 import es.mpt.dsic.infofirma.converter.InfoFirmaConverter;
@@ -52,41 +53,59 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
   private EeUtilServiceMtom port;
   private ApplicationLogin applicationLogin;
 
-  @PostConstruct
-  public void configureInfoFirma() {
+  private boolean configureInfoFirma() {
     String infoFirmaActivo = properties.getProperty("infofirma.activo");
-
     try {
-      if (!ACTIVO.contentEquals(infoFirmaActivo)) {
-        logger.info("El WS de INFOFIRMA para la obtención de información de firmas no está activo");
-        activo = false;
-      } else {
-        String urlInfoFirma = properties.getProperty("infofirma.url");
-        logger.debug(String.format("El WS de INFOFIRMA se encuentra en %s", urlInfoFirma));
+      if (!activo) {
+        if (!ACTIVO.contentEquals(infoFirmaActivo)) {
+          logger
+              .info("El WS de INFOFIRMA para la obtención de información de firmas no está activo");
+          activo = false;
+        } else {
+          String urlInfoFirma = properties.getProperty("infofirma.url");
+          logger.debug(String.format("El WS de INFOFIRMA se encuentra en %s", urlInfoFirma));
 
-        EeUtilServiceMtomImplService service1 =
-            new EeUtilServiceMtomImplService(new URL(properties.getProperty("infofirma.url")));
-        port = service1.getPort(EeUtilServiceMtom.class);
-        BindingProvider bp = (BindingProvider) port;
-        // Habilitar MTOM en cliente
-        // ****************************************************************************************
-        SOAPBinding soapBinding = (SOAPBinding) bp.getBinding();
-        soapBinding.setMTOMEnabled(true);
-        // ****************************************************************************************
-        bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlInfoFirma);
+          EeUtilServiceMtomImplService service1 =
+              new EeUtilServiceMtomImplService(new URL(properties.getProperty("infofirma.url")));
+          port = service1.getPort(EeUtilServiceMtom.class);
+          BindingProvider bp = (BindingProvider) port;
+          // Habilitar MTOM en cliente
+          // ****************************************************************************************
+          SOAPBinding soapBinding = (SOAPBinding) bp.getBinding();
+          soapBinding.setMTOMEnabled(true);
+          // ****************************************************************************************
+          bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlInfoFirma);
 
-        applicationLogin = new ApplicationLogin();
-        applicationLogin.setIdaplicacion(properties.getProperty("infofirma.idaplicacion"));
-        applicationLogin.setPassword(properties.getProperty("infofirma.password"));
+          applicationLogin = new ApplicationLogin();
+          applicationLogin.setIdaplicacion(properties.getProperty("infofirma.idaplicacion"));
+          applicationLogin.setPassword(properties.getProperty("infofirma.password"));
 
-        logger.debug(String.format("Utilizando para infofirma idaplicacion/password : %s/%s",
-            properties.getProperty("infofirma.idaplicacion"),
-            properties.getProperty("infofirma.password")));
-        activo = true;
+          logger.debug(String.format("Utilizando para infofirma idaplicacion/password : %s/%s",
+              properties.getProperty("infofirma.idaplicacion"),
+              properties.getProperty("infofirma.password")));
+          activo = true;
+        }
       }
     } catch (MalformedURLException e) {
       activo = false;
     }
+    return activo;
+  }
+
+  public DataHandler ampliarFirma(DataHandler firmaMtom,
+      ConfiguracionAmpliarFirma configuracionAmpliarFirma) throws InfoFirmaServiceException {
+
+    ResultadoAmpliarFirmaMtom resultado;
+    try {
+      resultado = port.ampliarFirma(applicationLogin, firmaMtom, configuracionAmpliarFirma);
+    } catch (InSideException e) {
+      logger.debug(e);
+      throw new InfoFirmaServiceException(
+          "Error " + e.getFaultInfo().getCodigo() + " " + e.getFaultInfo().getDescripcion());
+
+    }
+
+    return resultado.getFirma();
 
   }
 
@@ -100,7 +119,7 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
   @Override
   public InfoFirmaElectronica getInfoFirma(FirmaElectronica firma, OpcionesInfoFirma opciones,
       byte[] bytesContenido) throws InfoFirmaServiceNoEsFirmaException, InfoFirmaServiceException {
-    if (!activo) {
+    if (!configureInfoFirma()) {
       throw new InfoFirmaServiceException(
           "El WS de INFOFIRMA para la obtención de información de firmas no está activo");
     }
@@ -137,6 +156,10 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
       if ("COD_0001".equalsIgnoreCase(e.getFaultInfo().getCodigo())
           || "COD_0002".equalsIgnoreCase(e.getFaultInfo().getCodigo())
           || "COD_0003".equalsIgnoreCase(e.getFaultInfo().getCodigo())) {
+
+        if ("COD_0002".equalsIgnoreCase(e.getFaultInfo().getCodigo())) {
+          throw new InfoFirmaServiceException("El fomato de firma presentado no está admitido.");
+        }
         throw new InfoFirmaServiceNoEsFirmaException(
             "El contenido aportado no se corresponde con una firma electrónica de un formato de los admitidos");
       } else {
@@ -181,7 +204,7 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
   @Override
   public ResultadoValidarCertificado getInfoCertificate(String certificate)
       throws InfoFirmaServiceException, InSideException {
-    if (!activo) {
+    if (!configureInfoFirma()) {
       throw new InfoFirmaServiceException(
           "El WS de INFOFIRMA para la obtención de información de certificados no está activo");
     }
@@ -199,7 +222,7 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
       DatosFirmados datosFirmados) throws InfoFirmaServiceException {
 
     try {
-      if (!activo) {
+      if (!configureInfoFirma()) {
         throw new InfoFirmaServiceException(
             "El WS de INFOFIRMA para la obtención de información de firmas no está activo");
       }

@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="EeUtilFirmarService" targetNamespace="http://service.ws.inside.dsic.mpt.es/" xmlns:ns1="http://service.ws.inside.dsic.mpt.es/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="unqualified" targetNamespace="http://service.ws.inside.dsic.mpt.es/" version="1.0" xmlns:tns="http://service.ws.inside.dsic.mpt.es/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="firmaFichero" type="tns:firmaFichero"/>
+<xs:element name="firmaFicheroResponse" type="tns:firmaFicheroResponse"/>
+<xs:complexType name="firmaFichero">
+<xs:sequence>
+<xs:element name="aplicacionInfo" type="tns:applicationLogin"/>
+<xs:element name="datosEntrada" type="tns:datosEntradaFichero"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="applicationLogin">
+<xs:sequence>
+<xs:element name="idaplicacion" type="xs:string"/>
+<xs:element name="password" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="datosEntradaFichero">
+<xs:sequence>
+<xs:element name="contenido" type="xs:base64Binary"/>
+<xs:element minOccurs="0" name="formatoFirma" type="xs:string"/>
+<xs:element minOccurs="0" name="modoFirma" type="xs:string"/>
+<xs:element minOccurs="0" name="algoritmoFirma" type="xs:string"/>
+<xs:element name="cofirmarSiFirmado" type="xs:boolean"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="firmaFicheroResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="datosSalida" type="tns:datosSalida"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="datosSalida">
+<xs:sequence>
+<xs:element name="estado" type="xs:string"/>
+<xs:element name="resultado" type="xs:string"/>
+<xs:element name="datosResultado" type="tns:contenidoSalida"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType abstract="true" name="contenidoSalida">
+<xs:sequence/>
+</xs:complexType>
+<xs:complexType name="resultadoFirma">
+<xs:complexContent>
+<xs:extension base="tns:contenidoSalida">
+<xs:sequence>
+<xs:element name="formatoFirma" type="xs:string"/>
+<xs:element name="modoFirma" type="xs:string"/>
+<xs:element name="algoritmoFirma" type="xs:string"/>
+<xs:element name="datosEntrada" type="xs:string"/>
+<xs:element name="datosFirmados" type="xs:string"/>
+<xs:element name="contenidoFirma" type="xs:string"/>
+<xs:element name="fechaFirma" type="xs:string"/>
+<xs:element name="datosFirmante" type="tns:datosFirmante"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="datosFirmante">
+<xs:sequence>
+<xs:element name="nombreFirmante" type="xs:string"/>
+<xs:element name="numeroIdentificacion" type="xs:string"/>
+<xs:element name="mailFirmante" type="xs:string"/>
+<xs:element name="entidadCertificadora" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:complexType name="error">
+<xs:complexContent>
+<xs:extension base="tns:contenidoSalida">
+<xs:sequence>
+<xs:element name="mensaje" type="xs:string"/>
+<xs:element name="causa" type="xs:string"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:complexType name="resultadoFirmaFichero">
+<xs:complexContent>
+<xs:extension base="tns:contenidoSalida">
+<xs:sequence>
+<xs:element name="formatoFirma" type="xs:string"/>
+<xs:element name="modoFirma" type="xs:string"/>
+<xs:element name="algoritmoFirma" type="xs:string"/>
+<xs:element name="contenido" type="xs:base64Binary"/>
+<xs:element name="firma" type="xs:base64Binary"/>
+<xs:element name="fechaFirma" type="xs:string"/>
+<xs:element name="datosFirmante" type="tns:datosFirmante"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="firmaFicheroResponse">
+    <wsdl:part element="ns1:firmaFicheroResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="firmaFichero">
+    <wsdl:part element="ns1:firmaFichero" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="EeUtilFirmarService">
+    <wsdl:operation name="firmaFichero">
+      <wsdl:input message="ns1:firmaFichero" name="firmaFichero">
+    </wsdl:input>
+      <wsdl:output message="ns1:firmaFicheroResponse" name="firmaFicheroResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

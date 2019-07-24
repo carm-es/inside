@@ -266,7 +266,18 @@ public abstract class InsideConverterExpediente {
 
     } catch (JAXBException e) {
       try {
-        Node nodoEni = XMLUtils.getNode(expedienteValidacion.getContenido(), "ns7:expediente");
+
+        String prefijoEXpENI =
+            XMLUtils.prefijoNamespaceExpediente(new String(expedienteValidacion.getContenido()),
+                "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e");
+        Node nodoEni = null;
+        if (prefijoEXpENI != null && !prefijoEXpENI.trim().equals("")) {
+          String pref = prefijoEXpENI.split(":")[1];
+          nodoEni = XMLUtils.getNode(expedienteValidacion.getContenido(), pref + ":expediente");
+        } else {
+          nodoEni = XMLUtils.getNode(expedienteValidacion.getContenido(), "ns7:expediente");
+        }
+
         if (nodoEni != null) {
           String nodoEniString =
               XMLUtils.expedienteAdicionalWebToEni(expedienteValidacion.getContenido());

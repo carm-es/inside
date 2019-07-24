@@ -16,6 +16,10 @@
 
 			<form id="puestaDisposicionForm" th:action="@{/puestaDisposicion}" method="post" class="mf-form__stack">
 				<div th:fragment="puestaDisposicion">
+				
+					<div class="fld">
+						<span id="mensajesError"></span>
+					</div>
 					
 					<div class="fld">
 						<label for="identificador"
@@ -30,7 +34,8 @@
 						<label for="uuid" th:text="#{expedientesAlmacenados.uuid}"></label>
 						<input class="large" type="text" id="tokenUuid" name="tokenUuid" value="" maxlength="55" readonly="readonly"/>
 					</div>
-							
+					
+
 					
 					<input class="large" type="hidden" id="tokenfechaCaducidad" name="tokenfechaCaducidad"/>
 					

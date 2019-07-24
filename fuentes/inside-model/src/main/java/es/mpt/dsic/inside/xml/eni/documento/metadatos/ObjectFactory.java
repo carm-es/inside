@@ -31,19 +31,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoEstadoElaboracion }
-   * 
-   */
-  public TipoEstadoElaboracion createTipoEstadoElaboracion() {
-    return new TipoEstadoElaboracion();
-  }
-
-  /**
    * Create an instance of {@link TipoMetadatos }
    * 
    */
   public TipoMetadatos createTipoMetadatos() {
     return new TipoMetadatos();
+  }
+
+  /**
+   * Create an instance of {@link TipoEstadoElaboracion }
+   * 
+   */
+  public TipoEstadoElaboracion createTipoEstadoElaboracion() {
+    return new TipoEstadoElaboracion();
   }
 
   /**

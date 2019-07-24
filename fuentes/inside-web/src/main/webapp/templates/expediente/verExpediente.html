@@ -422,33 +422,6 @@ layout:decorator="common/inside_layout">
 							</tr>
 						</thead>
 						<tbody>
-							<tr th:each="registro, iterationStatus  : ${listaRespuestaEnvioJusticiaLista}">
-							<!-- 
-								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_aplicacion}"></td>					
-								<td class="grid-column-creador"	th:text="${registro.AuditoriaEsb_modulo}"></td>
-								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.AuditoriaEsb_servicio}"></td>
-							 -->
-								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_marcaTiempo}"></td>	
-												
-								<td class="grid-column-creador"	 th:if="${registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.correcto}"></td>
-								<td class="grid-column-creador"	 th:if="${not registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.incorrecto}"></td>
-
-								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.codigoEnvio}"></td>												
-								<td class="grid-column-__actions last-column">
-									<ul class="grid-row-actions">
-										<li class="grid-row-action">
-											<a class="mf-table-data--row-action  mf-action  mf-action__revisar "
-												th:if="${not registro.AuditoriaEsb_aplicacion.equals('Error') }" 
-												th:onclick="|javascript:consultaRemisionJusticia('${registro.AuditoriaEsb_aplicacion}','${registro.AuditoriaEsb_modulo}','${registro.AuditoriaEsb_servicio}','${registro.AuditoriaEsb_marcaTiempo}','${registro.codigoEnvio}')|"
-												target="_self"
-												th:title="#{remisionJusticia.accion.consultaEstadoRemision}"> <span
-												class="mf-icon mf-icon-globes-info"></span>
-											</a>
-										</li>
-									</ul>
-
-								</td>
-							</tr>
 						</tbody>
 					</table>
 							

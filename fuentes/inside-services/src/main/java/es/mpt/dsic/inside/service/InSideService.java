@@ -22,7 +22,6 @@ import es.mpt.dsic.inside.model.busqueda.consulta.ConsultaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaUsuario;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoAuditoriaFirmaServidor;
 import es.mpt.dsic.inside.model.objetos.ObjetoCredencialEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoElastic;
@@ -35,6 +34,7 @@ import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidadAplicacionEeutil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.ObjetoNumeroProcedimiento;
+import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatos;
@@ -42,14 +42,12 @@ import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionExpediente;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpediente;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAcceso;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaToken;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoComunicacionTokenExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpAppUrl;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado;
@@ -62,7 +60,6 @@ import es.mpt.dsic.inside.model.objetos.firmas.FirmaInsideTipoFirmaEnum;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
-import es.mpt.dsic.inside.service.util.UnidadOrganicaRolPortales;
 import es.mpt.dsic.inside.service.visualizacion.ResultadoVisualizacionDocumento;
 import es.mpt.dsic.inside.xml.inside.TipoDocumentoInsideConMAdicionales;
 import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
@@ -304,6 +301,9 @@ public interface InSideService {
   List<ObjetoInsideDocumentoUnidad> getDocumentosUnidad(ObjetoInsideUsuario usuario,
       boolean soloUnidadActiva) throws InSideServiceException;
 
+  List<ObjetoInsideDocumentoUnidad> getDocumentosMetadatosUnidad(ObjetoInsideUsuario usuario,
+      boolean soloUnidadActiva) throws InSideServiceException;
+
   ObjetoExpedienteToken getTokenByUsuarioExpediente(ObjetoExpedienteToken usuarioToken)
       throws InSideServiceException;
 
@@ -429,10 +429,6 @@ public interface InSideService {
   ObjetoInsideAplicacion actualizarCredencialesEeetuilApp(String app,
       ObjetoCredencialEeutil credential) throws InSideServiceException;
 
-  public void guardarRespuestaRemisionJusticiaExpediente(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InSideServiceException;
-
   ObjetoInsideUnidadAplicacionEeutil getApplicationEeutilByUser(ObjetoInsideUsuario user)
       throws InSideServiceException;
 
@@ -465,14 +461,6 @@ public interface InSideService {
   public ObjetoInsideAplicacion crearActualizarSerialNumberCertificado(String idAplicacion,
       String serialNumberCertificado) throws InsideServiceStoreException;
 
-  public void guardarSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InSideServiceException;
-
-  void guardarRespuestaRemisionJusticiaExpedienteNoInside(
-      ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia,
-      String identificadorExpediente, String version) throws InSideServiceException;
-
   public List<String> listaNumeroProcedimiento() throws InsideServiceStoreException;
 
   public String altaNumeroProcedimiento(String numeroProcedimiento)
@@ -491,42 +479,9 @@ public interface InSideService {
   public void deleteEstructuraCarpeta(String identificadorEstructura)
       throws InsideServiceStoreException;
 
-  void saveComunicacionTokenExpediente(
-      ObjetoComunicacionTokenExpediente objetoComunicacionTokenExpediente)
-      throws InsideServiceStoreException;
-
-  List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteActivas(
-      int maximoResultados, int numeroMaximoIntentos) throws InsideServiceStoreException;
-
-  void saveSolicitudAccesoExpediente(
-      ObjetoSolicitudAccesoExpediente objetoSolicitudAccesoExpediente)
-      throws InsideServiceStoreException;
-
-  String getUrlDestinoPeticionAccesoExpediente(String dir3) throws InSideServiceException;
-
-  List<ObjetoSolicitudAccesoExpediente> getSolicitudesAccesoExpediente(
-      ObjetoInsideUsuario objetoInsideUsuario)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException;
-
-  ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpediente(String id)
-      throws InsideServiceStoreException, JAXBException, XMLStreamException;
-
   public void saveAuditoriaAccesoDocumento(
       ObjetoAuditoriaAccesoDocumento objetoAuditoriaAccesoDocumento)
       throws InsideServiceStoreException;
-
-  public ObjetoSolicitudAccesoExpAppUrl saveSolicitudAccesoExpAppUrl(
-      ObjetoSolicitudAccesoExpAppUrl objetoSolicitudAccesoExpAppUrl)
-      throws InsideServiceStoreException;
-
-  public ObjetoSolicitudAccesoExpAppUrl getSolicitudAccesoExpAppUrlPorDir3(String dir3Padre)
-      throws InsideServiceStoreException;
-
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEvioJusticaByCodigoEnvio(
-      ObjectInsideRespuestaEnvioJusticia respuestaEnvioJusticia) throws InSideServiceException;
-
-  public ObjectInsideRespuestaEnvioJusticia getRespuestaEnvioJusticiaByCodigoEnvio(
-      String codigoEnvio) throws InSideServiceException;
 
   public void validarFirma(byte[] firma) throws InSideServiceException;
 
@@ -550,9 +505,6 @@ public interface InSideService {
 
   public void saveAuditoriaFirmaServidor(ObjetoAuditoriaFirmaServidor objetoAuditoriaFirmaServidor);
 
-  public List<ObjetoAuditoriaAcceso> getAuditoriaAccesoDocumento(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException;
-
   List<ObjetoInsideExpedienteUnidad> getExpedientesUnidadPorMetadatos(String nif,
       TipoMetadatosAdicionales tipoMetadatosAdicionales) throws InSideServiceException;
 
@@ -564,20 +516,38 @@ public interface InSideService {
   public List<ObjetoInsideUsuario> getUsuariosUnidadOrganica(ObjetoInsideUsuario usuarioEnSesion,
       Locale locale) throws InsideServiceStoreException;
 
-  public List<ObjetoComunicacionTokenExpediente> getComunicacionesTokenExpedienteUnidadOrganicaUsuario(
-      ObjetoInsideUsuario objetoInsideUsuario) throws InsideServiceStoreException;
-
-  public ObjetoComunicacionTokenExpediente getComunicacionTokenExpedientePorId(String id)
-      throws InsideServiceStoreException;
-
-  public List<UnidadOrganicaRolPortales> getlistaUnidadesRolesPortales(String nif)
-      throws InsideServiceStoreException;
-
   public ObjetoInsideRol getRolUnidadUsuario(String codigoUnidad, String nif)
       throws InSideServiceException;
 
-  ObjetoSolicitudAccesoExpediente getSolicitudAccesoExpedientePorIdPeticion(String idPeticion)
-      throws JAXBException;
+  List<ObjetoUnidadOrganica> getUnidadesOrganicasUsuariosInside(String texto)
+      throws InSideServiceException;
 
+  public ObjetoDocumentoInsideContenido getDocumentoContenidoFromObjetoDocumentoInside(
+      String identificador, byte[] bytesContenido, ObjetoDocumentoInside documento)
+      throws InSideServiceException;
+
+  public boolean existeUsuarioInsideConDir3(String dir3) throws InsideServiceStoreException;
+
+  Map<String, String> obtenerDocsExpAndAlgoritmoHuella(
+      List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> list, String path);
+
+  ObjetoDocumentoInsideContenido getDocumentoContenido(String identificador, byte[] bytesContenido,
+      String sessionId) throws Exception;
+
+  public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
+      throws InsideServiceStoreException;
+
+  public ObjetoInsideExpedienteUnidad getExpedienteUnidad(String identificadorExpediente)
+      throws InsideServiceStoreException;
+
+  public ObjetoInsideUnidad getUnidadOrganica(Object idUnidadOrganica)
+      throws InsideServiceStoreException;
+
+  public ObjetoExpedienteInside modificaExpedienteInsideWS(ObjetoExpedienteInside expediente,
+      String usuario, boolean online) throws InSideServiceException;
+
+  public ObjetoExpedienteInside vincularDocumentosEnExpedienteWS(ObjetoExpedienteInside expediente,
+      Collection<ObjetoDocumentoInside> documentos, String ruta, String usuario, boolean online)
+      throws InSideServiceException;
 
 }

@@ -26,11 +26,11 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link UsuarioResultadoBusqueda }
+   * Create an instance of {@link Usuario }
    * 
    */
-  public UsuarioResultadoBusqueda createUsuarioResultadoBusqueda() {
-    return new UsuarioResultadoBusqueda();
+  public Usuario createUsuario() {
+    return new Usuario();
   }
 
   /**
@@ -42,11 +42,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link Usuario }
+   * Create an instance of {@link UsuarioResultadoBusqueda }
    * 
    */
-  public Usuario createUsuario() {
-    return new Usuario();
+  public UsuarioResultadoBusqueda createUsuarioResultadoBusqueda() {
+    return new UsuarioResultadoBusqueda();
   }
 
 }

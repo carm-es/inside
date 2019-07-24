@@ -44,8 +44,8 @@ public class TipoCarpetaIndizadaConversionWSMtom {
   @XmlElement(name = "IdentificadorCarpeta", required = true)
   protected String identificadorCarpeta;
   @XmlElements({@XmlElement(name = "ExpedienteIndizado", type = TipoIndiceConversionWSMtom.class),
-      @XmlElement(name = "DocumentoIndizado", type = TipoDocumentoIndizadoConversionWSMtom.class),
-      @XmlElement(name = "CarpetaIndizada", type = TipoCarpetaIndizadaConversionWSMtom.class)})
+      @XmlElement(name = "CarpetaIndizada", type = TipoCarpetaIndizadaConversionWSMtom.class),
+      @XmlElement(name = "DocumentoIndizado", type = TipoDocumentoIndizadoConversionWSMtom.class)})
   protected List<Object> documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada;
 
   /**
@@ -87,7 +87,7 @@ public class TipoCarpetaIndizadaConversionWSMtom {
    * 
    * <p>
    * Objects of the following type(s) are allowed in the list {@link TipoIndiceConversionWSMtom }
-   * {@link TipoDocumentoIndizadoConversionWSMtom } {@link TipoCarpetaIndizadaConversionWSMtom }
+   * {@link TipoCarpetaIndizadaConversionWSMtom } {@link TipoDocumentoIndizadoConversionWSMtom }
    * 
    * 
    */

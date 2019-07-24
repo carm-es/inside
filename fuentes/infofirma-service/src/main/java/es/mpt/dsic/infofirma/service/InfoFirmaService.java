@@ -11,7 +11,9 @@
 
 package es.mpt.dsic.infofirma.service;
 
+import javax.activation.DataHandler;
 import es.mpt.dsic.eeutil.client.model.DatosFirmados;
+import es.mpt.dsic.eeutil.client.operFirma.model.ConfiguracionAmpliarFirma;
 import es.mpt.dsic.eeutil.client.operFirma.model.InSideException;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidacionInfo;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidarCertificado;
@@ -31,4 +33,7 @@ public interface InfoFirmaService {
 
   public ResultadoValidarCertificado getInfoCertificate(String certificate)
       throws InfoFirmaServiceException, InSideException;
+
+  public DataHandler ampliarFirma(DataHandler firmaMtom,
+      ConfiguracionAmpliarFirma configuracionAmpliarFirma) throws InfoFirmaServiceException;
 }

@@ -40,6 +40,14 @@ public class ObjectFactory {
   }
 
   /**
+   * Create an instance of {@link TipoDocumentoEniBinarioOTipoMtom }
+   * 
+   */
+  public TipoDocumentoEniBinarioOTipoMtom createTipoDocumentoEniBinarioOTipoMtom() {
+    return new TipoDocumentoEniBinarioOTipoMtom();
+  }
+
+  /**
    * Create an instance of {@link TipoOpcionesVisualizacionDocumentoMtom }
    * 
    */
@@ -61,14 +69,6 @@ public class ObjectFactory {
    */
   public TipoResultadoVisualizacionDocumentoInsideMtom createTipoResultadoVisualizacionDocumentoInsideMtom() {
     return new TipoResultadoVisualizacionDocumentoInsideMtom();
-  }
-
-  /**
-   * Create an instance of {@link TipoDocumentoEniBinarioOTipoMtom }
-   * 
-   */
-  public TipoDocumentoEniBinarioOTipoMtom createTipoDocumentoEniBinarioOTipoMtom() {
-    return new TipoDocumentoEniBinarioOTipoMtom();
   }
 
   /**

@@ -31,19 +31,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoDocumentoConversionInside.Csv }
-   * 
-   */
-  public TipoDocumentoConversionInside.Csv createTipoDocumentoConversionInsideCsv() {
-    return new TipoDocumentoConversionInside.Csv();
-  }
-
-  /**
    * Create an instance of {@link TipoDocumentoConversionInside.MetadatosEni }
    * 
    */
   public TipoDocumentoConversionInside.MetadatosEni createTipoDocumentoConversionInsideMetadatosEni() {
     return new TipoDocumentoConversionInside.MetadatosEni();
+  }
+
+  /**
+   * Create an instance of {@link TipoDocumentoConversionInside.Csv }
+   * 
+   */
+  public TipoDocumentoConversionInside.Csv createTipoDocumentoConversionInsideCsv() {
+    return new TipoDocumentoConversionInside.Csv();
   }
 
   /**

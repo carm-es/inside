@@ -612,9 +612,10 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 
       ObjetoExpedienteInside expediente = service.desvincularDocumentosEnExpediente(identificador,
           identificadoresDocumentos, ruta, aplicacion, false);
+      service.modificaExpedienteInsideWS(expediente, aplicacion, false);
       insideUtilService.validateExpedientImport(
           (insideUtilService.getStringExpedienteMarshall(expediente)).getBytes());
-      service.modificaExpedienteInside(expediente, aplicacion, false);
+
       ExpedienteInsideInfo expedienteInfo =
           InsideConverterExpedienteInfo.fromExpediente(expediente);
 
@@ -1419,6 +1420,39 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
     return resultado;
   }
 
+  @Override
+  @Secured("ROLE_LEER_EXPEDIENTE")
+  public RespuestaPdfExpediente visualizarExpediente(byte[] expedienteEni)
+      throws InsideWSException {
+
+    RespuestaPdfExpediente respuestaPdfExpediente;
+    try {
+      ObjetoExpedienteInside objExp = insideUtilService.validateExpedientImport(expedienteEni);
+
+      if (objExp.getVisualizacionIndice() == null) {
+        objExp = service.obtenerVisualizacionIndiceSiActivo(objExp, false, false, null, false, null,
+            true);
+      }
+
+      TipoExpedienteInsideConMAdicionales tipoExpedienteMA =
+          new TipoExpedienteInsideConMAdicionales();
+      tipoExpedienteMA.setExpediente(InsideConverterExpediente.expedienteInsideToEni(objExp, null));
+      tipoExpedienteMA.setMetadatosAdicionales(InsideConverterMetadatos
+          .metadatosAdicionalesInsideToXml(objExp.getMetadatos().getMetadatosAdicionales()));
+
+      respuestaPdfExpediente = new RespuestaPdfExpediente();
+      respuestaPdfExpediente.setPdfExpediente(
+          tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario());
+
+      return respuestaPdfExpediente;
+    } catch (Exception e) {
+      throw InsideExceptionConverter.convertToException(e);
+    }
+
+  }
+
+
+
   public Properties getProperties() {
     return properties;
   }
@@ -1426,6 +1460,7 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
   public void setProperties(Properties properties) {
     this.properties = properties;
   }
+
 
   @Override
   @Secured("ROLE_LEER_EXPEDIENTE")
@@ -1449,6 +1484,35 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
       throw InsideExceptionConverter.convertToException(e);
     }
 
+  }
+
+  @Override
+  public RespuestaPdfExpediente getPdfExpedientePorId(String identificador, String version)
+      throws InsideWSException {
+
+    RespuestaPdfExpediente respuestaPdfExpediente;
+    try {
+
+      ObjetoExpedienteInside objExp;
+      if (version != null && !"".equals(version)) {
+        objExp = service.getExpediente(identificador, Integer.parseInt(version), true);
+      } else {
+        objExp = service.getExpediente(identificador, true);
+      }
+
+      TipoExpedienteInsideConMAdicionales tipoExpedienteMA =
+          new TipoExpedienteInsideConMAdicionales();
+      tipoExpedienteMA.setExpediente(InsideConverterExpediente.expedienteInsideToEni(objExp, null));
+      tipoExpedienteMA.setMetadatosAdicionales(InsideConverterMetadatos
+          .metadatosAdicionalesInsideToXml(objExp.getMetadatos().getMetadatosAdicionales()));
+
+      respuestaPdfExpediente = new RespuestaPdfExpediente();
+      respuestaPdfExpediente.setPdfExpediente(
+          tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario());
+      return respuestaPdfExpediente;
+    } catch (Exception e) {
+      throw InsideExceptionConverter.convertToException(e);
+    }
   }
 
 }

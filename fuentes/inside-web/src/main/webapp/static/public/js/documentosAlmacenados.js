@@ -41,7 +41,10 @@ $(document).ready(function() {
             "class" : "tc",
             "bSortable" : false,
             "width" : "5%"
-        }, ],
+        }, {
+            "bSortable" : false,
+            "width" : "0%"
+        } ],
         "paging" : true
     });
 

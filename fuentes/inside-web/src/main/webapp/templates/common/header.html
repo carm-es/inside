@@ -48,6 +48,8 @@
 			</div>
 		</div>
 		<header id="header" class="mf-header" th:fragment="header">
+			<script th:src="|${#httpServletRequest.getContextPath()}/js/ajaxSessionTimeOut.js?v=${session.versionNumber}|"></script>
+
 			<input type="hidden" id="context" th:value="${#httpServletRequest.getContextPath()}"/>
 			<input type="hidden" id="ip_server" th:value="${#httpServletRequest.getServerName()}"/>
 			<input type="hidden" id="port_server" th:value="${#httpServletRequest.getServerPort()}"/>
@@ -58,7 +60,7 @@
 				<div id="mainHeader" class="mf-header--logo">
 					<h1 class="mf-logo">
 						<a class="mf-logo--link" href="#!" th:title="#{layout.logo.tittle}">
-							<img class="mf-logo--img" src="images/logoSEAP.gif" th:alt="#{layout.logo.alt}"/>
+							<img class="mf-logo--img" src="/images/logoSEAP.gif" th:alt="#{layout.logo.alt}"/>
 						</a>
 					</h1>
 				</div>
@@ -74,7 +76,7 @@
 	                            </li>
 								<li class="last mf-usermenu--item" th:if="${#authentication.unidadOrganicaActiva != null}">
 									<p id="profile_L01180227" class="mf-profiles--title">
-	                                	<a style="color:#008fdc" th:href="|javascript:${'loadUnidadesOrganicas(&quot;' + #authentication.name + '&quot;)'}|"><span id="unidadOrganicaActiva" class="user-profile-name" th:text="${#strings.abbreviate(#authentication.unidadOrganicaActiva,50)}" 
+	                                	<a style="color:#008fdc" th:href="|javascript:${'loadUnidadesOrganicas(&quot;' + #authentication.name + '&quot;,&quot;' + #httpServletRequest.getContextPath() + '&quot;)'}|"><span id="unidadOrganicaActiva" class="user-profile-name" th:text="${#strings.abbreviate(#authentication.unidadOrganicaActiva,50)}" 
 	                                		th:value="${#authentication.unidadOrganicaActiva}" th:title="${#authentication.unidadOrganicaActiva}"></span></a>
 	                                </p>
 	                            </li>
@@ -154,8 +156,13 @@
 						</ul>
 					</nav>
 				</div>
+
 				
 			</div>
+			<!-- <div sec:authorize="isAuthenticated()">
+				<script
+					th:src="|${#httpServletRequest.getContextPath()}/js/session.js?v=${session.versionNumber}|"></script>
+			</div> -->
 		</header>
 		
 		<!-- WRAPPER -->

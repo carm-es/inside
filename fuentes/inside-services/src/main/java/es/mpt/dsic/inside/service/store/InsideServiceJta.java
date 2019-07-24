@@ -13,6 +13,7 @@ package es.mpt.dsic.inside.service.store;
 
 import java.util.List;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
 
 
 public interface InsideServiceJta {
@@ -28,5 +29,8 @@ public interface InsideServiceJta {
   <T> Object saveOrUpdate(T bean);
 
   <T> Object delete(T bean);
+
+  <T> List<T> getAllObjetosCriteriaOrder(Class<T> bean, List<Criterion> criterias,
+      List<Order> order);
 
 }

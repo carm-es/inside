@@ -13,8 +13,8 @@ Los componentes incluidos en inside-src.zip se enumeran a continuaci贸n:
 		- inside-services
 		- load-tables
 		- inside-util-web
+		- csvstorage-client
 		- inside-web
-		- inside-remision-nube
 
 	- lib: Librer韆s que usa la aplicaci髇 Inside
 	- resources
@@ -36,8 +36,7 @@ Los componentes incluidos en inside-src.zip se enumeran a continuaci贸n:
 			- clave.properties
 			- SignModule_SP.xml
 			- StorkSamlEngine_SP.xml			
-			- SamlEngine.xml		
-			- server.cmis.properties										
+			- SamlEngine.xml												
 			- siaService.properties
 			- temporalData.properties
 			- trustStore.jks
@@ -45,19 +44,16 @@ Los componentes incluidos en inside-src.zip se enumeran a continuaci贸n:
 			- visualizacion.properties
 			- ws-security.jks
 			- ws-security.properties
-			- validacionENI.properties
 			
 
 		- scripts_bbdd: Scripts de BBDD
 			- 1_creacion_objetos_mysql.sql
 			- 2_inserts_GeneradorClave_mysql.sql
-			- 3_inserts_InsideRol.sql
 			- 4_quartz.sql
-			- 5_triggers.sql
-			- 6_vistas.sql
 
 			- 1 - insert_aplicacion.sql
-						
+			- 2_inserts_usuarios.sql
+			
 		
 		- endorsed_lib: Librer韆s a copiar en el directorio endorsed de la JRE
 	
@@ -68,6 +64,7 @@ Los componentes incluidos en inside-src.zip se enumeran a continuaci贸n:
 		- visualizacion: Especificaci髇 de WS de visualizaci髇 de documentos ENI e 韓dice de expedientes ENI (WSDL).
 		- csvstorage: Especificaci髇 de WS de almacenamiento de documentos (WSDL).
 		- clientewsregistroelectronico: Especificaci髇 de WS de registro electr髇ico (WSDL).
+		- afirma: Especificaci髇 de WS de validar firma (WSDL).
 		- loadTables: Especificaci髇 de WS de carga de tablas (WSDL).
 		- siaService: Especificaci髇 de WS de carga c骴igo Sia (WSDL).
 		 

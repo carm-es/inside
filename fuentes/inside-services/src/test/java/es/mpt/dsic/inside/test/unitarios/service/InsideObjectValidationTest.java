@@ -36,6 +36,7 @@ import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.object.definitions.InsideObjectDefinitionsContainer;
 import es.mpt.dsic.inside.service.object.metadatos.validator.Exception.InSideServiceValidationException;
 import es.mpt.dsic.inside.test.unitarios.InSideServiceTestBase;
+import es.mpt.dsic.inside.util.InsideUtils;
 
 /**
  * Test para probar las validaciones de los objetos
@@ -78,9 +79,11 @@ public class InsideObjectValidationTest<T extends ObjetoInside<?>> extends InSid
         new ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado();
     documentoIndizado.setOrden(2);
     documentoIndizado.setFechaIncorporacionExpediente(GregorianCalendar.getInstance());
-    documentoIndizado.setFuncionResumen("md5");
+    documentoIndizado.setFuncionResumen(InsideUtils.HUELLA_SHA512_LITERAL_URI);
     documentoIndizado.setIdentificadorDocumento(UUID.randomUUID().toString());
-    documentoIndizado.setValorHuella(DigestUtils.md5DigestAsHex("Huella".getBytes()));
+    documentoIndizado
+        .setValorHuella(org.apache.commons.codec.digest.DigestUtils.sha512Hex("Huella".getBytes()));
+
     elementosIndizados.add(documentoIndizado);
 
     contenidoIndice.setElementosIndizados(elementosIndizados);

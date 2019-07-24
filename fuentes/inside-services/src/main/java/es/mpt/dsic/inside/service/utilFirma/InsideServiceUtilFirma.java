@@ -18,4 +18,7 @@ public interface InsideServiceUtilFirma {
 
   String generarCSV(byte[] data, String mime) throws InsideServiceUtilFirmaException;
 
+  String generarCSVAmbito(String ambito, byte[] data, String mime)
+      throws InsideServiceUtilFirmaException;
+
 }

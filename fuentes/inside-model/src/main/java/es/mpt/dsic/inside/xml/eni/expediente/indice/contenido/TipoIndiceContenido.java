@@ -51,8 +51,8 @@ public class TipoIndiceContenido {
   @XmlElement(name = "FechaIndiceElectronico", required = true)
   @XmlSchemaType(name = "dateTime")
   protected XMLGregorianCalendar fechaIndiceElectronico;
-  @XmlElements({@XmlElement(name = "ExpedienteIndizado", type = TipoIndiceContenido.class),
-      @XmlElement(name = "DocumentoIndizado", type = TipoDocumentoIndizado.class),
+  @XmlElements({@XmlElement(name = "DocumentoIndizado", type = TipoDocumentoIndizado.class),
+      @XmlElement(name = "ExpedienteIndizado", type = TipoIndiceContenido.class),
       @XmlElement(name = "CarpetaIndizada", type = TipoCarpetaIndizada.class)})
   protected List<Object> documentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada;
   @XmlAttribute(name = "Id")
@@ -99,8 +99,8 @@ public class TipoIndiceContenido {
    * 
    * 
    * <p>
-   * Objects of the following type(s) are allowed in the list {@link TipoIndiceContenido }
-   * {@link TipoDocumentoIndizado } {@link TipoCarpetaIndizada }
+   * Objects of the following type(s) are allowed in the list {@link TipoDocumentoIndizado }
+   * {@link TipoIndiceContenido } {@link TipoCarpetaIndizada }
    * 
    * 
    */

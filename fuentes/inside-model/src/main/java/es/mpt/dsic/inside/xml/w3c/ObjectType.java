@@ -75,8 +75,8 @@ public class ObjectType {
    * 
    * 
    * <p>
-   * Objects of the following type(s) are allowed in the list {@link String } {@link Element }
-   * {@link Object }
+   * Objects of the following type(s) are allowed in the list {@link Element } {@link Object }
+   * {@link String }
    * 
    * 
    */

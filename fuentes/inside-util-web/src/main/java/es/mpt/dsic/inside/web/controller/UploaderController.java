@@ -32,9 +32,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.exception.ServiceException;
-import es.mpt.dsic.inside.web.util.WebConstants;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
+import es.mpt.dsic.inside.service.util.WebConstants;
 
 @Controller
 public class UploaderController {
@@ -61,10 +62,10 @@ public class UploaderController {
     } catch (FileNotFoundException e) {
       logger.error("Error al escribir fichero temporal");
       throw new ServiceException(e.getMessage(), e, false);
-    } catch (ServiceException e) {
+    } catch (IOException e) {
       logger.error("Error al escribir fichero temporal");
       throw new ServiceException(e.getMessage(), e, false);
-    } catch (IOException e) {
+    } catch (InSideServiceTemporalDataException e) {
       logger.error("Error al escribir fichero temporal");
       throw new ServiceException(e.getMessage(), e, false);
     }
@@ -118,11 +119,6 @@ public class UploaderController {
       retorno.put("status", "error");
       retorno.put("msg",
           messageSource.getMessage(WebConstants.MSG_FILE_UPLOAD_ERROR, null, locale));
-    } catch (ServiceException e) {
-      logger.error("Error al escribir fichero temporal");
-      retorno.put("status", "error");
-      retorno.put("msg",
-          messageSource.getMessage(WebConstants.MSG_FILE_UPLOAD_ERROR, null, locale));
     } catch (IOException e) {
       logger.error("Error al escribir fichero temporal");
       retorno.put("status", "error");
@@ -146,10 +142,7 @@ public class UploaderController {
     try {
       retorno =
           Base64.encodeBase64String(temporalDataBusinessService.getFile(session.getId(), name));
-    } catch (FileNotFoundException e) {
-      logger.error("Error al leer fichero temporal");
-      throw new ServiceException(e.getMessage(), e, false);
-    } catch (IOException e) {
+    } catch (InSideServiceTemporalDataException e) {
       logger.error("Error al leer fichero temporal");
       throw new ServiceException(e.getMessage(), e, false);
     }

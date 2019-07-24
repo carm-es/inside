@@ -220,7 +220,7 @@ public class InsideConverterUtils {
     } else if ("application/vnd.oasis.opendocument.text".equalsIgnoreCase(mime)) {
       nombreFormato = "ODT";
     } else if ("application/vnd.oasis.opendocument.spreadsheet".equalsIgnoreCase(mime)) {
-      nombreFormato = "ODT";
+      nombreFormato = "ODS";
     } else if ("application/vnd.oasis.opendocument.presentation".equalsIgnoreCase(mime)) {
       nombreFormato = "ODP";
     } else if ("application/vnd.oasis.opendocument.graphics".equalsIgnoreCase(mime)) {

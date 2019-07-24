@@ -97,11 +97,20 @@ public enum InsideWsErrors {
                                                                                                       411,
                                                                                                       "Ya existen documentos en el indice con el mismo identificador")), SOLICITUD_ACCESO_EXP_APP_URL_ALREADY_EXISTS(
                                                                                                           new InsideWSError(
-                                                                                                              412,
+                                                                                                              413,
                                                                                                               "Ya existe una url de destino donde solicitar peticiones de expedientes para el dir3 padre especificado")), ERRORES_EN_EL_INDICE_EXPEDIENTE(
                                                                                                                   new InsideWSError(
                                                                                                                       412,
-                                                                                                                      "Errores en el indice del expediente")),
+                                                                                                                      "Errores en el indice del expediente")), MAPEO_DIR3PADRE_CERTIFICADO_ALREADY_EXISTS(
+                                                                                                                          new InsideWSError(
+                                                                                                                              414,
+                                                                                                                              "Ya existe un mapeo dir3 padre para ese número de serie certificado")), MAPEO_DIR3PADRE_CERTIFICADO_NO_EXISTS_CERTIFICADO(
+                                                                                                                                  new InsideWSError(
+                                                                                                                                      414,
+                                                                                                                                      "No existe ese mapeo dir3 padre para ese número de serie certificado")), MAPEO_DIR3PADRE_CERTIFICADO_NO_EXISTS_DIR3(
+                                                                                                                                          new InsideWSError(
+                                                                                                                                              414,
+                                                                                                                                              "No existe ese mapeo de certificado para ese dir3 padre")),
 
   INTERNAL_SERVICE_ERROR(new InsideWSError(500, "Error interno de Inside")),
 
@@ -127,7 +136,7 @@ public enum InsideWsErrors {
                                                                               "Si el destino es un juzgado, hay que especificar datos de remisión al cargador de justicia")), COMUNICACION_TOKEN_REMISION_JUSTICIA_NIG_INVALIDO(
                                                                                   new InsideWSError(
                                                                                       620,
-                                                                                      "Error en parámetro de remisión al cargador de justicia, código NIG debe tener 20 caracteres")), COMUNICACION_TOKEN_REMISION_JUSTICIA_ANYO_PROCEDIMIENTO_INVALIDO(
+                                                                                      "Error en parámetro de remisión al cargador de justicia, código NIG debe tener 19 caracteres")), COMUNICACION_TOKEN_REMISION_JUSTICIA_ANYO_PROCEDIMIENTO_INVALIDO(
                                                                                           new InsideWSError(
                                                                                               621,
                                                                                               "Error en parámetro de remisión al cargador de justicia, año procedimiento no válido")), COMUNICACION_TOKEN_REMISION_JUSTICIA_CLASE_PROCEDIMIENTO_INVALIDO(
@@ -142,11 +151,19 @@ public enum InsideWsErrors {
                                                                                                                       "Error en parámetro de remisión al cargador de justicia, dir 3 remitente inválido")), COMUNICACION_TOKEN_REMISION_JUSTICIA_DESCRIPCION_INVALIDO(
                                                                                                                           new InsideWSError(
                                                                                                                               625,
-                                                                                                                              "Error en parámetro de remisión al cargador de justicia, una descripción es obligatoria")), COMUNICACION_TOKEN_NO_JUZGADO_NO_SE_ENCONTRO_URL_DESTINATARIO(
+                                                                                                                              "Error en parámetro de remisión al cargador de justicia, una descripción es obligatoria")), COMUNICACION_TOKEN_REMISION_JUSTICIA_DESCRIPCION_INVALIDO_LONGITUD(
                                                                                                                                   new InsideWSError(
-                                                                                                                                      626,
-                                                                                                                                      "No se pudo encontrar destino para el dir3")),
-
+                                                                                                                                      628,
+                                                                                                                                      "Error en parámetro de remisión al cargador de justicia, la descripción no puede contener más de 60 caracteres")), COMUNICACION_TOKEN_NO_SE_ENCONTRO_URL_DESTINATARIO(
+                                                                                                                                          new InsideWSError(
+                                                                                                                                              626,
+                                                                                                                                              "No se pudo encontrar destino para el dir3")), COMUNICACION_TOKEN_DOCUMENTO_MAXIMO_TAMANYO(
+                                                                                                                                                  new InsideWSError(
+                                                                                                                                                      627,
+                                                                                                                                                      "Uno de los documentos supera el tamaño máximo admitido de 8MB")), COMUNICACION_TOKEN_NO_SE_ENCONTRO_SERIAL_CERTIFICADO_CLIENTE(
+                                                                                                                                                          new InsideWSError(
+                                                                                                                                                              629,
+                                                                                                                                                              "No encontró el número de serie de certificado de cliente aportado en Inside, hay que mapearlo a un dir3 padre")),
   // Errores en los envíos a Justicia
   UNIDAD_ORGANICA_NO_ENCONTRADA(new InsideWSError(610,
       "Preparando Remisión a Justicia : No se encontró una unidad orgánica asociada al dir3 destinatario proporcionado")), NUMERO_ORDEN_NO_ENCONTRADO(
@@ -159,7 +176,9 @@ public enum InsideWsErrors {
                                   new InsideWSError(617,
                                       "La consulta a MJU no devolvió resultados")), CONSULTA_MJU_CODIGO_ERROR(
                                           new InsideWSError(618,
-                                              "La consulta a MJU no se pudo realizar"));
+                                              "La consulta a MJU no se pudo realizar")), ERROR_CONECTAR_SERVICIO_PUJ(
+                                                  new InsideWSError(619,
+                                                      "No se ha podido conectar al servicio punto unico justicia"));
 
   private final InsideWSError value;
 

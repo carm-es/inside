@@ -40,19 +40,19 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoIndizado }
-   * 
-   */
-  public TipoDocumentoIndizado createTipoDocumentoIndizado() {
-    return new TipoDocumentoIndizado();
-  }
-
-  /**
    * Create an instance of {@link TipoIndiceContenido }
    * 
    */
   public TipoIndiceContenido createTipoIndiceContenido() {
     return new TipoIndiceContenido();
+  }
+
+  /**
+   * Create an instance of {@link TipoDocumentoIndizado }
+   * 
+   */
+  public TipoDocumentoIndizado createTipoDocumentoIndizado() {
+    return new TipoDocumentoIndizado();
   }
 
   /**

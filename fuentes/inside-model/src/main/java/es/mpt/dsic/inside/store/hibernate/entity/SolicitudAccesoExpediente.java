@@ -32,6 +32,7 @@ public class SolicitudAccesoExpediente implements java.io.Serializable {
   private String idPeticion;
   private String usuarioPeticionario;
   private String asunto;
+  private String motivacion;
   private String idExpedienteSolicitado;
   private String dir3ExpedienteSolicitado;
   private Integer codigoSia;
@@ -183,6 +184,15 @@ public class SolicitudAccesoExpediente implements java.io.Serializable {
 
   public void setNifUsuarioGeneraToken(String nifUsuarioGeneraToken) {
     this.nifUsuarioGeneraToken = nifUsuarioGeneraToken;
+  }
+
+  @Column(name = "Motivacion")
+  public String getMotivacion() {
+    return motivacion;
+  }
+
+  public void setMotivacion(String motivacion) {
+    this.motivacion = motivacion;
   }
 
 

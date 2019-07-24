@@ -35,6 +35,10 @@ public class InsideUtils {
   public static final String PERMISO_LECTURA = "lectura";
   public static final String PERMISO_ESCRITURA = "escritura";
 
+  private final static String letrasNif = "TRWAGMYFPDXBNJZSQVHLCKE";
+  private final static String digitoControlCif = "JABCDEFGHI";
+  private final static String cifLetra = "KPQS";
+
   /**
    * Convierte un String delimitado por guiones bajos a su equivalente "camelizado" Ej: version_nti
    * => versionNti
@@ -104,6 +108,10 @@ public class InsideUtils {
     if ("PDF".equalsIgnoreCase(nombreFormato)) {
       mime = "application/pdf";
     } else if ("XML".equalsIgnoreCase(nombreFormato)) {
+      mime = "text/xml";
+    }
+    // Los ficheros con extensión xsig se tratan como xml
+    else if ("XSIG".equalsIgnoreCase(nombreFormato)) {
       mime = "text/xml";
     } else if ("TXT".equalsIgnoreCase(nombreFormato)) {
       mime = "text/plain";
@@ -606,4 +614,125 @@ public class InsideUtils {
     } // for i
     return salida;
   }
+
+  public static boolean validaNifCifNie(String texto) {
+    texto = texto.trim().replace("-", "");
+    return isDniValido(texto) || isNieValido(texto) || isCifValido(texto);
+
+  }
+
+  private static boolean isDniValido(String dni) {
+    try {
+      String aux = dni.substring(0, 8);
+      aux = calculaDni(aux);
+      return dni.equals(aux);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private static boolean isNieValido(String nie) {
+    try {
+      String aux = nie.substring(0, 8);
+      aux = calculaNie(aux);
+
+      return nie.equals(aux);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private static boolean isCifValido(String cif) {
+    try {
+      String aux = cif.substring(0, 8);
+      aux = calculaCif(aux);
+
+      return cif.equals(aux);
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  private static String calculaDni(String dni) {
+    String str = completaCeros(dni, 8);
+
+    if (str.length() == 9) {
+      str = str.substring(0, dni.length() - 1);
+    }
+    return str + calculaLetra(str);
+  }
+
+  private static String calculaNie(String nie) {
+    String str = null;
+
+    if (nie.length() == 9) {
+      nie = nie.substring(0, nie.length() - 1);
+    }
+
+    if (nie.startsWith("X")) {
+      str = nie.replace('X', '0');
+    } else if (nie.startsWith("Y")) {
+      str = nie.replace('Y', '1');
+    } else if (nie.startsWith("Z")) {
+      str = nie.replace('Z', '2');
+    }
+
+    return nie + calculaLetra(str);
+  }
+
+  private static String calculaCif(String cif) {
+    return cif + calculaDigitoControl(cif);
+  }
+
+  private static String completaCeros(String str, int num) {
+    while (str.length() < num) {
+      str = "0" + str;
+    }
+    return str;
+  }
+
+  private static char calculaLetra(String aux) {
+    return letrasNif.charAt(Integer.parseInt(aux) % 23);
+  }
+
+  private static String calculaDigitoControl(String cif) {
+    String str = cif.substring(1, 8);
+    String cabecera = cif.substring(0, 1);
+    int sumaPar = 0;
+    int sumaImpar = 0;
+    int sumaTotal;
+
+    for (int i = 1; i < str.length(); i += 2) {
+      int aux = Integer.parseInt("" + str.charAt(i));
+      sumaPar += aux;
+    }
+
+    for (int i = 0; i < str.length(); i += 2) {
+      sumaImpar += posicionImpar("" + str.charAt(i));
+    }
+
+    sumaTotal = sumaPar + sumaImpar;
+    sumaTotal = 10 - (sumaTotal % 10);
+
+    if (sumaTotal == 10) {
+      sumaTotal = 0;
+    }
+
+    if (cifLetra.contains(cabecera)) {
+      str = "" + digitoControlCif.charAt(sumaTotal);
+    } else {
+      str = "" + sumaTotal;
+    }
+
+    return str;
+  }
+
+  private static int posicionImpar(String str) {
+    int aux = Integer.parseInt(str);
+    aux = aux * 2;
+    aux = (aux / 10) + (aux % 10);
+
+    return aux;
+  }
+
 }

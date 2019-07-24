@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://afirmaws/services/ValidarCertificado" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://afirmaws/services/ValidarCertificado" xmlns:intf="http://afirmaws/services/ValidarCertificado" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsvalidacion="http://afirmaws/ws/validacion" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+
+  <wsdl:types>
+
+    <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://afirmaws/ws/validacion" xmlns:wsvalidacion="http://afirmaws/ws/validacion" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+	<!-- PETICION DE VALIDACION Y OBTENCION DE INFORMACION DE UN CERTIFICADO -->
+
+
+	<!-- Elemento raiz -->
+
+
+	      <xs:simpleType name="CadenaSinEspacios">
+
+
+		        <xs:restriction base="xs:string">
+
+
+			          <xs:whiteSpace value="collapse"/>
+
+
+		        </xs:restriction>
+
+
+	      </xs:simpleType>
+
+
+	      <xs:element name="mensajeEntrada">
+
+
+		        <xs:complexType>
+
+
+			          <xs:sequence>
+
+
+				            <xs:element name="peticion">
+
+
+					              <xs:simpleType>
+
+
+						                <xs:restriction base="wsvalidacion:CadenaSinEspacios">
+
+
+							                  <xs:enumeration value="ValidarCertificado"/>
+
+
+							                  <xs:enumeration value="ObtenerInfoCertificado"/>
+
+
+						                </xs:restriction>
+
+
+					              </xs:simpleType>
+
+
+				            </xs:element>
+
+
+				            <xs:element name="versionMsg" type="xs:string"/>
+
+
+				            <xs:element name="parametros">
+
+
+					              <xs:complexType>
+
+
+						                <xs:all>
+
+
+							                  <xs:element name="certificado" type="xs:base64Binary"/>
+
+
+							                  <xs:element name="idAplicacion" type="xs:string"/>
+
+
+							                  <xs:element minOccurs="0" name="modoValidacion">
+
+
+								                    <xs:simpleType>
+
+
+									                      <xs:restriction base="xs:integer">
+
+
+										                        <xs:minInclusive value="0"/>
+
+
+										                        <xs:maxInclusive value="2"/>
+
+
+									                      </xs:restriction>
+
+
+								                    </xs:simpleType>
+
+
+							                  </xs:element>
+
+
+							                  <xs:element minOccurs="0" name="obtenerInfo" type="xs:boolean"/>
+
+
+						                </xs:all>
+
+
+					              </xs:complexType>
+
+
+				            </xs:element>
+
+
+			          </xs:sequence>
+
+
+		        </xs:complexType>
+
+
+	      </xs:element>
+
+
+	<!-- RESULTADO DE UNA PETICION DE VALIDACION DE UN CERTIFICADO E INFORMACION SOBRE EL MISMO -->
+
+
+	<!-- Elemento raiz -->
+
+
+	      <xs:element name="mensajeSalida">
+
+
+		        <xs:complexType>
+
+
+			          <xs:sequence>
+
+
+				            <xs:element name="peticion">
+
+
+					              <xs:simpleType>
+
+
+						                <xs:restriction base="wsvalidacion:CadenaSinEspacios">
+
+
+							                  <xs:enumeration value="ValidarCertificado"/>
+
+
+							                  <xs:enumeration value="ObtenerInfoCertificado"/>
+
+
+						                </xs:restriction>
+
+
+					              </xs:simpleType>
+
+
+				            </xs:element>
+
+
+				            <xs:element name="versionMsg" type="xs:string"/>
+
+
+				            <xs:element name="respuesta">
+
+
+					              <xs:complexType>
+
+
+						                <xs:choice>
+
+
+							                  <xs:element name="ResultadoProcesamiento">
+
+
+								                    <xs:complexType>
+
+
+									                      <xs:sequence>
+
+
+										                        <xs:element minOccurs="0" name="InfoCertificado" type="wsvalidacion:InfoCertificadoInfo"/>
+
+
+										                        <xs:element minOccurs="0" name="ResultadoValidacion" type="wsvalidacion:ResultadoValidacionInfo"/>
+
+
+									                      </xs:sequence>
+
+
+								                    </xs:complexType>
+
+
+							                  </xs:element>
+
+
+							                  <xs:element name="Excepcion">
+
+
+								                    <xs:complexType>
+
+
+									                      <xs:sequence>
+
+
+										                        <xs:element name="codigoError" type="xs:string"/>
+
+
+										                        <xs:element name="descripcion" type="xs:string"/>
+
+
+										                        <xs:element minOccurs="0" name="excepcionAsociada" type="xs:string"/>
+
+
+									                      </xs:sequence>
+
+
+								                    </xs:complexType>
+
+
+							                  </xs:element>
+
+
+						                </xs:choice>
+
+
+					              </xs:complexType>
+
+
+				            </xs:element>
+
+
+			          </xs:sequence>
+
+
+		        </xs:complexType>
+
+
+	      </xs:element>
+
+
+	<!-- Informacion sobre el certificado -->
+
+
+	      <xs:complexType name="InfoCertificadoInfo">
+
+
+		        <xs:sequence>
+
+
+			          <xs:element maxOccurs="unbounded" name="Campo">
+
+
+				            <xs:complexType>
+
+
+					              <xs:sequence>
+
+
+						                <xs:element name="idCampo" type="xs:string"/>
+
+
+						                <xs:element name="valorCampo" type="xs:string"/>
+
+
+					              </xs:sequence>
+
+
+				            </xs:complexType>
+
+
+			          </xs:element>
+
+
+		        </xs:sequence>
+
+
+	      </xs:complexType>
+
+
+	<!-- Resultado de la validacion. Segun se indique en la peticion, la validacion sera
+mas o menos exahustiva -->
+
+
+	      <xs:complexType name="ResultadoValidacionInfo">
+
+
+		        <xs:sequence>
+
+
+			          <xs:element name="resultado" type="xs:string"/>
+
+
+			          <xs:element name="descripcion" type="xs:string"/>
+
+
+			          <xs:element name="ValidacionSimple" type="wsvalidacion:ValidacionSimpleInfo"/>
+
+
+			          <xs:element minOccurs="0" name="ValidacionEstado" type="wsvalidacion:ValidacionEstadoInfo"/>
+
+
+			          <xs:element minOccurs="0" name="ValidacionCadena" type="wsvalidacion:ValidacionCadenaInfo"/>
+
+
+		        </xs:sequence>
+
+
+	      </xs:complexType>
+
+
+	<!-- Validacion basica -->
+
+
+	      <xs:complexType name="ValidacionSimpleInfo">
+
+
+		        <xs:sequence>
+
+
+			          <xs:element name="codigoResultado" type="xs:string"/>
+
+
+			          <xs:element name="descResultado" type="xs:string"/>
+
+
+			          <xs:element minOccurs="0" name="excepcion" type="xs:string"/>
+
+
+		        </xs:sequence>
+
+
+	      </xs:complexType>
+
+
+	<!-- Validacion sobre el estado de revocacion del certificado -->
+
+
+	      <xs:complexType name="ValidacionEstadoInfo">
+
+
+		        <xs:sequence>
+
+
+			          <xs:element name="estado" type="xs:string"/>
+
+
+			          <xs:element name="descEstado" type="xs:string"/>
+
+
+			          <xs:element maxOccurs="unbounded" name="InfoMetodoVerificacion">
+
+
+				            <xs:complexType>
+
+
+					              <xs:all>
+
+
+						                <xs:element name="estado" type="xs:string"/>
+
+
+						                <xs:element name="descEstado" type="xs:string"/>
+
+
+						                <xs:element minOccurs="0" name="fechaUltimaActualizacion" type="xs:string"/>
+
+
+						                <xs:element minOccurs="0" name="fechaRevocacion" type="xs:string"/>
+
+
+						                <xs:element minOccurs="0" name="motivo" type="xs:string"/>
+
+
+						                <xs:element name="Metodo">
+
+
+							                  <xs:complexType>
+
+
+								                    <xs:sequence>
+
+
+									                      <xs:element name="urlServidor" type="xs:string"/>
+
+
+									                      <xs:element name="protocolo" type="xs:string"/>
+
+
+								                    </xs:sequence>
+
+
+							                  </xs:complexType>
+
+
+						                </xs:element>
+
+
+						                <xs:element minOccurs="0" name="tokenOCSP" type="xs:string"/>
+
+
+						                <xs:element minOccurs="0" name="excepcion" type="xs:string"/>
+
+
+					              </xs:all>
+
+
+				            </xs:complexType>
+
+
+			          </xs:element>
+
+
+		        </xs:sequence>
+
+
+	      </xs:complexType>
+
+
+	<!-- Validacion de toda la cadena de certificados hasta el certificado raiz -->
+
+
+	      <xs:complexType name="ValidacionCadenaInfo">
+
+
+		        <xs:sequence>
+
+
+			          <xs:element name="codigoResultado" type="xs:string"/>
+
+
+			          <xs:element name="descResultado" type="xs:string"/>
+
+
+			          <xs:element maxOccurs="unbounded" minOccurs="0" name="errorCertificado">
+
+
+				            <xs:complexType>
+
+
+					              <xs:sequence>
+
+
+						                <xs:element name="idCertificado" type="xs:string"/>
+
+
+						                <xs:element name="ValidacionSimple" type="wsvalidacion:ValidacionSimpleInfo"/>
+
+
+						                <xs:element name="ValidacionEstado" type="wsvalidacion:ValidacionEstadoInfo"/>
+
+
+					              </xs:sequence>
+
+
+				            </xs:complexType>
+
+
+			          </xs:element>
+
+
+		        </xs:sequence>
+
+
+	      </xs:complexType>
+
+
+    </xs:schema>
+
+  </wsdl:types>
+
+
+    <wsdl:message name="ValidarCertificadoRequest">
+
+
+        <wsdl:part name="parametrosIn" type="xsd:string"/>
+
+
+    </wsdl:message>
+
+
+    <wsdl:message name="ValidarCertificadoResponse">
+
+
+        <wsdl:part name="ValidarCertificadoReturn" type="xsd:string"/>
+
+
+    </wsdl:message>
+
+
+    <wsdl:portType name="ValidacionWS">
+
+
+        <wsdl:operation name="ValidarCertificado" parameterOrder="parametrosIn">
+
+
+            <wsdl:input message="impl:ValidarCertificadoRequest" name="ValidarCertificadoRequest"/>
+
+
+            <wsdl:output message="impl:ValidarCertificadoResponse" name="ValidarCertificadoResponse"/>
+
+
+        </wsdl:operation>
+
+
+    </wsdl:portType>
+
+
+    <wsdl:binding name="ValidarCertificadoSoapBinding" type="impl:ValidacionWS">
+
+
+        <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+
+        <wsdl:operation name="ValidarCertificado">
+
+
+            <wsdlsoap:operation soapAction=""/>
+
+
+            <wsdl:input name="ValidarCertificadoRequest">
+
+
+                <wsdlsoap:body namespace="http://afirmaws/services/ValidarCertificado" use="literal"/>
+
+
+            </wsdl:input>
+
+
+            <wsdl:output name="ValidarCertificadoResponse">
+
+
+                <wsdlsoap:body namespace="http://afirmaws/services/ValidarCertificado" use="literal"/>
+
+
+            </wsdl:output>
+
+
+        </wsdl:operation>
+
+
+    </wsdl:binding>
+
+
+    <wsdl:service name="ValidacionService">
+
+
+        <wsdl:port binding="impl:ValidarCertificadoSoapBinding" name="ValidarCertificado">
+
+
+            <wsdlsoap:address location="http://server:port/afirmaws/services/ValidarCertificado"/>
+
+
+        </wsdl:port>
+
+
+    </wsdl:service>
+
+
+</wsdl:definitions>

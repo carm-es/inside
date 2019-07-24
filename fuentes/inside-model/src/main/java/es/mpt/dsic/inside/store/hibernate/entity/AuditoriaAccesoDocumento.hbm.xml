@@ -43,7 +43,10 @@
         </property>     
         <property name="Fecha" type="timestamp">
             <column name="Fecha" not-null="true"/>
-        </property>   	
+        </property>  
+        <property name="idDir3" type="java.lang.Integer">
+            <column name="idDir3" />
+        </property>            	
 	
     </class>
 </hibernate-mapping>

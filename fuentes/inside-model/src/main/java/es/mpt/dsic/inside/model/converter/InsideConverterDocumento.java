@@ -13,6 +13,7 @@ package es.mpt.dsic.inside.model.converter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
@@ -20,7 +21,9 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
@@ -43,6 +46,7 @@ import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertifica
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoContenidoBinarioInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoDsSignatureInside;
 import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoReferenciaInside;
+import es.mpt.dsic.inside.util.InsideObjectsUtils;
 import es.mpt.dsic.inside.util.XMLUtils;
 import es.mpt.dsic.inside.xml.eni.documento.ObjectFactory;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
@@ -119,10 +123,26 @@ public abstract class InsideConverterDocumento {
 
     FirmaElectronica fe = new FirmaElectronica();
     InfoFirmaElectronica infoFirma = null;
-    boolean contenidoEnContenido =
-        documentoInside.getContenido().getValorBinario() != null ? true : false;
+    boolean contenidoEnContenido = false;
+    if (documentoInside.getContenido().getValorBinario() != null
+        || (StringUtils.isNotEmpty(documentoInside.getContenido().getReferencia())
+            && !FirmaInsideTipoFirmaEnum.TF_01.value()
+                .equals(documentoInside.getFirmas().get(0).getTipoFirma().value()))) {
+      contenidoEnContenido = true;
 
-    fe.setFirma(getFirmaElectronica(documentoInside));
+      // si el documentoesta en la firma
+      if (StringUtils.isNotEmpty(documentoInside.getContenido().getReferencia())
+          && "#FIRMA_0".equalsIgnoreCase(documentoInside.getContenido().getReferencia())) {
+        // Obtenemos la firma implícita
+        FirmaInside firmaImplicita = InsideObjectsUtils.getFirmaInsideByIdentificadorEnDocumento(
+            documentoInside.getContenido().getReferencia().replace("#", ""),
+            documentoInside.getFirmas());
+        ContenidoFirmaCertificadoAlmacenableInside contAlm =
+            (ContenidoFirmaCertificadoAlmacenableInside) firmaImplicita.getContenidoFirma();
+        fe.setFirma(contAlm.getValorBinario());
+      }
+
+    }
 
     try {
       infoFirma = infoFirmaService.getInfoFirma(fe, null, bytesContenido);
@@ -160,6 +180,10 @@ public abstract class InsideConverterDocumento {
     byte[] contenido;
     if (documentoInside.getContenido().getValorBinario() != null) {
       contenido = documentoInside.getContenido().getValorBinario();
+    } else if (documentoInside.getFirmas().size() == 0
+        && StringUtils.isNotEmpty(documentoInside.getContenido().getReferencia())) {
+      // en ficheros de gran tamaño no retornamos el contenido
+      contenido = null;
     } else {
       String idReferencia = documentoInside.getContenido().getReferencia().substring(1);
 
@@ -224,6 +248,7 @@ public abstract class InsideConverterDocumento {
       documentoInsideContenido.setValorBinario(documentoInside.getContenido().getValorBinario());
       documentoInsideContenido.setMime(documentoInside.getContenido().getMime());
       documentoInsideContenido.setNombreFormato(documentoInside.getContenido().getNombreFormato());
+      documentoInsideContenido.setReferencia(documentoInside.getContenido().getReferencia());
     } else {
       throw new InsideConverterException("No se ha podido obtener información de la firma", e,
           true);
@@ -245,7 +270,7 @@ public abstract class InsideConverterDocumento {
         documentoConversion.getCsv() != null ? documentoConversion.getCsv().getValorCSV() : null,
         documentoConversion.getCsv() != null ? documentoConversion.getCsv().getRegulacionCSV()
             : null,
-        infoFirmaService);
+        infoFirmaService, documentoConversion.getContenidoId());
 
     return documentoInside;
 
@@ -267,6 +292,10 @@ public abstract class InsideConverterDocumento {
     retorno.setCsv(getCsvObjetoConversionInside(docInside.getFirmas()));
     retorno.setMetadatosEni(
         InsideConverterMetadatos.Documento.metadatosInsideToPrimitivo(docInside.getMetadatos()));
+    if (docInside.getContenido() != null
+        && StringUtils.isNotEmpty(docInside.getContenido().getReferencia())) {
+      retorno.setContenidoId(docInside.getContenido().getReferencia());
+    }
     return retorno;
   }
 
@@ -296,7 +325,7 @@ public abstract class InsideConverterDocumento {
         documentoAlta.getContenido(), contenido, documentoAlta.isFirmadoConCertificado(),
         documentoAlta.getCsv() != null ? documentoAlta.getCsv().getValorCSV() : null,
         documentoAlta.getCsv() != null ? documentoAlta.getCsv().getRegulacionCSV() : null,
-        infoFirmaService);
+        infoFirmaService, null);
 
     return documentoInside;
 
@@ -305,7 +334,7 @@ public abstract class InsideConverterDocumento {
   public static ObjetoDocumentoInside fillContenidoAndFirmasObjetoDocumentoInside(
       ObjetoDocumentoInside documentoInside, byte[] bytesFirma, byte[] bytesContenido,
       boolean firmadoConCertificado, String csv, String regulacionCSV,
-      InfoFirmaService infoFirmaService) throws InsideConverterException {
+      InfoFirmaService infoFirmaService, String contenidoId) throws InsideConverterException {
     ObjetoDocumentoInsideContenido contenido = new ObjetoDocumentoInsideContenido();
     String idDocumento =
         documentoInside != null ? documentoInside.getIdentificador() : "Sin identificador";
@@ -325,14 +354,15 @@ public abstract class InsideConverterDocumento {
             "No se ha detectado que el Contenido del documento proporcionado sea una firma o esté firmado",
             true);
       } catch (InfoFirmaServiceException e) {
-        throw new InsideConverterException("El documento contiene una firma inválida o desconocida",
-            e, true);
+        throw new InsideConverterException(
+            "El documento contiene una firma inválida o desconocida. " + e.getMessage(), e, true);
       }
 
       List<InfoFirmante> firmantes = infoFirma.getFirmantes();
 
       if ("XADES DETACHED".equalsIgnoreCase(infoFirma.getTipoFirma().getTipoFirma())
-          || "XADES ENVELOPED".equalsIgnoreCase(infoFirma.getTipoFirma().getTipoFirma())) {
+          || "XADES ENVELOPED".equalsIgnoreCase(infoFirma.getTipoFirma().getTipoFirma())
+          || "XADES ENVELOPING".equalsIgnoreCase(infoFirma.getTipoFirma().getTipoFirma())) {
         byte[] firma = bytesContenidoFirma;
         contenido.setValorBinario(firma);
         contenido.setMime("application/xml");
@@ -426,8 +456,14 @@ public abstract class InsideConverterDocumento {
         }
       }
     } else {
-      contenido.setValorBinario(bytesFirma);
-      getMimeTypeByBytes(bytesFirma, contenido);
+      if (bytesFirma != null) {
+        contenido.setValorBinario(bytesFirma);
+        getMimeTypeByBytes(bytesFirma, contenido);
+      } else {
+        contenido.setReferencia(contenidoId);
+        contenido.setMime(InsideConverterUtils.getMimeByNombreFormato(
+            contenidoId.substring(contenidoId.length() - 3, contenidoId.length())));
+      }
       try {
         contenido
             .setNombreFormato(InsideConverterUtils.getNombreFormatoByMime(contenido.getMime()));
@@ -563,15 +599,26 @@ public abstract class InsideConverterDocumento {
         String s = InsideConverterUtils.objectXMLToString(contenidoEni.getDatosXML());
         contenidoInside.setValorBinario(s.getBytes());
         contenidoInside.setMime("application/xml");
+        contenidoInside.setIdentificadorEnDocumento(contenidoEni.getId());
       } else if (contenidoEni.getValorBinario() != null) {
         contenidoInside.setValorBinario(contenidoEni.getValorBinario());
         contenidoInside
             .setMime(InsideConverterUtils.getMimeByNombreFormato(contenidoEni.getNombreFormato()));
+        contenidoInside.setIdentificadorEnDocumento(
+            StringUtils.isNotEmpty(contenidoEni.getId()) ? contenidoEni.getId()
+                : "CONTENIDO_DOCUMENTO");
       } else if (contenidoEni.getReferenciaFichero() != null) {
         contenidoInside.setReferencia(contenidoEni.getReferenciaFichero());
+        File contenido = new File(contenidoEni.getReferenciaFichero());
+        if (contenido.exists()) {
+          contenidoInside.setMime(
+              InsideConverterUtils.getMimeByNombreFormato(contenido.getAbsolutePath().substring(
+                  contenido.getAbsolutePath().length() - 3, contenido.getAbsolutePath().length())));
+        }
+        contenidoInside.setIdentificadorEnDocumento(contenidoEni.getId());
       }
 
-      contenidoInside.setIdentificadorEnDocumento(contenidoEni.getId());
+
       return contenidoInside;
     }
 
@@ -657,8 +704,23 @@ public abstract class InsideConverterDocumento {
 
       } catch (JAXBException e1) {
         try {
-          Node nodoEni =
-              XMLUtils.getNode(docEniBinarioOTipo.getDocumentoEniBinario(), "ns5:documento");
+          // comentamos esta linea y buscamos el prefijo que lleve el documentoeni
+          // Node nodoEni = XMLUtils.getNode(docEniBinarioOTipo.getDocumentoEniBinario(),
+          // "ns5:documento");
+          // calculamos el prefijo del primer nodo
+          String prefijoDocENI = XMLUtils.prefijoNamespaceExpediente(
+              new String(docEniBinarioOTipo.getDocumentoEniBinario()),
+              "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+          Node nodoEni = null;
+          if (prefijoDocENI != null && !prefijoDocENI.trim().equals("")) {
+            String pref = prefijoDocENI.split(":")[1];
+            nodoEni =
+                XMLUtils.getNode(docEniBinarioOTipo.getDocumentoEniBinario(), pref + ":documento");
+          } else {
+            nodoEni =
+                XMLUtils.getNode(docEniBinarioOTipo.getDocumentoEniBinario(), "ns5:documento");
+          }
+
           if (nodoEni != null) {
             String nodoEniString =
                 XMLUtils.documentoAdicionalWebToEni(docEniBinarioOTipo.getDocumentoEniBinario());
@@ -688,6 +750,8 @@ public abstract class InsideConverterDocumento {
     return documentoInside;
   }
 
+
+
   public static ObjetoDocumentoInside tipoDocumentoValidacionToInside(
       TipoDocumentoValidacionInside documentoValidacion) throws InsideConverterException {
     // Si se recibe el documento en base64 hacemos unmarshall para
@@ -705,7 +769,18 @@ public abstract class InsideConverterDocumento {
 
     } catch (JAXBException e) {
       try {
-        Node nodoEni = XMLUtils.getNode(documentoValidacion.getContenido(), "ns5:documento");
+        // calculamos el prefijo del primer nodo
+        String prefijoDocENI =
+            XMLUtils.prefijoNamespaceExpediente(new String(documentoValidacion.getContenido()),
+                "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e");
+        Node nodoEni = null;
+        if (prefijoDocENI != null && !prefijoDocENI.trim().equals("")) {
+          String pref = prefijoDocENI.split(":")[1];
+          nodoEni = XMLUtils.getNode(documentoValidacion.getContenido(), pref + ":documento");
+        } else {
+          nodoEni = XMLUtils.getNode(documentoValidacion.getContenido(), "ns5:documento");
+        }
+
         if (nodoEni != null) {
           String nodoEniString =
               XMLUtils.documentoAdicionalWebToEni(documentoValidacion.getContenido());

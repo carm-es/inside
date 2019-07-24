@@ -215,15 +215,21 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
    <wsdl:message name="registrarRequest">
 
-      <wsdl:part name="autenticacion" type="tns1:AutenticacionType"/>
+      <wsdl:part name="autenticacion" type="tns1:AutenticacionType">
 
-      <wsdl:part name="registro" type="impl:RegistroType"/>
+      </wsdl:part>
+
+      <wsdl:part name="registro" type="impl:RegistroType">
+
+      </wsdl:part>
 
    </wsdl:message>
 
    <wsdl:message name="registrarResponse">
 
-      <wsdl:part name="JustificanteType" type="tns1:JustificanteType"/>
+      <wsdl:part name="JustificanteType" type="tns1:JustificanteType">
+
+      </wsdl:part>
 
    </wsdl:message>
 
@@ -231,9 +237,13 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:operation name="registrar" parameterOrder="autenticacion registro">
 
-         <wsdl:input message="impl:registrarRequest" name="registrarRequest"/>
+         <wsdl:input message="impl:registrarRequest" name="registrarRequest">
 
-         <wsdl:output message="impl:registrarResponse" name="registrarResponse"/>
+       </wsdl:input>
+
+         <wsdl:output message="impl:registrarResponse" name="registrarResponse">
+
+       </wsdl:output>
 
       </wsdl:operation>
 
@@ -267,7 +277,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:RegistrarServiceSoapBinding" name="RegistrarService">
 
-         <wsdlsoap:address location="http://rec2ws.redsara.es/registro2/services/RegistrarService"/>
+         <wsdlsoap:address location="http://server:port/registro2/services/RegistrarService"/>
 
       </wsdl:port>
 

@@ -9,7 +9,7 @@
     
     <script th:src="|${#httpServletRequest.getContextPath()}/js/generarDocumento.js?v=${session.versionNumber}|"></script>
     <script th:src="|${#httpServletRequest.getContextPath()}/js/metadatos.js?v=${session.versionNumber}|"></script>
-    
+     <script th:src="|${#httpServletRequest.getContextPath()}/js/libs/pdf.js?v=${session.versionNumber}|"></script>
     <!-- Mini applet afirma -->
     <script th:src="|${#httpServletRequest.getContextPath()}/js/applet-firma/miniafirma1.5/constantes.js?v=${session.versionNumber}|"></script>
     <script th:src="|${#httpServletRequest.getContextPath()}/js/applet-firma/miniafirma1.5/miniapplet.js?v=${session.versionNumber}|"></script>
@@ -54,7 +54,7 @@
                         <span th:text="#{generarDocumento.descargarArchivo}"></span>
                     </a>
                 </li>
-                <li class="mf-window-toolbar--tool">
+                <li class="mf-window-toolbar--tool" th:if="${!isBigFile}">
                     <a href="#!" onclick="verContenido()" th:title="#{generarDocumento.verContenido.title}">
                         <span class="mf-icon  mf-icon-doc-pdf-download"></span>
                         <span th:text="#{generarDocumento.verContenido}"></span>
@@ -94,11 +94,16 @@
             </form>
             <form id="generarDocumento" th:action="@{/generarDocumento}"
                 method="post" class="" th:object="${documentoEni}">
+                <input type="hidden" id="metadatoNombreNatural" th:value="${metadatoNombreNatural}"/>
                 <input type="hidden" name="viewName" id="viewName" value="documento/generarDocumento"/>
                 <input type="hidden" name="metadatosAdicionalesDoc" id="metadatosAdicionalesDoc" th:object="${metadatosAdicionales}"/>
                 <input type="hidden" name="documentId" id="documentId" th:value="${documentId}"/>
                 <input type="hidden" name="showMessage" id="showMessage" th:value="${showMessage}"/>
                 <input type="hidden" name="conAdicionales" id="conAdicionales" th:value="${conAdicionales}"/>
+                
+                <!-- lista JSON desde expedienteController para cargar exp de cada unidad -->
+				<input type="hidden" name="listaExpedientesJSON" id="listaExpedientesJSON" th:value="${listaExpedientesJSON}"/>
+			
                 <div th:fragment="metadatosEniDoc">
 
                     <fieldset class="mf-form__stack">
@@ -364,7 +369,7 @@
 										th:text="#{generarDocumento.metadato.adicional.valor}"></label>
 									<input type="text" class="sticked-input-right"
 										id="valueMetadatoAdicional" name="valueMetadatoAdicional" style="width:200px"
-										maxlength="100" />
+										maxlength="500" />
 								</div>
 								<button type="button" name="button" th:title="#{button.anadir}"
 									onclick="addMetadatoDoc()">
@@ -385,7 +390,7 @@
 										th:text="#{generarDocumento.metadato.adicional.valor}"></label>
 									<input type="text" class="sticked-input-right" disabled="disabled"
 										id="valueMetadatoAdicional" name="valueMetadatoAdicional" style="width:200px"
-										maxlength="100" />
+										maxlength="500" />
 								</div>
 								<button type="button" name="button" th:title="#{button.anadir}"
 									onclick="addMetadatoDoc()" disabled="disabled"> 
@@ -442,7 +447,21 @@
                         <div class="fld" th:if="${dataDocBase64 != null and !navegador}">
                              <iframe class="js-gallery-ver--visor" style="width:100%; height:1024px;" th:src="${'data:application/pdf;base64,' + dataDocBase64}"></iframe>
                         </div>
-	                    <a href="#!" onclick="descargarContenido()" th:if="${dataDocBase64 != null and navegador}" th:title="#{generarDocumento.descargarArchivo.title}">
+	                    
+                        <div class="fld" th:if="${dataDocBase64 != null and navegador}">
+                        		<div class="fld dsp_b js-pdf-data" th:attr="data-pdfbase64=${dataDocBase64}">
+									<button  type="button" class="js-pdf-prev"  style="padding: 5px 10px;">
+										<span class="mf-icon mf-icon-arrow3-back">  </span>
+									</button>
+									
+									<button type="button" class="js-pdf-next" style="padding: 5px 10px;">
+										<span class="mf-icon mf-icon-arrow3-next"></span>
+									</button>
+								</div>
+                             	<canvas id="pdfContainer" style="border:1px  solid black;text-align: center; width:75%; height:1024px;" ></canvas>
+                        </div>	                    
+	                    
+	                    <a href="#!" onclick="descargarContenido()" th:if="${dataDocBase64 == null}" th:title="#{generarDocumento.descargarArchivo.title}">
 	                        <span class="mf-icon mf-icon-doc-download"></span>
 	                        <span th:text="#{generarDocumento.descargarArchivo}"></span>
 	                    </a>
@@ -515,3 +534,4 @@
 
 </body>
 </html>
+ 

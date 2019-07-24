@@ -23,13 +23,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import org.apache.commons.io.IOUtils;
-import org.springframework.util.DigestUtils;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
+import es.mpt.dsic.inside.util.InsideUtils;
 import es.mpt.dsic.inside.util.XMLUtils;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
-import es.mpt.dsic.inside.xml.inside.TipoDocumentoInsideConMAdicionales;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoCarpetaIndizadaConversion;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoCarpetaIndizadaConversionWS;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoDocumentoIndizadoConversion;
@@ -99,8 +98,8 @@ public abstract class InsideConverterTipoExpedienteConversion {
     retorno.setFechaIncorporacionExpediente(data.getFechaIncorporacionExpediente());
     retorno.setOrdenDocumentoExpediente(data.getOrdenDocumentoExpediente());
 
-    retorno.setFuncionResumen("md5");
-    String valorHuella = DigestUtils.md5DigestAsHex(data.getContenido());
+    retorno.setFuncionResumen(InsideUtils.HUELLA_SHA512_LITERAL_URI);
+    String valorHuella = org.apache.commons.codec.digest.DigestUtils.sha512Hex(data.getContenido());
     retorno.setValorHuella(valorHuella);
 
     JAXBContext jc = null;

@@ -11,83 +11,103 @@
 
 package es.mpt.dsic.inside.service.validacionENI.impl;
 
+import java.io.ByteArrayInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.activation.DataHandler;
-import javax.annotation.PostConstruct;
-import javax.jws.WebParam;
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceException;
 import org.apache.axiom.attachments.ByteArrayDataSource;
-import org.apache.axiom.attachments.utils.DataHandlerUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionExpediente;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpediente;
+import es.mpt.dsic.inside.service.sia.impl.ConsumidorSIA;
+import es.mpt.dsic.inside.service.store.InsideServiceStore;
+import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.ApplicationLogin;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.Detalle;
+import es.mpt.dsic.inside.service.validacionENIMtom.model.DocumentoEntradaMtom;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.EeUtilValidacionENIServiceMtom;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.EeUtilValidacionENIServiceMtomImplService;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.RespuestaValidacionENI;
-import es.mpt.dsic.inside.service.validacionENIMtom.model.DocumentoEntradaMtom;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.Validaciones;
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.TipoOpcionValidacionExpediente;
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionDetalleExpedienteInside;
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionExpedienteInside;
 
-
-
 public class ConsumidorValidacionENI {
 
-  // private EeUtilValidacionENIService sc;
+  private final String XPATH_RUTA_ORGANOS_DOC = "documento/metadatos/Organo";
+  private final String XPATH_RUTA_ORGANOS_EXP = "expediente/metadatosExp/Organo";
+  private final String XPATH_RUTA_IDENTIFICADOR_DOC = "documento/metadatos/Identificador";
+  private final String XPATH_RUTA_IDENTIFICADOR_EXP = "expediente/metadatosExp/Identificador";
+  private final String XPATH_RUTA_CLASIFICACION_EXP = "expediente/metadatosExp/Clasificacion";
+  private final String XPATH_RUTA_FECHA_APERTURA_EXP =
+      "expediente/metadatosExp/FechaAperturaExpediente";
 
   private EeUtilValidacionENIServiceMtom scMtom;
+  private ConsumidorSIA consumidorSIA;
+
+  @Autowired
+  private InsideServiceStore insideStore;
 
   private String user;
   private String password;
-  private String versionSchemas;
+  private String schemasDir;
   private String url;
   private ApplicationLogin aplicacionInfo;
 
+  private boolean activo = false;
+
+  private String identificadorObjeto;
+
   protected static final Log logger = LogFactory.getLog(ConsumidorValidacionENI.class);
 
-  @PostConstruct
-  public void configure() {
-    // EeUtilValidacionENIServiceImplService servicio = new EeUtilValidacionENIServiceImplService();
-    // sc = servicio.getPort(EeUtilValidacionENIService.class);
-    // String endpointURL = url;
-    // BindingProvider bp = (BindingProvider)sc;
-    // bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURL);
+  public boolean configure() {
+    if (!activo) {
+      EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
+      try {
+        servicioMtom = new EeUtilValidacionENIServiceMtomImplService(new URL(url));
 
+        scMtom = servicioMtom.getPort(EeUtilValidacionENIServiceMtom.class);
 
-    EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
-    try {
-      servicioMtom = new EeUtilValidacionENIServiceMtomImplService(new URL(url));
-    } catch (MalformedURLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+        disableChunking(ClientProxy.getClient(scMtom));
+
+        String endpointURLMtom = url;
+        BindingProvider bpMtom = (BindingProvider) scMtom;
+        bpMtom.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURLMtom);
+
+        aplicacionInfo = new ApplicationLogin();
+        aplicacionInfo.setIdaplicacion(user);
+        aplicacionInfo.setPassword(password);
+        activo = true;
+      } catch (MalformedURLException | WebServiceException e) {
+        logger.error("No se ha podido conectar al servicio :", e);
+      }
     }
-    scMtom = servicioMtom.getPort(EeUtilValidacionENIServiceMtom.class);
-
-    disableChunking(ClientProxy.getClient(scMtom));
-
-    String endpointURLMtom = url;
-    BindingProvider bpMtom = (BindingProvider) scMtom;
-    bpMtom.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURLMtom);
-
-
-
-    aplicacionInfo = new ApplicationLogin();
-    aplicacionInfo.setIdaplicacion(user);
-    aplicacionInfo.setPassword(password);
-
+    return activo;
   }
 
   private void disableChunking(Client client) {
@@ -101,36 +121,163 @@ public class ConsumidorValidacionENI {
 
   public List<ResultadoValidacionDocumento> validaDocumentoENI(byte[] docuemnto,
       Validaciones validaciones) {
+
     logger.debug("Inicio validaDocumentoENI");
 
-    DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
+    DocumentoEntradaMtom documentoENI = new DocumentoEntradaMtom();
     ByteArrayDataSource dataSource = new ByteArrayDataSource(docuemnto);
-    docEntrada.setContenido(new DataHandler(dataSource));
+    documentoENI.setContenido(new DataHandler(dataSource));
+    RespuestaValidacionENI respuesta;
+    List<Detalle> listaDetalles = new ArrayList<Detalle>();
+    String dataDocumentoXml = null;
+    try {
+      byte[] documento = IOUtils.toByteArray(documentoENI.getContenido().getInputStream());
+      dataDocumentoXml = XMLUtil.obtenerDocumentoENIXML(XMLUtil.decodeUTF8(documento));
 
-    RespuestaValidacionENI respuesta =
-        scMtom.validarDocumentoENI(aplicacionInfo, docEntrada, versionSchemas, validaciones);
+    } catch (Exception e) {
+      respuesta = new RespuestaValidacionENI();
+      respuesta.setGlobal(GlobalValidacionENICodigosRespuestaValidacion.G_XXX_CODIGO + " - "
+          + GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE);
+      respuesta.setDetalle(listaDetalles);
+    }
+
+    if (validaciones.isValidaSchema()) {
+      try {
+        identificadorObjeto =
+            XMLUtil.getvalorNodoDatosXML(dataDocumentoXml, this.XPATH_RUTA_IDENTIFICADOR_DOC);
+        validarSchema(dataDocumentoXml.getBytes(XMLUtil.UTF8_CHARSET));
+
+      } catch (SAXException e) {
+
+        Detalle detalleValidacion =
+            getDetalleValidacion(DocumentoENICodigosRespuestaValidacion.D_E_999_CODIGO,
+                DocumentoENICodigosRespuestaValidacion.D_E_999_DETALLE);
+        listaDetalles.add(detalleValidacion);
+
+      } catch (Exception e) {
+
+        Detalle detalleValidacion =
+            getDetalleValidacion(GlobalValidacionENICodigosRespuestaValidacion.G_EXX_CODIGO,
+                GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE);
+        listaDetalles.add(detalleValidacion);
+
+      }
+
+      listaDetalles.add(getDetalleValidacion(DocumentoENICodigosRespuestaValidacion.D_E_000_CODIGO,
+          DocumentoENICodigosRespuestaValidacion.D_E_000_DETALLE));
+    }
+
+    if (validaciones.isValidaDir3()) {
+
+      try {
+        identificadorObjeto =
+            XMLUtil.getvalorNodoDatosXML(dataDocumentoXml, this.XPATH_RUTA_IDENTIFICADOR_DOC);
+
+        List<String> listaOrganos = XMLUtil.getContentNodeList(
+            dataDocumentoXml.getBytes(XMLUtil.UTF8_CHARSET), this.XPATH_RUTA_ORGANOS_DOC);
+        String dir3Erroneo = validateOrganos(listaOrganos);
+        if (!dir3Erroneo.equals("")) {
+          listaDetalles
+              .add(getDetalleValidacion(DocumentoENICodigosRespuestaValidacion.D_D_999_CODIGO,
+                  DocumentoENICodigosRespuestaValidacion.D_D_999_DETALLE + " -- (" + dir3Erroneo
+                      + ")"));
+        } else {
+          listaDetalles
+              .add(getDetalleValidacion(DocumentoENICodigosRespuestaValidacion.D_D_000_CODIGO,
+                  DocumentoENICodigosRespuestaValidacion.D_D_000_DETALLE));
+        }
+      } catch (Exception e) {
+        listaDetalles
+            .add(getDetalleValidacion(GlobalValidacionENICodigosRespuestaValidacion.G_DXX_CODIGO,
+                GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE));
+      }
+
+    }
+
+    if (validaciones.isValidaFirma()) {
+      if (configure()) {
+        RespuestaValidacionENI respuestValidarFirma =
+            scMtom.validarFirmaDocumentoENI(aplicacionInfo, documentoENI);
+        listaDetalles.addAll(respuestValidarFirma.getDetalle());
+      } else {
+        logger.error("El servicio no se encuentra activo");
+      }
+
+    }
+
+    respuesta = getRespuestaGlobal(listaDetalles);
 
     logger.debug("Fin validaDocumentoENI");
 
     return formatValidacionENIDocumentoInside(respuesta);
+
   }
 
+  private void validarSchema(byte[] xmlBytes) throws SAXException, Exception {
+    ByteArrayInputStream bin = null;
+    try {
+      bin = new ByteArrayInputStream(xmlBytes);
 
+      XMLReader parser = XMLUtil.createParserForValidation(XMLUtil.getSchemasSources(schemasDir));
+
+      InputSource xmlSource = new InputSource(bin);
+      parser.parse(xmlSource);
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      if (bin != null) {
+        bin.close();
+      }
+    }
+  }
+
+  private Detalle getDetalleValidacion(String codigo, String Detalle) {
+    Detalle detalleValidacion = new Detalle();
+    detalleValidacion.setIdObjeto(identificadorObjeto);
+    detalleValidacion.setCodigoRespuesta(codigo);
+    detalleValidacion.setDetalleRespuesta(Detalle);
+    return detalleValidacion;
+
+  }
+
+  private String validateOrganos(List<String> organos) {
+    StringBuffer tmpBuff = new StringBuffer("");
+    for (String organo : organos) {
+      ObjetoInsideUnidad unidadOrganica;
+      try {
+        unidadOrganica = (ObjetoInsideUnidad) insideStore.getUnidadOrganica(organo);
+
+        if (unidadOrganica == null) {
+          if (!tmpBuff.toString().equals("")) {
+            tmpBuff.append(",");
+          }
+          tmpBuff.append(organo);
+        }
+      } catch (InsideServiceStoreException e) {
+      }
+    }
+
+    return tmpBuff.toString();
+  }
 
   public List<ResultadoValidacionDocumento> validaFirmaDocumentoENI(byte[] docuemnto) {
-    logger.debug("Inicio validaFirmaDocumentoENI");
+    if (configure()) {
+      logger.debug("Inicio validaFirmaDocumentoENI");
 
-    DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
-    ByteArrayDataSource dataSource = new ByteArrayDataSource(docuemnto);
-    docEntrada.setContenido(new DataHandler(dataSource));
+      DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
+      ByteArrayDataSource dataSource = new ByteArrayDataSource(docuemnto);
+      docEntrada.setContenido(new DataHandler(dataSource));
 
-    RespuestaValidacionENI respuesta = scMtom.validarFirmaDocumentoENI(aplicacionInfo, docEntrada);
+      RespuestaValidacionENI respuesta =
+          scMtom.validarFirmaDocumentoENI(aplicacionInfo, docEntrada);
 
-    logger.debug("Fin validaFirmaDocumentoENI");
-    return formatValidacionENIDocumentoInside(respuesta);
+      logger.debug("Fin validaFirmaDocumentoENI");
+      return formatValidacionENIDocumentoInside(respuesta);
+    } else {
+      logger.error("El servicio no se encuentra activo");
+      return null;
+    }
   }
-
-
 
   public List<ResultadoValidacionExpediente> validaExpedienteENI(byte[] expediente,
       Validaciones validaciones) {
@@ -140,29 +287,187 @@ public class ConsumidorValidacionENI {
     ByteArrayDataSource dataSource = new ByteArrayDataSource(expediente);
     expEntrada.setContenido(new DataHandler(dataSource));
 
-    RespuestaValidacionENI respuesta =
-        scMtom.validarExpedienteENI(aplicacionInfo, expEntrada, versionSchemas, validaciones);
+    RespuestaValidacionENI respuesta = null;
+
+    List<Detalle> listaDetalles = new ArrayList<Detalle>();
+
+    String dataExpedienteENIXml = null;
+
+    byte[] expedienteRecibidoOriginalSinTocar = null;
+    try {
+      expedienteRecibidoOriginalSinTocar =
+          IOUtils.toByteArray(expEntrada.getContenido().getInputStream());
+      dataExpedienteENIXml =
+          XMLUtil.obtenerExpedienteENIXML(XMLUtil.decodeUTF8(expedienteRecibidoOriginalSinTocar));
+
+    } catch (Exception e) {
+      respuesta = new RespuestaValidacionENI();
+      respuesta.setGlobal(GlobalValidacionENICodigosRespuestaValidacion.G_XXX_CODIGO + " - "
+          + GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE);
+      respuesta.setDetalle(listaDetalles);
+    }
+
+    if (validaciones.isValidaSchema()) {
+      try {
+        identificadorObjeto =
+            XMLUtil.getvalorNodoDatosXML(dataExpedienteENIXml, this.XPATH_RUTA_IDENTIFICADOR_EXP);
+        validarSchema(dataExpedienteENIXml.getBytes(XMLUtil.UTF8_CHARSET));
+
+      } catch (SAXException e) {
+
+        Detalle detalleValidacion =
+            getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_E_999_CODIGO,
+                ExpedienteENICodigosRespuestaValidacion.E_E_999_DETALLE);
+        listaDetalles.add(detalleValidacion);
+
+      } catch (Exception e) {
+
+        Detalle detalleValidacion =
+            getDetalleValidacion(GlobalValidacionENICodigosRespuestaValidacion.G_EXX_CODIGO,
+                GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE);
+        listaDetalles.add(detalleValidacion);
+
+      }
+
+      listaDetalles.add(getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_E_000_CODIGO,
+          ExpedienteENICodigosRespuestaValidacion.E_E_000_DETALLE));
+    }
+
+    if (validaciones.isValidaDir3()) {
+      try {
+        identificadorObjeto =
+            XMLUtil.getvalorNodoDatosXML(dataExpedienteENIXml, this.XPATH_RUTA_IDENTIFICADOR_EXP);
+
+        List<String> listaOrganos = XMLUtil.getContentNodeList(
+            dataExpedienteENIXml.getBytes(XMLUtil.UTF8_CHARSET), this.XPATH_RUTA_ORGANOS_EXP);
+        String dir3Erroneo = validateOrganos(listaOrganos);
+        if (!dir3Erroneo.equals("")) {
+          listaDetalles
+              .add(getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_D_999_CODIGO,
+                  ExpedienteENICodigosRespuestaValidacion.E_D_999_DETALLE + " -- (" + dir3Erroneo
+                      + ")"));
+        } else {
+          listaDetalles
+              .add(getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_D_000_CODIGO,
+                  ExpedienteENICodigosRespuestaValidacion.E_D_000_DETALLE));
+        }
+      } catch (Exception e) {
+        listaDetalles
+            .add(getDetalleValidacion(GlobalValidacionENICodigosRespuestaValidacion.G_DXX_CODIGO,
+                GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE));
+      }
+    }
+
+    if (validaciones.isValidaSIA()) {
+      // VALIDACION 4 VALIDACIONCODIGOSIA
+      // Detalle detalleSIA = eeutilEniValidationENIService
+      // .validarCodigoSIAExpedienteEniFile(dataExpedienteENIXml);
+      try {
+        identificadorObjeto =
+            XMLUtil.getvalorNodoDatosXML(dataExpedienteENIXml, this.XPATH_RUTA_IDENTIFICADOR_EXP);
+
+        String clasificacion_SIA = XMLUtil.getContentNode(
+            dataExpedienteENIXml.getBytes(XMLUtil.UTF8_CHARSET), XPATH_RUTA_CLASIFICACION_EXP);
+        String fechaAperturaExpediente = XMLUtil.getContentNode(
+            dataExpedienteENIXml.getBytes(XMLUtil.UTF8_CHARSET), XPATH_RUTA_FECHA_APERTURA_EXP);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date feApExFormateada = sdf.parse(fechaAperturaExpediente);
+        Calendar calendario = GregorianCalendar.getInstance();
+        calendario.setTime(feApExFormateada);
+
+        boolean correcto = validateClasificacionSIA(clasificacion_SIA, calendario);
+        if (!correcto) {
+          listaDetalles
+              .add(getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_S_999_CODIGO,
+                  ExpedienteENICodigosRespuestaValidacion.E_S_999_DETALLE + " -- ("
+                      + clasificacion_SIA + ")"));
+        } else {
+          listaDetalles
+              .add(getDetalleValidacion(ExpedienteENICodigosRespuestaValidacion.E_S_000_CODIGO,
+                  ExpedienteENICodigosRespuestaValidacion.E_S_000_DETALLE));
+        }
+
+      } catch (Exception e) {
+        listaDetalles
+            .add(getDetalleValidacion(GlobalValidacionENICodigosRespuestaValidacion.G_SXX_CODIGO,
+                GlobalValidacionENICodigosRespuestaValidacion.G_XXX_DETALLE));
+      }
+
+    }
+
+    if (validaciones.isValidaFirma()) {
+      if (configure()) {
+        RespuestaValidacionENI detalleFirma =
+            scMtom.validarFirmaExpedienteENI(aplicacionInfo, expEntrada);
+        listaDetalles.addAll(detalleFirma.getDetalle());
+      } else {
+        logger.error("El servicio no se encuentra activo");
+      }
+    }
 
     logger.debug("Fin validaExpedienteENI");
-    return formatValidacionENIExpedienteInside(respuesta);
+    return formatValidacionENIExpedienteInside(getRespuestaGlobal(listaDetalles));
+
   }
 
+  private boolean validateClasificacionSIA(String clasificacionSIA, Calendar fecha) {
+    String clasificacionPattern = ".*_PRO_.*";
+    boolean retorno = true;
+    Integer anio = fecha.get(Calendar.YEAR);
+    boolean exists = true;
 
+    try {
+      exists = consumidorSIA.existClasificacion(clasificacionSIA, anio.toString());
+    } catch (Exception e) {
+      retorno = false;
+      logger.error("Error en la llamada al servicio de SIA para validar");
+    }
+
+    try {
+      if (!exists) {
+        logger.debug("Valor de clasificación no corresponde en SIA");
+        Pattern pattern = Pattern.compile(clasificacionPattern);
+        Matcher matcher = pattern.matcher(clasificacionSIA);
+        if (!matcher.matches()) {
+          retorno = false;
+        } else {
+
+          StringTokenizer tmpToken = new StringTokenizer(clasificacionSIA, "_PRO_");
+          String data = (String) tmpToken.nextElement();
+          ObjetoInsideUnidad unidadOrganica = insideStore.getUnidadOrganica(data);
+
+          if (unidadOrganica == null) {
+            retorno = false;
+          }
+        }
+      }
+    } catch (Exception e) {
+      retorno = false;
+      logger.error("Error en la busqueda de SIA en tabla para validarlo");
+    }
+
+    return retorno;
+
+  }
 
   public List<ResultadoValidacionExpediente> validaFirmaExpedienteENI(byte[] expediente) {
-    logger.debug("Inicio validaFirmaExpedienteENI");
+    if (configure()) {
+      logger.debug("Inicio validaFirmaExpedienteENI");
 
-    DocumentoEntradaMtom expEntrada = new DocumentoEntradaMtom();
-    ByteArrayDataSource dataSource = new ByteArrayDataSource(expediente);
-    expEntrada.setContenido(new DataHandler(dataSource));
+      DocumentoEntradaMtom expEntrada = new DocumentoEntradaMtom();
+      ByteArrayDataSource dataSource = new ByteArrayDataSource(expediente);
+      expEntrada.setContenido(new DataHandler(dataSource));
 
-    RespuestaValidacionENI respuesta = scMtom.validarFirmaExpedienteENI(aplicacionInfo, expEntrada);
+      RespuestaValidacionENI respuesta =
+          scMtom.validarFirmaExpedienteENI(aplicacionInfo, expEntrada);
 
-    logger.debug("Fin validaFirmaExpedienteENI");
-    return formatValidacionENIExpedienteInside(respuesta);
+      logger.debug("Fin validaFirmaExpedienteENI");
+      return formatValidacionENIExpedienteInside(respuesta);
+    } else {
+      logger.error("El servicio no se encuentra activo");
+      return formatValidacionENIExpedienteInside(null);
+    }
   }
-
-
 
   public static TipoResultadoValidacionExpedienteInside listResultadoValidacionExpedienteToTipoResultadoValidacionExpedienteInside(
       List<Detalle> resultados) {
@@ -183,8 +488,6 @@ public class ConsumidorValidacionENI {
     return res;
   }
 
-
-
   private List<ResultadoValidacionExpediente> formatValidacionENIExpedienteInside(
       RespuestaValidacionENI respuestaWSValidacionEN) {
     List<ResultadoValidacionExpediente> resultadosValidacion =
@@ -196,28 +499,24 @@ public class ConsumidorValidacionENI {
         rve.setMensaje(elemento.getDetalleRespuesta());
         rve.setValido(elemento.getCodigoRespuesta().contains("000]") ? true : false);
 
-
         if (elemento.getCodigoRespuesta().contains("[E.E.")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);// Validacion esquemas
-                                                                    // espedientes
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);
         } else if (elemento.getCodigoRespuesta().contains("[E.D.")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);// Validacion unidades organicas
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);
         } else if (elemento.getCodigoRespuesta().contains("[E.S.")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);// Validacion clasificacion
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);
         } else if (elemento.getCodigoRespuesta().contains("[E.F.")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_04);// Validacion firma
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_04);
         }
 
-        // por si es error generico
         if (elemento.getCodigoRespuesta().contains("[G.E")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);// Validacion esquemas
-                                                                    // espedientes
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_01);
         } else if (elemento.getCodigoRespuesta().contains("[G.D")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);// Validacion unidades organicas
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_02);
         } else if (elemento.getCodigoRespuesta().contains("[G.S")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);// Validacion clasificacion
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_03);
         } else if (elemento.getCodigoRespuesta().contains("[G.F")) {
-          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_04);// Validacion firma
+          rve.setTipoValidacion(OpcionValidacionExpediente.TOVE_04);
         }
 
         resultadosValidacion.add(rve);
@@ -227,13 +526,10 @@ public class ConsumidorValidacionENI {
     return resultadosValidacion;
   }
 
-
-
   private List<ResultadoValidacionDocumento> formatValidacionENIDocumentoInside(
       RespuestaValidacionENI respuestaWSValidacionEN) {
     List<ResultadoValidacionDocumento> resultadosValidacion =
         new ArrayList<ResultadoValidacionDocumento>();
-
 
     if (respuestaWSValidacionEN != null) {
       for (Detalle elemento : respuestaWSValidacionEN.getDetalle()) {
@@ -241,24 +537,22 @@ public class ConsumidorValidacionENI {
         rve.setMensaje(elemento.getDetalleRespuesta());
         rve.setValido(elemento.getCodigoRespuesta().contains("000]") ? true : false);
 
-
         if (elemento.getCodigoRespuesta().contains("[D.E.")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);// Validacion esquemas documento
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);
         } else if (elemento.getCodigoRespuesta().contains("[D.D.")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);// Validacion unidades organicas
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);
         } else if (elemento.getCodigoRespuesta().contains("[D.F.")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);// Validacion firma
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);
         }
 
         // por si es error generico
         if (elemento.getCodigoRespuesta().contains("[G.E")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);// Validacion esquemas documento
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_01);
         } else if (elemento.getCodigoRespuesta().contains("[G.D")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);// Validacion unidades organicas
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_02);
         } else if (elemento.getCodigoRespuesta().contains("[G.F")) {
-          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);// Validacion firma
+          rve.setTipoValidacion(OpcionValidacionDocumento.TOVD_03);
         }
-
 
         resultadosValidacion.add(rve);
       }
@@ -268,17 +562,6 @@ public class ConsumidorValidacionENI {
 
   }
 
-
-  // public EeUtilValidacionENIService getSc() {
-  // return sc;
-  // }
-  //
-  // public void setSc(EeUtilValidacionENIService sc) {
-  // this.sc = sc;
-  // }
-
-
-  // Atributos desde properties pasando por xml
   public String getUser() {
     return user;
   }
@@ -287,11 +570,9 @@ public class ConsumidorValidacionENI {
     return scMtom;
   }
 
-
   public void setScMtom(EeUtilValidacionENIServiceMtom scMtom) {
     this.scMtom = scMtom;
   }
-
 
   public void setUser(String user) {
     this.user = user;
@@ -313,12 +594,53 @@ public class ConsumidorValidacionENI {
     this.url = url;
   }
 
-  public String getVersionSchemas() {
-    return versionSchemas;
+  public String getSchemasDir() {
+    return schemasDir;
   }
 
-  public void setVersionSchemas(String versionSchemas) {
-    this.versionSchemas = versionSchemas;
+  public void setSchemasDir(String schemasDir) {
+    this.schemasDir = schemasDir;
+  }
+
+  public ConsumidorSIA getConsumidorSIA() {
+    return consumidorSIA;
+  }
+
+  public void setConsumidorSIA(ConsumidorSIA consumidorSIA) {
+    this.consumidorSIA = consumidorSIA;
+  }
+
+  private RespuestaValidacionENI getRespuestaGlobal(List<Detalle> listaDetalles) {
+
+    RespuestaValidacionENI respuesta = new RespuestaValidacionENI();
+    respuesta.setGlobal(GlobalValidacionENICodigosRespuestaValidacion.G_000_CODIGO + " - "
+        + GlobalValidacionENICodigosRespuestaValidacion.G_000_DETALLE);
+    respuesta.setDetalle(listaDetalles);
+
+    if (listaDetalles.isEmpty()) {
+      Detalle detalleVaciasValidaciones = new Detalle();
+      detalleVaciasValidaciones
+          .setCodigoRespuesta(GlobalValidacionENICodigosRespuestaValidacion.G_999_CODIGO);
+      detalleVaciasValidaciones
+          .setDetalleRespuesta(GlobalValidacionENICodigosRespuestaValidacion.G_999_DETALLE);
+      detalleVaciasValidaciones.setIdObjeto(
+          GlobalValidacionENICodigosRespuestaValidacion.G_ZZZ_ID_OBJETO_ERROR_VALIDACIONES);
+      respuesta.getDetalle().add(detalleVaciasValidaciones);
+      respuesta.setGlobal(GlobalValidacionENICodigosRespuestaValidacion.G_999_CODIGO + " - "
+          + GlobalValidacionENICodigosRespuestaValidacion.G_999_DETALLE);
+
+    } else {
+      for (Detalle detalle : listaDetalles) {
+
+        if (detalle.getCodigoRespuesta().endsWith("999]")) {
+          respuesta.setGlobal(GlobalValidacionENICodigosRespuestaValidacion.G_999_CODIGO + " - "
+              + GlobalValidacionENICodigosRespuestaValidacion.G_999_DETALLE);
+          break;
+        }
+      }
+    }
+
+    return respuesta;
   }
 
 }

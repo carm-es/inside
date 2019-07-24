@@ -23,7 +23,6 @@ import org.hibernate.Criteria;
 import org.hibernate.classic.Session;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideMetadatoAdicional;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
@@ -38,7 +37,6 @@ import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideIndiceFirmas;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideInteresado;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideMetadatosAdicionales;
 import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideOrgano;
-import es.mpt.dsic.inside.store.hibernate.entity.ExpedienteInsideRespuestaEnvioJusticia;
 
 public class InsideServiceStoreHibernateConverterExpediente
     implements InsideServiceStoreHibernateConverter<ObjetoExpedienteInside, ExpedienteInside> {
@@ -136,34 +134,6 @@ public class InsideServiceStoreHibernateConverterExpediente
 
     }
 
-
-    if (expediente.getObjectInsideRespuestaEnvioJusticiaLista().size() > 0) {
-      Set<ExpedienteInsideRespuestaEnvioJusticia> expedienteInsideRespuestaEnvioJusticia =
-          new HashSet<ExpedienteInsideRespuestaEnvioJusticia>();
-
-      for (ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia : expediente
-          .getObjectInsideRespuestaEnvioJusticiaLista()) {
-        ExpedienteInsideRespuestaEnvioJusticia respuestaEnvioJusticia =
-            new ExpedienteInsideRespuestaEnvioJusticia();
-        respuestaEnvioJusticia.setExpedienteInside(entity);
-        respuestaEnvioJusticia.setAuditoriaEsb_aplicacion(
-            objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_aplicacion());
-        respuestaEnvioJusticia
-            .setAuditoriaEsb_modulo(objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_modulo());
-        respuestaEnvioJusticia.setAuditoriaEsb_servicio(
-            objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_servicio());
-        respuestaEnvioJusticia.setAuditoriaEsb_marcaTiempo(
-            objectInsideRespuestaEnvioJusticia.getAuditoriaEsb_marcaTiempo());
-        respuestaEnvioJusticia.setAck(objectInsideRespuestaEnvioJusticia.getAck());
-        respuestaEnvioJusticia.setCodigoEnvio(objectInsideRespuestaEnvioJusticia.getCodigoEnvio());
-        respuestaEnvioJusticia.setMensaje(objectInsideRespuestaEnvioJusticia.getMensaje());
-        expedienteInsideRespuestaEnvioJusticia.add(respuestaEnvioJusticia);
-      }
-
-      entity.setExpedienteInsideRespuestaEnvioJusticia(expedienteInsideRespuestaEnvioJusticia);
-
-    }
-
     return entity;
 
   }
@@ -238,35 +208,6 @@ public class InsideServiceStoreHibernateConverterExpediente
       metadatosAdicionales.add(metadatosAdicional);
     }
     expediente.getMetadatos().setMetadatosAdicionales(metadatosAdicionales);
-
-
-
-    List<ObjectInsideRespuestaEnvioJusticia> respuestaEnvioJusticia =
-        new ArrayList<ObjectInsideRespuestaEnvioJusticia>();
-
-    for (ExpedienteInsideRespuestaEnvioJusticia respuestaEnvioJusticiaEntity : entity
-        .getExpedienteInsideRespuestaEnvioJusticia()) {
-      ObjectInsideRespuestaEnvioJusticia objectRespuestaEnvioJusticia =
-          new ObjectInsideRespuestaEnvioJusticia();
-      objectRespuestaEnvioJusticia
-          .setAuditoriaEsb_aplicacion(respuestaEnvioJusticiaEntity.getAuditoriaEsb_aplicacion());
-      objectRespuestaEnvioJusticia
-          .setAuditoriaEsb_modulo(respuestaEnvioJusticiaEntity.getAuditoriaEsb_modulo());
-      objectRespuestaEnvioJusticia
-          .setAuditoriaEsb_servicio(respuestaEnvioJusticiaEntity.getAuditoriaEsb_servicio());
-      objectRespuestaEnvioJusticia
-          .setAuditoriaEsb_marcaTiempo(respuestaEnvioJusticiaEntity.getAuditoriaEsb_marcaTiempo());
-      objectRespuestaEnvioJusticia.setAck(respuestaEnvioJusticiaEntity.getAck());
-      objectRespuestaEnvioJusticia.setCodigoEnvio(respuestaEnvioJusticiaEntity.getCodigoEnvio());
-      objectRespuestaEnvioJusticia.setMensaje(respuestaEnvioJusticiaEntity.getMensaje());
-
-      objectRespuestaEnvioJusticia.setCodigoUnidadOrganoRemitente(
-          respuestaEnvioJusticiaEntity.getCodigoUnidadOrganoRemitente());
-
-      respuestaEnvioJusticia.add(objectRespuestaEnvioJusticia);
-    }
-    expediente.setObjectInsideRespuestaEnvioJusticiaLista(respuestaEnvioJusticia);
-
 
     Calendar fechaBaja = null;
     if (entity.getFechaBaja() != null) {
@@ -343,8 +284,8 @@ public class InsideServiceStoreHibernateConverterExpediente
     // si coincide es la version correcta del expediente
     if (expedienteIndice.getId() == expendienteLastVersion.getId()) {
 
-      // hay que ver que si el exp esta dado de baja, no se devuelve porque ya no estaria el doc
-      // vinculado a el
+      // hay que ver que si el exp esta dado de baja, no se devuelve
+      // porque ya no estaria el doc vinculado a el
       if (expendienteLastVersion.getFechaBaja() == null) {
         retorno.put(expedienteIndice.getId(),
             toInside((ExpedienteInside) critExpIndice.uniqueResult(), session));

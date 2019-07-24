@@ -72,6 +72,9 @@ $(document).ready(function() {
 
 function openModalRemitirTokenSolicitud(expediente, idExpVacio, metadatos) {
 
+    //convertir en objetoJSON la lista creada en expedientController y pasada a stringJSON
+    var listaExpInside = JSON.parse($("#listaExpedientesJSON").val());
+
     var divData = $('#init-modal-solicitudesAccesoExpediente');
     var data = divData.data();
 
@@ -85,7 +88,8 @@ function openModalRemitirTokenSolicitud(expediente, idExpVacio, metadatos) {
         $(".mf-dialog #labelMetadatosAdicionales").append(metadatos);
         // Autocompletado del campo expedientes.
         $(".mf-dialog #identificadorExpedienteEscogidoPorUsuario").autocomplete({
-            source : $("#context").val() + '/autocomplete/expedientes?allExp=true&uniAct=false',
+            //source : $("#context").val() + '/autocomplete/expedientes?allExp=true&uniAct=true',
+            source : listaExpInside,
             minLength : 0,
             autoFocus : true,
             select : function(event, ui) {
@@ -131,7 +135,7 @@ function remitirToken() {
 function rechazarToken(expediente) {
 
     $.ajax({
-        url : $("#context").val() + "/rechazarTokenSolicitudAcceso",
+        url : $("#context").val() + "/solicitudesAccesoExpediente/rechazarTokenSolicitudAcceso",
         dataType : 'json',
         type : 'POST',
         data : {
@@ -156,7 +160,7 @@ function rechazarToken(expediente) {
 
 function enviarFormularioRemitirTokenSolicitudAcceso() {
     $.ajax({
-        url : $("#context").val() + "/remitirTokenSolicitudAcceso",
+        url : $("#context").val() + "/solicitudesAccesoExpediente/remitirTokenSolicitudAcceso",
         dataType : 'json',
         type : 'POST',
         data : $(".mf-dialog #remitirTokenForm").serialize(),

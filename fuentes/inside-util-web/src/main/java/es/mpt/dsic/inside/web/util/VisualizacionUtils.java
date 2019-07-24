@@ -40,7 +40,8 @@ import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
 import es.mpt.dsic.inside.model.objetos.visualizacion.TipoResultadoVisualizacion;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.InsideUtilService;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.util.Constantes;
 import es.mpt.dsic.inside.service.util.XMLUtils;
 import es.mpt.dsic.inside.service.visualizacion.InsideServiceVisualizacion;
@@ -104,7 +105,7 @@ public class VisualizacionUtils {
   }
 
   private TipoDocumentoEniBinarioOTipo getDocumentoEniBinario(String idSession, String documentId)
-      throws FileNotFoundException, IOException {
+      throws FileNotFoundException, IOException, InSideServiceTemporalDataException {
     TipoDocumentoEniBinarioOTipo docEniBinario = new TipoDocumentoEniBinarioOTipo();
     byte[] decoded = temporalDataBusinessService.getFile(idSession, documentId);
     docEniBinario.setDocumentoEniBinario(decoded);

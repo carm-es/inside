@@ -442,17 +442,24 @@ public interface InsideCertificateWebService {
           name = "identificador") String identificador)
       throws InsideWSException;
 
-  @WebMethod(operationName = "remisionAJusticia", action = "urn:remisionAJusticia")
-  @WebResult(name = "RespuestaRemisionAJusticiaType", partName = "RespuestaRemisionAJusticiaType",
-      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube")
-  public RespuestaRemisionAJusticiaType remisionAJusticia(
-      @WebParam(name = "peticionRemisionAJusticiaType") @XmlElement(required = true,
-          name = "peticionRemisionAJusticiaType") PeticionRemisionAJusticiaType peticionRemisionAJusticiaType)
-      throws InsideWSException;
+  @WebMethod(operationName = "visualizarExpediente", action = "urn:visualizarExpediente")
+  @WebResult(name = "RespuestaPdfExpediente", partName = "RespuestaPdfExpediente",
+      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/respuestaPdfExpediente")
+  public RespuestaPdfExpediente visualizarExpediente(@WebParam(name = "expedienteEni") @XmlElement(
+      required = true, name = "expedienteEni") byte[] expedienteEni) throws InsideWSException;
 
   @WebMethod(operationName = "getPdfExpediente", action = "urn:getPdfExpediente")
   @WebResult(name = "RespuestaPdfExpediente", partName = "RespuestaPdfExpediente",
       targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/respuestaPdfExpediente")
   public RespuestaPdfExpediente getPdfExpediente(@WebParam(name = "expedienteEni") @XmlElement(
       required = true, name = "expedienteEni") byte[] expedienteEni) throws InsideWSException;
+
+  @WebMethod(operationName = "getPdfExpedientePorId", action = "urn:getPdfExpedientePorId")
+  @WebResult(name = "RespuestaPdfExpediente", partName = "RespuestaPdfExpediente",
+      targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/respuestaPdfExpediente")
+  public RespuestaPdfExpediente getPdfExpedientePorId(
+      @WebParam(name = "identificador") @XmlElement(required = true,
+          name = "identificador") String identificador,
+      @WebParam(name = "version") @XmlElement(required = false, name = "version") String version)
+      throws InsideWSException;
 }

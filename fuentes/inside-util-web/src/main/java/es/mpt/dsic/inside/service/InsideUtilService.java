@@ -14,13 +14,19 @@ package es.mpt.dsic.inside.service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import es.mpt.dsic.infofirma.service.exception.InfoFirmaServiceException;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
+import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacion;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
-import es.mpt.dsic.inside.web.object.MessageObject;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
+import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
+import es.mpt.dsic.inside.util.xml.JAXBMarshaller;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
+import es.mpt.dsic.inside.ws.validation.exception.InsideValidationDataException;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
+import es.mpt.dsic.inside.xml.eni.documento.metadatos.EnumeracionEstadoElaboracion;
 import es.mpt.dsic.inside.xml.eni.expediente.TipoExpediente;
 import es.mpt.dsic.inside.xml.inside.TipoDocumentoInsideConMAdicionales;
 import es.mpt.dsic.inside.xml.inside.TipoExpedienteInsideConMAdicionales;
@@ -35,7 +41,6 @@ import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.TipoExpedienteVali
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionExpedienteInside;
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoDocumentoVisualizacionInside;
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoResultadoVisualizacionDocumentoInside;
-import es.mpt.dsic.puntoUnicoJusticia.client.modelo.EnviarAJusticiaResponse;
 
 public interface InsideUtilService {
 
@@ -102,19 +107,13 @@ public interface InsideUtilService {
   public byte[] lazyLoadXmlFile(String idSession, String id, boolean addXmlExtension)
       throws Exception;
 
-  public Map<String, byte[]> unzip(String carpeta, String fichero) throws IOException;
+  ObjetoDocumentoInsideContenido lazyLoadContentFile(String idSession, String id) throws Exception;
+
+  public Map<String, byte[]> unzip(String carpeta, String fichero)
+      throws IOException, InSideServiceTemporalDataException;
 
   public Map<String, Map<String, String>> getMapaExpedienteYDocumentos(
       String identificadorExpediente, String versionExpediente) throws Exception;
-
-  public String guardarResultadoEnvioJusticia(EnviarAJusticiaResponse enviarAJusticiaResponse,
-      String identificadorExpediente, String versionExpediente, MessageObject mensaje,
-      String codigoUnidadOrganoRemitente) throws InSideServiceException;
-
-  public String guardarResultadoEnvioJusticiaExpedienteNoInside(
-      EnviarAJusticiaResponse enviarAJusticiaResponse, String identificadorExpediente,
-      String versionExpediente, MessageObject mensaje, String codigoUnidadOrganoRemitente)
-      throws InSideServiceException;
 
   public byte[] generateDocXml(TipoDocumentoInsideConMAdicionales docInside)
       throws InSideServiceException;
@@ -130,4 +129,39 @@ public interface InsideUtilService {
   public String generateDefaultId(String unidadOrganica, boolean isDocument);
 
   public boolean esLongitudIdentificadorValido(String identificador) throws InsideWSException;
+
+  public void contieneCarpetasVacias(Object expediente) throws InsideValidationDataException;
+
+  public ObjetoDocumentoInside convertXmlDocumentToDocumentObject(
+      TipoDocumentoInsideConMAdicionales docConvertido) throws InSideServiceException;
+
+  public boolean aceptarFicheroTamanioYFirma(String pathContenido, String signId,
+      EnumeracionEstadoElaboracion enumeracionEstadoElaboracion) throws InSideServiceException;
+
+  ObjetoDocumentoInsideContenido getExternalContent(String sistema, String uuid, String idSession);
+
+  ObjetoDocumentoInsideContenido getExternalContent(String idDocumentoInside, String idSession)
+      throws InSideServiceException;
+
+  public TipoResultadoValidacionExpedienteInside validateExpedientOperacionWebService(
+      byte[] expedienteEniBytes) throws InSideServiceException;
+
+  public ObjetoDocumentoInside validateDocumentImport(Map<String, Object> retorno,
+      String firmapreviamente, byte[] generateDocXml) throws InSideServiceException;
+
+  public byte[] generateZipFicherosFisicos(Map<String, byte[]> ficheros, JAXBMarshaller marshaller,
+      InSideService insideService, String sessionId) throws Exception;
+
+  public byte[] generateZipFicherosFisicosNoInside(Map<String, byte[]> ficheros,
+      JAXBMarshaller marshaller, InSideService insideService) throws Exception;
+
+  public byte[] transformarExpedienteDescargaCompletoParaValidarFirma(TipoExpediente tExpAdi,
+      String contenido) throws InsideServiceInternalException;
+
+  public void trataAmpliacionFirmaDocumento(TipoDocumentoInsideConMAdicionales docConvertido)
+      throws InfoFirmaServiceException, IOException;
+
+  public byte[] tratarFirmaLongevaExpediente(byte[] firmaIndice)
+      throws InfoFirmaServiceException, IOException;
+
 }

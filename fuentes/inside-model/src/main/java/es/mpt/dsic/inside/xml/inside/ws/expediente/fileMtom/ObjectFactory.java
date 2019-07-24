@@ -26,19 +26,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link ExpedienteEniFileInsideMtom }
-   * 
-   */
-  public ExpedienteEniFileInsideMtom createExpedienteEniFileInsideMtom() {
-    return new ExpedienteEniFileInsideMtom();
-  }
-
-  /**
    * Create an instance of {@link ExpedienteEniFileInsideConMAdicionalesMtom }
    * 
    */
   public ExpedienteEniFileInsideConMAdicionalesMtom createExpedienteEniFileInsideConMAdicionalesMtom() {
     return new ExpedienteEniFileInsideConMAdicionalesMtom();
+  }
+
+  /**
+   * Create an instance of {@link ExpedienteEniFileInsideMtom }
+   * 
+   */
+  public ExpedienteEniFileInsideMtom createExpedienteEniFileInsideMtom() {
+    return new ExpedienteEniFileInsideMtom();
   }
 
 }

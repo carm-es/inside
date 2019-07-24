@@ -25,8 +25,8 @@ import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.auditoria.InSideAuditoriaService;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.web.util.PdfUtils;
-import es.mpt.dsic.inside.web.util.WebConstants;
 
 @PropertySource("file:${config.path}/temporalData.properties")
 @Service("inSideAuditoriaService")

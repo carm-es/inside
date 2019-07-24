@@ -11,11 +11,7 @@
 
 package es.mpt.dsic.inside.model.objetos.expediente;
 
-import java.util.ArrayList;
-import java.util.List;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoInside;
-import es.mpt.dsic.inside.model.objetos.ObjetoInsideMetadatoAdicional;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersion;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideVersionable;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
@@ -32,22 +28,6 @@ public class ObjetoExpedienteInside extends ObjetoInside<ObjetoExpedienteInsideM
   protected ObjetoDocumentoInsideContenido visualizacionIndice;
 
   private ObjetoInsideVersion version;
-
-  private List<ObjectInsideRespuestaEnvioJusticia> objectInsideRespuestaEnvioJusticiaLista;
-
-
-  public List<ObjectInsideRespuestaEnvioJusticia> getObjectInsideRespuestaEnvioJusticiaLista() {
-    if (this.objectInsideRespuestaEnvioJusticiaLista == null) {
-      this.objectInsideRespuestaEnvioJusticiaLista =
-          new ArrayList<ObjectInsideRespuestaEnvioJusticia>();
-    }
-    return objectInsideRespuestaEnvioJusticiaLista;
-  }
-
-  public void setObjectInsideRespuestaEnvioJusticiaLista(
-      List<ObjectInsideRespuestaEnvioJusticia> objectInsideRespuestaEnvioJusticiaLista) {
-    this.objectInsideRespuestaEnvioJusticiaLista = objectInsideRespuestaEnvioJusticiaLista;
-  }
 
   public ObjetoExpedienteInsideIndice getIndice() {
     if (indice == null) {
@@ -108,6 +88,5 @@ public class ObjetoExpedienteInside extends ObjetoInside<ObjetoExpedienteInsideM
     sb.append("]");
     return sb.toString();
   }
-
 
 }

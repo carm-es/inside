@@ -37,7 +37,7 @@ public class InsideServiceStoreHibernateConverterExpedienteToken {
 
     entity.setCsv(token.getCsv());
     entity.setUuid(token.getUuid());
-
+    entity.setVersionExpediente(token.getVersionExpediente());
     entity.setDir3(token.getDir3());
     entity.setAsunto(token.getAsunto());
     entity.setNifs(token.getNifs());
@@ -55,6 +55,7 @@ public class InsideServiceStoreHibernateConverterExpedienteToken {
     expediente.setIdentificador(entity.getIdentificador());
     expediente.setCsv(entity.getCsv());
     expediente.setUuid(entity.getUuid());
+    expediente.setVersionExpediente(entity.getVersionExpediente());
     expediente
         .setUsuario(InsideServiceStoreHibernateConverterUsuario.toInside(entity.getUsuario()));
 

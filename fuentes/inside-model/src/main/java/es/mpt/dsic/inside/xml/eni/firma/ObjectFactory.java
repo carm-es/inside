@@ -31,6 +31,22 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
+   * Create an instance of {@link TipoFirmasElectronicas.ContenidoFirma }
+   * 
+   */
+  public TipoFirmasElectronicas.ContenidoFirma createTipoFirmasElectronicasContenidoFirma() {
+    return new TipoFirmasElectronicas.ContenidoFirma();
+  }
+
+  /**
+   * Create an instance of {@link TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado }
+   * 
+   */
+  public TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado createTipoFirmasElectronicasContenidoFirmaFirmaConCertificado() {
+    return new TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado();
+  }
+
+  /**
    * Create an instance of {@link Firmas }
    * 
    */
@@ -47,27 +63,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado }
-   * 
-   */
-  public TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado createTipoFirmasElectronicasContenidoFirmaFirmaConCertificado() {
-    return new TipoFirmasElectronicas.ContenidoFirma.FirmaConCertificado();
-  }
-
-  /**
    * Create an instance of {@link TipoFirmasElectronicas }
    * 
    */
   public TipoFirmasElectronicas createTipoFirmasElectronicas() {
     return new TipoFirmasElectronicas();
-  }
-
-  /**
-   * Create an instance of {@link TipoFirmasElectronicas.ContenidoFirma }
-   * 
-   */
-  public TipoFirmasElectronicas.ContenidoFirma createTipoFirmasElectronicasContenidoFirma() {
-    return new TipoFirmasElectronicas.ContenidoFirma();
   }
 
   /**

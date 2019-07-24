@@ -31,19 +31,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoOpcionesValidacionDocumentoInside }
-   * 
-   */
-  public TipoOpcionesValidacionDocumentoInside createTipoOpcionesValidacionDocumentoInside() {
-    return new TipoOpcionesValidacionDocumentoInside();
-  }
-
-  /**
    * Create an instance of {@link TipoDocumentoValidacionInside }
    * 
    */
   public TipoDocumentoValidacionInside createTipoDocumentoValidacionInside() {
     return new TipoDocumentoValidacionInside();
+  }
+
+  /**
+   * Create an instance of {@link TipoOpcionesValidacionDocumentoInside }
+   * 
+   */
+  public TipoOpcionesValidacionDocumentoInside createTipoOpcionesValidacionDocumentoInside() {
+    return new TipoOpcionesValidacionDocumentoInside();
   }
 
   /**

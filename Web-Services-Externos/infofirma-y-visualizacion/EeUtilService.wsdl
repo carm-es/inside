@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="EeUtilServiceImplService" targetNamespace="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:ns1="http://service.ws.inside.dsic.mpt.es/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://impl.service.ws.inside.dsic.mpt.es/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:import location="EeUtilService_types" namespace="http://service.ws.inside.dsic.mpt.es/">
+    </wsdl:import>
+  <wsdl:binding name="EeUtilServiceImplServiceSoapBinding" type="ns1:EeUtilService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="obtenerInformacionFirma">
+      <soap:operation soapAction="urn:obtenerInformacionFirma" style="document"/>
+      <wsdl:input name="obtenerInformacionFirma">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="obtenerInformacionFirmaResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="foliar">
+      <soap:operation soapAction="urn:foliar" style="document"/>
+      <wsdl:input name="foliar">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="foliarResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="visualizar">
+      <soap:operation soapAction="urn:visualizar" style="document"/>
+      <wsdl:input name="visualizar">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="visualizarResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="InSideException">
+        <soap:fault name="InSideException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="EeUtilServiceImplService">
+    <wsdl:port binding="tns:EeUtilServiceImplServiceSoapBinding" name="EeUtilServiceImplPort">
+      <soap:address location="http://server:port/eeutil/ws/EeUtilService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://justicia.es/esb/error/xsd-schemas/V1" targetNamespace="http://justicia.es/esb/error/xsd-schemas/V1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:element name="ErrorEsb" type="ns:ErrorEsbType">
+		<xsd:annotation>
+			<xsd:documentation>Elemento que representa un error dentro de ESB. Este error puede ser generado internamente o ser proveniente de un sistema externo.</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="ErrorEsbType">
+		<xsd:all>
+			<xsd:element name="Codigo" type="ns:CodigoErrorType">
+				<xsd:annotation>
+					<xsd:documentation>Código único que identifica al error producido.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Descripcion" type="ns:LiteralErrorType">
+				<xsd:annotation>
+					<xsd:documentation>Ofrece una descripción del error producido.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Causa" type="ns:LiteralErrorType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Ofrece una descripción de la causa u origen del error. Es opcional.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Accion" type="ns:LiteralErrorType" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Ofrece una descripción de la acción recomendada.Es opcional.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="TipoError" type="ns:TipoErrorType">
+				<xsd:annotation>
+					<xsd:documentation>Especifica si el error es TECNICO ó FUNCIONAL.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:all>
+	</xsd:complexType>
+	<xsd:simpleType name="LiteralErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Definición de Restricciones para Literales de Error ESB</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="255"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="CodigoErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Definición de Restricciones para el Identificador de Error ESB</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="255"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="TipoErrorType">
+		<xsd:annotation>
+			<xsd:documentation>Definición de Restricciones para el Tipo de Error ESB</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="9"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+</xsd:schema>

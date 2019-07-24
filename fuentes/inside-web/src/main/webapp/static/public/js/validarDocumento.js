@@ -49,7 +49,7 @@ function configurarPlUploadValidarDocumento() {
 
 function validarDocumento() {
     $("#contentValidationData").html('');
-    $('#importarVeil').removeClass('hidden');
+    $mf.timer.on();
     $.ajax({
         url : $("#context").val() + '/validarDocumento',
         type : 'POST',
@@ -57,7 +57,7 @@ function validarDocumento() {
         timeout : 999999,
         data : $("#validarDocumentoForm").serialize(),
         success : function(data) {
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
             if (data.mensajeUsuario != null) {
                 $("#tipoMensaje").val(data.mensajeUsuario.level);
                 $("#valorMensaje").val(data.mensajeUsuario.message);
@@ -87,7 +87,7 @@ function validarDocumento() {
             }
         },
         error : function(e) {
-            $('#importarVeil').addClass('hidden');
+            $mf.timer.off();
             console.error(e);
         }
     });

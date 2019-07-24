@@ -1,0 +1,64 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:err="http://justicia.es/esb/error/xsd-schemas/V1" xmlns:ns="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/xsd-schemas/V1" xmlns:tns="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/wsdl-schemas/V1" targetNamespace="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/wsdl-schemas/V1">
+	<wsdl:types>
+		<xs:schema targetNamespace="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/xsd-schemas/V1" version="1.0">
+			<xs:include schemaLocation="RemisionExpedienteCallback_1.0.xsd"/>
+			<xs:import namespace="http://justicia.es/esb/error/xsd-schemas/V1" schemaLocation="ErrorESB_1.0.xsd"/>
+		</xs:schema>
+		<xs:schema targetNamespace="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/wsdl-schemas/V1" version="1.0">
+			<xs:element name="NotificarEstadoEnvioRequest" type="ns:PeticionNotificarEstadoEnvioType">
+			</xs:element>
+			<xs:element name="NotificarEstadoEnvioResponse" type="ns:RespuestaNotificarEstadoEnvioType">
+			</xs:element>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="NotificarEstadoEnvioRequest">
+		<wsdl:part name="peticion" element="tns:NotificarEstadoEnvioRequest"/>
+	</wsdl:message>
+	<wsdl:message name="NotificarEstadoEnvioResponse">
+		<wsdl:part name="respuesta" element="tns:NotificarEstadoEnvioResponse"/>
+	</wsdl:message>
+	<wsdl:message name="Error">
+		<wsdl:part name="Error" element="err:ErrorEsb"/>
+	</wsdl:message>
+	<wsdl:portType name="RemisionExpedienteCallback_PortType">
+		<wsdl:operation name="notificarEstadoEnvio">
+			<wsdl:input message="tns:NotificarEstadoEnvioRequest"/>
+			<wsdl:output message="tns:NotificarEstadoEnvioResponse"/>
+			<wsdl:fault name="Error" message="tns:Error"/>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="RemisionExpedienteCallback_SoapBinding" type="tns:RemisionExpedienteCallback_PortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="notificarEstadoEnvio">
+			<soap:operation soapAction="notificarEstadoEnvio" style="document"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="Error">
+				<soap:fault name="Error" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="RemisionExpedienteCallback_Service">
+		<wsdl:port name="RemisionExpedienteCallback" binding="tns:RemisionExpedienteCallback_SoapBinding">
+			<soap:address location="http://localhost:8080/mju/esb/PlataformaEE/RemisionExpedienteCallback"/>
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>

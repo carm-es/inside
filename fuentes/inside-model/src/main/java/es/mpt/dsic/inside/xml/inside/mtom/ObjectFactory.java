@@ -26,11 +26,11 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoDocumentoInsideConMAdicionalesMtom }
+   * Create an instance of {@link TipoDocumentoInsideMtom }
    * 
    */
-  public TipoDocumentoInsideConMAdicionalesMtom createTipoDocumentoInsideConMAdicionalesMtom() {
-    return new TipoDocumentoInsideConMAdicionalesMtom();
+  public TipoDocumentoInsideMtom createTipoDocumentoInsideMtom() {
+    return new TipoDocumentoInsideMtom();
   }
 
   /**
@@ -42,11 +42,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoInsideMtom }
+   * Create an instance of {@link TipoDocumentoInsideConMAdicionalesMtom }
    * 
    */
-  public TipoDocumentoInsideMtom createTipoDocumentoInsideMtom() {
-    return new TipoDocumentoInsideMtom();
+  public TipoDocumentoInsideConMAdicionalesMtom createTipoDocumentoInsideConMAdicionalesMtom() {
+    return new TipoDocumentoInsideConMAdicionalesMtom();
   }
 
   /**

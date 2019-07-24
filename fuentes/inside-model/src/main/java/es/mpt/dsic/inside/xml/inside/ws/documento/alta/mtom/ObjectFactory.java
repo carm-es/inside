@@ -31,19 +31,19 @@ public class ObjectFactory {
   public ObjectFactory() {}
 
   /**
-   * Create an instance of {@link TipoDocumentoAsociadoaExpedienteMtom }
-   * 
-   */
-  public TipoDocumentoAsociadoaExpedienteMtom createTipoDocumentoAsociadoaExpedienteMtom() {
-    return new TipoDocumentoAsociadoaExpedienteMtom();
-  }
-
-  /**
    * Create an instance of {@link TipoDocumentoAltaInsideMtom.Csv }
    * 
    */
   public TipoDocumentoAltaInsideMtom.Csv createTipoDocumentoAltaInsideMtomCsv() {
     return new TipoDocumentoAltaInsideMtom.Csv();
+  }
+
+  /**
+   * Create an instance of {@link TipoDocumentoAltaInsideMtom }
+   * 
+   */
+  public TipoDocumentoAltaInsideMtom createTipoDocumentoAltaInsideMtom() {
+    return new TipoDocumentoAltaInsideMtom();
   }
 
   /**
@@ -55,11 +55,11 @@ public class ObjectFactory {
   }
 
   /**
-   * Create an instance of {@link TipoDocumentoAltaInsideMtom }
+   * Create an instance of {@link TipoDocumentoAsociadoaExpedienteMtom }
    * 
    */
-  public TipoDocumentoAltaInsideMtom createTipoDocumentoAltaInsideMtom() {
-    return new TipoDocumentoAltaInsideMtom();
+  public TipoDocumentoAsociadoaExpedienteMtom createTipoDocumentoAsociadoaExpedienteMtom() {
+    return new TipoDocumentoAsociadoaExpedienteMtom();
   }
 
   /**

@@ -27,8 +27,8 @@ import es.mpt.dsic.inside.model.objetos.ObjetoElastic;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.web.object.MessageObject;
-import es.mpt.dsic.inside.web.util.WebConstants;
 
 @Controller
 public class ElasticController {

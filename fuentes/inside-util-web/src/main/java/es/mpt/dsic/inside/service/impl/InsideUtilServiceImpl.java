@@ -12,12 +12,13 @@
 package es.mpt.dsic.inside.service.impl;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,12 +27,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPathExpressionException;
+import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,15 +51,19 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.xml.sax.SAXException;
+import csvstorage.es.gob.aapp.csvstorage.webservices.bigaDataTransfer.document.v1.CSVStorageException;
+import es.mpt.dsic.eeutil.client.operFirma.model.ConfiguracionAmpliarFirma;
 import es.mpt.dsic.infofirma.service.InfoFirmaService;
+import es.mpt.dsic.infofirma.service.exception.InfoFirmaServiceException;
 import es.mpt.dsic.inside.model.converter.InsideConverterDocumento;
 import es.mpt.dsic.inside.model.converter.InsideConverterExpediente;
 import es.mpt.dsic.inside.model.converter.InsideConverterMetadatos;
 import es.mpt.dsic.inside.model.converter.InsideConverterValidacion;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
-import es.mpt.dsic.inside.model.objetos.ObjectInsideRespuestaEnvioJusticia;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
+import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
+import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacion;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpediente;
@@ -62,27 +72,32 @@ import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado;
 import es.mpt.dsic.inside.model.objetos.firmas.FirmaInside;
 import es.mpt.dsic.inside.model.objetos.firmas.FirmaInsideTipoFirmaEnum;
-import es.mpt.dsic.inside.model.objetos.firmas.contenido.ContenidoFirmaCertificadoContenidoBinarioInside;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.InsideUtilService;
-import es.mpt.dsic.inside.service.TemporalDataBusinessService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
+import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
+import es.mpt.dsic.inside.service.object.converter.impl.InsideServiceAdapterException;
+import es.mpt.dsic.inside.service.object.converter.impl.csvstorage.InsideServiceCsvStorageAdapter;
 import es.mpt.dsic.inside.service.object.metadatos.validator.Exception.InSideServiceValidationException;
 import es.mpt.dsic.inside.service.object.metadatos.validator.impl.MetadatoValidatorStringRegex;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectNoActiveException;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectNotFoundException;
+import es.mpt.dsic.inside.service.temporalData.TemporalDataBusinessService;
+import es.mpt.dsic.inside.service.util.FileUtils;
+import es.mpt.dsic.inside.service.util.InsideWSUtils;
+import es.mpt.dsic.inside.service.util.UtilidadDigestInsideImpl;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.service.visualizacion.ResultadoVisualizacionDocumento;
 import es.mpt.dsic.inside.util.XMLUtils;
 import es.mpt.dsic.inside.util.xml.JAXBMarshaller;
 import es.mpt.dsic.inside.web.object.MessageObject;
-import es.mpt.dsic.inside.web.util.InsideWSUtils;
-import es.mpt.dsic.inside.web.util.WebConstants;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
 import es.mpt.dsic.inside.ws.validation.InsideValidationDataService;
 import es.mpt.dsic.inside.ws.validation.exception.InsideValidationDataException;
 import es.mpt.dsic.inside.xml.eni.documento.TipoDocumento;
+import es.mpt.dsic.inside.xml.eni.documento.metadatos.EnumeracionEstadoElaboracion;
 import es.mpt.dsic.inside.xml.eni.expediente.TipoExpediente;
 import es.mpt.dsic.inside.xml.inside.MetadatoAdicional;
 import es.mpt.dsic.inside.xml.inside.TipoDocumentoInsideConMAdicionales;
@@ -91,6 +106,7 @@ import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
 import es.mpt.dsic.inside.xml.inside.ws.credential.WSCredentialInside;
 import es.mpt.dsic.inside.xml.inside.ws.documento.TipoDocumentoEniFileInside;
 import es.mpt.dsic.inside.xml.inside.ws.documento.conversion.TipoDocumentoConversionInside;
+import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoCarpetaIndizadaConversion;
 import es.mpt.dsic.inside.xml.inside.ws.expediente.conversion.TipoExpedienteConversionInside;
 import es.mpt.dsic.inside.xml.inside.ws.validacion.documento.TipoDocumentoValidacionInside;
 import es.mpt.dsic.inside.xml.inside.ws.validacion.documento.TipoOpcionValidacionDocumento;
@@ -102,8 +118,6 @@ import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.TipoOpcionesValida
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionExpedienteInside;
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoDocumentoVisualizacionInside;
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoResultadoVisualizacionDocumentoInside;
-import es.mpt.dsic.puntoUnicoJusticia.client.modelo.AuditoriaEsbType;
-import es.mpt.dsic.puntoUnicoJusticia.client.modelo.EnviarAJusticiaResponse;
 
 @Service("insideUtilService")
 public class InsideUtilServiceImpl implements InsideUtilService {
@@ -135,6 +149,21 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   @Qualifier("MetadatosIdentifierLongitudValidation")
   private MetadatoValidatorStringRegex metadatosIdentifierLongitudValidation;
 
+  @Autowired
+  FileUtils fileUtils;
+
+  @Autowired
+  protected InsideServiceCsvStorageAdapter csvStorageAdapter;
+
+  @Autowired
+  protected UtilidadDigestInsideImpl utilidadDigestInsideImpl;
+
+  @Autowired
+  protected InsideServiceCsvStorageAdapter insideServiceCsvStorageAdapter;
+
+  @Autowired
+  private InfoFirmaService infoFirmaService;
+
   private static final String NAMESPACE_DOCUMENTO_ELEC =
       "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e";
   private static final String NAMESPACE_WEBSERVICE =
@@ -143,6 +172,9 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   private static final String ID_INITIAL_PART = "ES_";
   private static final String ID_EXP_PART = "_EXP_";
   private static final String ID_COMMON_PART = "_";
+  private static final String PAdES_LTV = "urn:afirma:dss:1.0:profile:XSS:PAdES:1.1.2:forms:LTV";
+  private static final String XAdES_T = "urn:oasis:names:tc:dss:1.0:profiles:AdES:forms:ES-T";
+  private static final String XAdES_A = "urn:oasis:names:tc:dss:1.0:profiles:AdES:forms:ES-A";
 
   @Override
   public TipoDocumento convertirDocumentoAEni(TipoDocumentoConversionInside documentoConversion,
@@ -204,7 +236,11 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       byte[] documento = null;
       if (documentoConversion.getContenido() == null
           && StringUtils.isNotEmpty(documentoConversion.getContenidoId())) {
-        documento = IOUtils.toByteArray(new FileInputStream(documentoConversion.getContenidoId()));
+        File file = new File(documentoConversion.getContenidoId());
+        if (file.exists()) {
+          documento = IOUtils.toByteArray(new FileInputStream(file));
+        }
+
       } else {
         documento = documentoConversion.getContenido();
       }
@@ -281,10 +317,14 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     logger.debug("Validando documentoConversión en servicio GInside");
     ObjetoDocumentoInside documentoInside = null;
     try {
-      if (documentoConversion.getContenido() == null
-          && StringUtils.isNotEmpty(documentoConversion.getContenidoId())) {
-        documentoConversion.setContenido(
-            IOUtils.toByteArray(new FileInputStream(documentoConversion.getContenidoId())));
+
+      // si el fichero es grande no cogemos el contenido
+      if (!fileUtils.isBigFile(documentoConversion.getContenidoId())) {
+        if (documentoConversion.getContenido() == null
+            && StringUtils.isNotEmpty(documentoConversion.getContenidoId())) {
+          documentoConversion.setContenido(
+              IOUtils.toByteArray(new FileInputStream(documentoConversion.getContenidoId())));
+        }
       }
 
       documentoConversion =
@@ -406,8 +446,8 @@ public class InsideUtilServiceImpl implements InsideUtilService {
         service.firmarIndiceExpediente(expedienteInside, info, null);
       }
     } else {
-      // service.establecerFirmaExpedienteANodoFirmaBase64(expedienteInside, "FIRMA_0",
-      // FirmaInsideTipoFirmaEnum.TF_02,
+      // service.establecerFirmaExpedienteANodoFirmaBase64(expedienteInside,
+      // "FIRMA_0", FirmaInsideTipoFirmaEnum.TF_02,
       // Base64.decodeBase64(contenidoFirma.getBytes()),
       // expedienteConversion.getMetadatosEni().getIdentificador());
       service.establecerFirmaExpedienteANodoFirmaBase64(expedienteInside, "FIRMA_0",
@@ -467,10 +507,151 @@ public class InsideUtilServiceImpl implements InsideUtilService {
         }
       }
 
+      // if (!firmaCSV && validarDoc != null
+      // &&
+      // !validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion())
+      // throw new InsideServiceInternalException(
+      // validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////// esto por lo de laura de ficheros firmados previamente
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// si
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// esta
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// certificado
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// caducado
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// hay
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// que
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// sacar
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// aviso////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
       if (!firmaCSV && validarDoc != null && !validarDoc.getValidacionDetalle()
-          .get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion())
-        throw new InsideServiceInternalException(validarDoc.getValidacionDetalle()
-            .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+          .get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion()) {
+        // de momento pasan todos hasta que podamos discernir firma
+        // invalida por certificado caducado
+        if (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
+            .getDetalleValidacion().contains(" "))
+          throw new InsideServiceInternalException(validarDoc.getValidacionDetalle()
+              .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      if (validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()) {
+        tipoDoc = marshaller.unmarshallDataDocumentAditional(data);
+        if (tipoDoc.getDocumento() == null) {
+          tipoDoc = marshaller.unmarshallDataDocumentoArchive(data);
+        }
+        objDoc = InsideConverterDocumento.documentoEniAndMetadatosToDocumentoInside(
+            tipoDoc.getDocumento(), tipoDoc.getMetadatosAdicionales());
+      } else {
+        throw new InsideServiceInternalException(
+            validarDoc.getValidacionDetalle().get(0).getDetalleValidacion());
+      }
+    } catch (InsideServiceInternalException e) {
+      String mensaje = messageSource.getMessage(WebConstants.MSG_IMPORTAR_DOC_NO_VALIDO, null,
+          Locale.getDefault());
+      logger.warn(mensaje, e);
+      if (e.getMessage() != null) {
+        mensaje += e.getMessage().indexOf("--") > -1
+            ? e.getMessage().substring(0, e.getMessage().indexOf("--"))
+            : e.getMessage();
+      }
+      throw new InsideServiceInternalException(mensaje);
+    } catch (Exception e) {
+      logger.error(e);
+      throw new InsideServiceInternalException("Error en la validación del documento.");
+    }
+
+    logger.info("Fin validateDocumentImport");
+
+    return objDoc;
+  }
+
+  @Override
+  public ObjetoDocumentoInside validateDocumentImport(Map<String, Object> retorno,
+      String firmadoPreviamente, byte[] data) throws InSideServiceException {
+    TipoOpcionesValidacionDocumentoInside opcionesDoc = new TipoOpcionesValidacionDocumentoInside();
+    TipoDocumentoValidacionInside documentoValidacion = new TipoDocumentoValidacionInside();
+    TipoDocumentoInsideConMAdicionales tipoDoc;
+    TipoResultadoValidacionDocumentoInside validarDoc = null;
+    ObjetoDocumentoInside objDoc = null;
+
+    logger.info("Inicio validateDocumentImport");
+
+    opcionesDoc.getOpcionValidacionDocumento().add(TipoOpcionValidacionDocumento.TOVD_01);
+    documentoValidacion.setOpcionesValidacionDocumento(opcionesDoc);
+    documentoValidacion.setContenido(data);
+
+    try {
+      validarDoc = validarDocumentoEniFile(documentoValidacion);
+
+      // HAY QUE VALIDAR LA FIRMA DEL DOCUMENTO ANTES DE IMPORTARLO.
+      // obtener el indice donde viene la validacion de la firma
+      int indiceDondeVieneLaValidacionFirma = 0;
+      boolean firmaCSV = false;
+      while (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
+          .getTipoValidacion().equals(TipoOpcionValidacionDocumento.fromValue("TOVD03"))) {
+        indiceDondeVieneLaValidacionFirma++;
+
+        if (indiceDondeVieneLaValidacionFirma == validarDoc.getValidacionDetalle().size()) {
+          firmaCSV = true;
+          break;
+        }
+      }
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////// esto por lo de laura de ficheros firmados previamente
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// si
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// esta
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// certificado
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// caducado
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// hay
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// que
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// sacar
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// aviso////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      if (!firmaCSV && validarDoc != null && !validarDoc.getValidacionDetalle()
+          .get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion()) {
+        // de momento pasan todos hasta que podamos discernir firma
+        // invalida por certificado caducado
+        if ("1".equals(firmadoPreviamente) && !validarDoc.getValidacionDetalle()
+            .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion().contains(" "))
+          throw new InsideServiceInternalException(validarDoc.getValidacionDetalle()
+              .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+        else {
+          retorno.put("mensajeUsuarioPreviamenteFirmado",
+              new MessageObject(WebConstants.MESSAGE_LEVEL_WARNING,
+                  "AVISO: El documento contiene una firma que no es correcta."));
+        }
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       if (validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()) {
         tipoDoc = marshaller.unmarshallDataDocumentAditional(data);
@@ -640,8 +821,10 @@ public class InsideUtilServiceImpl implements InsideUtilService {
             expediente.getMetadatosAdicionales());
 
       } else {
+        String mensaje = messageSource.getMessage(WebConstants.MSG_IMPORTAR_EXP_CARPETA_NO_VACIA,
+            null, Locale.getDefault());
         throw new InsideServiceInternalException(
-            validarExp.getValidacionDetalle().get(0).getDetalleValidacion());
+            validarExp.getValidacionDetalle().get(0).getDetalleValidacion() + ". " + mensaje);
       }
 
     } catch (Exception e) {
@@ -654,6 +837,33 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     logger.info("Fin validateExpedientImport");
 
     return objExp;
+  }
+
+  @Override
+  public TipoResultadoValidacionExpedienteInside validateExpedientOperacionWebService(
+      byte[] expedienteEniBytes) throws InSideServiceException {
+    TipoExpedienteValidacionInside expedienteValidacion = new TipoExpedienteValidacionInside();
+    TipoOpcionesValidacionExpedienteInside opciones = new TipoOpcionesValidacionExpedienteInside();
+
+    logger.info("Inicio validateExpedientOperacionWebService");
+
+    opciones.getOpcionValidacionExpediente().add(TipoOpcionValidacionExpediente.TOVE_01);
+    expedienteValidacion.setOpcionesValidacionExpediente(opciones);
+    expedienteValidacion.setContenido(expedienteEniBytes);
+
+    try {
+
+      TipoResultadoValidacionExpedienteInside validarExp =
+          validarExpedienteEniFile(expedienteValidacion, false, false);
+
+      return validarExp;
+
+    } catch (Exception e) {
+      String mensaje = "Error en validateExpedientOperacionWebService";
+      logger.warn(mensaje, e);
+      throw new InsideServiceInternalException(mensaje + e.getMessage());
+    }
+
   }
 
   @Override
@@ -848,8 +1058,8 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 
     Map<String, Object> result = new HashMap<String, Object>();
     comprobarIdExpediente(objExp);
-    if (!comprobarContenidoDocInsideIgualContenidoDocIndiceExp(documentos, result, idUsuario,
-        online)) {
+    if (!comprobarContenidoDocInsideIgualContenidoDocIndiceExp(objExp, documentos, result,
+        idUsuario, online)) {
       crearNuevosDocumentosEnExpediente(documentos, idUsuario, online);
       result.put("expediente", service.altaExpediente(objExp, false, idUsuario, online));
     }
@@ -865,8 +1075,8 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     logger.debug("Inicio operación updateExpedientAndDocuments en servicio GInside");
 
     Map<String, Object> result = new HashMap<String, Object>();
-    if (!comprobarContenidoDocInsideIgualContenidoDocIndiceExp(documentos, result, idUsuario,
-        online)) {
+    if (!comprobarContenidoDocInsideIgualContenidoDocIndiceExp(objExp, documentos, result,
+        idUsuario, online)) {
       crearNuevosDocumentosEnExpediente(documentos, idUsuario, online);
       result.put("expediente", service.modificaExpedienteInside(objExp, false, idUsuario, online));
     }
@@ -883,14 +1093,21 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   }
 
   private boolean comprobarContenidoDocInsideIgualContenidoDocIndiceExp(
-      List<ObjetoDocumentoInside> documentos, Map<String, Object> result, String idUsuario,
-      boolean online) throws InSideServiceException {
+      ObjetoExpedienteInside objExp, List<ObjetoDocumentoInside> documentos,
+      Map<String, Object> result, String idUsuario, boolean online) throws InSideServiceException {
     List<String> docsErrorContenidoDifInside = new ArrayList<String>();
     boolean errorContenidoDistinto = false;
     try {
+
+      // Obtengo mapa idDocumento - algoritmo huella para la comprobacion
+      Map<String, String> idDocIndiceExpAndAlgoritmoHuella =
+          service.obtenerDocsExpAndAlgoritmoHuella(
+              objExp.getIndice().getIndiceContenido().getElementosIndizados(), "/");
+
       Iterator<ObjetoDocumentoInside> iter = documentos.listIterator();
       while (iter.hasNext()) {
-        comprobarHashDocAlmacenadosInside(docsErrorContenidoDifInside, iter, idUsuario, online);
+        comprobarHashDocAlmacenadosInside(docsErrorContenidoDifInside, iter, idUsuario, online,
+            idDocIndiceExpAndAlgoritmoHuella);
       }
     } catch (InsideConverterException e) {
       throw new InsideServiceInternalException(
@@ -905,16 +1122,25 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   }
 
   public void comprobarHashDocAlmacenadosInside(List<String> docsErrorContenidoDifInside,
-      Iterator<ObjetoDocumentoInside> iter, String idUsuario, boolean online)
-      throws InsideConverterException {
+      Iterator<ObjetoDocumentoInside> iter, String idUsuario, boolean online,
+      Map<String, String> idDocIndiceExpAndAlgoritmoHuella) throws InsideConverterException {
     try {
+
+      // Map<String, String> idDocIndiceExpAndAlgoritmoHuella
+      // Se debe usar para conocer el algoritmo huella usado para el
+      // documento
+
       ObjetoDocumentoInside documentoIndiceExp = iter.next();
       ObjetoDocumentoInside documentoInside =
           service.getDocumento(documentoIndiceExp.getIdentificador());
+      // este valorHuellaDocEnInside es el antiguo que se hacia de todo el
+      // eni.xml y siempre se ha hecho en md5 asi que se mantiene este
       String valorHuellaDocEnInside = DigestUtils.md5DigestAsHex(generateDocXml(
           InsideConverterDocumento.documentoInsideToConMAdicionales(documentoInside, null)));
-      String valorHuellaDocContenidoEnInside = getValorHuellaContenido(documentoInside);
-      String valorHuellaDocEnExpediente = getValorHuellaContenido(documentoIndiceExp);
+      String valorHuellaDocContenidoEnInside = utilidadDigestInsideImpl
+          .getValorHuellaContenidoAlgoritmo(documentoInside, idDocIndiceExpAndAlgoritmoHuella);
+      String valorHuellaDocEnExpediente = utilidadDigestInsideImpl
+          .getValorHuellaContenidoAlgoritmo(documentoIndiceExp, idDocIndiceExpAndAlgoritmoHuella);
       if (valorHuellaDocEnInside.equals(valorHuellaDocEnExpediente)
           || valorHuellaDocContenidoEnInside.equals(valorHuellaDocEnExpediente)) {
         service.actualizarAsociacionDocumentoUnidad(documentoInside, idUsuario, online);
@@ -925,32 +1151,6 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     } catch (InSideServiceException e) {
       logger.debug("Documento candidato a ser dado de alta en Inside", e);
     }
-  }
-
-  // public String getValorHuellaContenido(ObjetoDocumentoInside documentoInside) {
-  // byte[] documentoIndiceExpContenido = (documentoInside.getContenido().getValorBinario() != null)
-  // ? documentoInside.getContenido().getValorBinario() :
-  // documentoInside.getContenido().getReferencia().getBytes();
-  // return DigestUtils.md5DigestAsHex(documentoIndiceExpContenido);
-  // }
-
-  public String getValorHuellaContenido(ObjetoDocumentoInside documentoInside) {
-    byte[] documentoIndiceExpContenido = null;
-
-    // Si tiene valorbinario
-    if (documentoInside.getContenido().getValorBinario() != null) {
-      documentoIndiceExpContenido = documentoInside.getContenido().getValorBinario();
-    } else {// si devuelve la referencia. Hay que ir a la referencia a buscar el contenido para
-            // hacer el hash, no hacer el hash de la cadena de la referencia
-
-      ContenidoFirmaCertificadoContenidoBinarioInside firmaBase64 =
-          (ContenidoFirmaCertificadoContenidoBinarioInside) documentoInside.getFirmas().get(0)
-              .getContenidoFirma();
-      documentoIndiceExpContenido = Base64.encodeBase64(firmaBase64.getValorBinario());
-    }
-
-
-    return DigestUtils.md5DigestAsHex(documentoIndiceExpContenido);
   }
 
   private void comprobarIdExpediente(ObjetoExpedienteInside objExp) throws InSideServiceException {
@@ -1098,11 +1298,62 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     try {
       String fileName = addXmlExtension ? id + WebConstants.FORMAT_XML : id;
       result = temporalDataBusinessService.getFile(idSession, fileName);
-    } catch (FileNotFoundException e) {
+    } catch (InSideServiceTemporalDataException e) {
       ObjetoDocumentoInside objetoDocumentoInside = service.getDocumento(id);
       TipoDocumentoInsideConMAdicionales tDocMetadatosAdicionales =
           InsideConverterDocumento.documentoInsideToConMAdicionales(objetoDocumentoInside, null);
       String docMarshall;
+      // comprobar si el fichero es superior a XXX MB
+      if (tDocMetadatosAdicionales.getDocumento().getContenido().getValorBinario() != null
+          && fileUtils.isBigFile(
+              tDocMetadatosAdicionales.getDocumento().getContenido().getValorBinario())) {
+        result = fileUtils.getXmlBytesFromTipoDocumento(tDocMetadatosAdicionales.getDocumento());
+      } else {
+        if (tDocMetadatosAdicionales.getMetadatosAdicionales() != null
+            && CollectionUtils.isNotEmpty(
+                tDocMetadatosAdicionales.getMetadatosAdicionales().getMetadatoAdicional())) {
+          docMarshall = marshaller.marshallDataDocument(tDocMetadatosAdicionales,
+              "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService", DOCUMENTO, "enidoc");
+        } else {
+          docMarshall = marshaller.marshallDataDocument(tDocMetadatosAdicionales.getDocumento(),
+              NAMESPACE_DOCUMENTO_ELEC, DOCUMENTO, "enidoc");
+        }
+        result = docMarshall.getBytes();
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Recupera un documento según los parámetros. Si no se encuentra en la carpeta temporal se busca
+   * en base de datos. Tiene en cuenta si el documento incluye metadatos adicionales.
+   * 
+   * @param idSession
+   * @param id
+   * @return
+   * @throws Exception
+   */
+  @Override
+  public ObjetoDocumentoInsideContenido lazyLoadContentFile(String idSession, String id)
+      throws Exception {
+    ObjetoDocumentoInsideContenido result = null;
+    TipoDocumento tipoDocumento = null;
+    try {
+      String fileName = id + WebConstants.FORMAT_XML;
+      byte[] xmlFile = temporalDataBusinessService.getFile(idSession, fileName);
+
+      tipoDocumento = marshaller.unmarshallDataDocument(xmlFile);
+
+      result = service.getDocumentoContenido(tipoDocumento.getMetadatos().getIdentificador(), null,
+          idSession);
+    } catch (Exception e) {
+      ObjetoDocumentoInside objetoDocumentoInside = service.getDocumento(id);
+
+      TipoDocumentoInsideConMAdicionales tDocMetadatosAdicionales =
+          InsideConverterDocumento.documentoInsideToConMAdicionales(objetoDocumentoInside, null);
+      String docMarshall;
+
       if (tDocMetadatosAdicionales.getMetadatosAdicionales() != null && CollectionUtils
           .isNotEmpty(tDocMetadatosAdicionales.getMetadatosAdicionales().getMetadatoAdicional())) {
         docMarshall = marshaller.marshallDataDocument(tDocMetadatosAdicionales,
@@ -1112,14 +1363,18 @@ public class InsideUtilServiceImpl implements InsideUtilService {
             NAMESPACE_DOCUMENTO_ELEC, DOCUMENTO, "enidoc");
       }
 
-      result = docMarshall.getBytes();
+      TipoDocumento docEni = marshaller.unmarshallDataDocument(docMarshall.getBytes());
+
+      result =
+          service.getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null, idSession);
     }
 
     return result;
   }
 
   @Override
-  public Map<String, byte[]> unzip(String carpeta, String fichero) throws IOException {
+  public Map<String, byte[]> unzip(String carpeta, String fichero)
+      throws IOException, InSideServiceTemporalDataException {
 
     Map<String, byte[]> respuesta = new HashMap<String, byte[]>();
 
@@ -1211,127 +1466,6 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 
   }
 
-  /**
-   * Devuelve el código de envío general. Si el envío es correcto contiene el propio códico de
-   * envío. Si el envío es incorrecto contiene el código de error@descripción del error.
-   */
-  @Override
-  public String guardarResultadoEnvioJusticia(EnviarAJusticiaResponse enviarAJusticiaResponse,
-      String identificadorExpediente, String versionExpediente, MessageObject mensaje,
-      String codigoUnidadOrganoRemitente) throws InSideServiceException {
-    // ESTE CAMBIO NECESITA VERSION NUEVA DE PUNTOUNICOJUSTICIA Y SUBIRLA A
-    // HOMOVIVUS
-    // abrir proyecto puntounicojusticia y hacer package
-    // codigoEnvioGeneral si ha habido error viene con un codigo inicial ,
-    // una arroba y el mensaje de error
-    // si no hay error viene un codigo de envio valido solamente
-    String codigoEnvioGeneral =
-        enviarAJusticiaResponse.getResultadoEnvioToJusticia().getCodigoEnvio();
-    String codigoEnvio;
-    String msg;
-    if (!enviarAJusticiaResponse.getResultadoEnvioToJusticia().isACK()) {
-      logger.error(
-          "JusticiaController.remitirExpediente --> Error al remitir expediente a justicia ACK falso. "
-              + codigoEnvioGeneral);
-      String[] partesDelMensajeError = codigoEnvioGeneral.split("@");
-      codigoEnvio = partesDelMensajeError[0];
-      if (partesDelMensajeError.length > 1)
-        msg = "ERROR: " + partesDelMensajeError[1];
-      else
-        msg = "ERROR en el envío a justicia. JusticiaController.remitirExpediente";
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
-          "Error en envío. Código interno inside de envío erroneo:  Contacte con el administrador.");
-    } else {
-      msg = "Envío realizado correctamente. Código de envío: " + codigoEnvioGeneral;
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_SUCCESS, msg);
-      codigoEnvio = codigoEnvioGeneral;
-    }
-
-    // Guardar la respuesta del envio asociada al expediente. Se recupera el
-    // objeto expediente y se le actualiza los ResultadosEnvioJusticia
-    AuditoriaEsbType auditoriaESB =
-        enviarAJusticiaResponse.getResultadoEnvioToJusticia().getAuditoriaEsb();
-    if (auditoriaESB == null) {
-      auditoriaESB = new AuditoriaEsbType();
-      auditoriaESB.setAplicacion("ERROR");
-      auditoriaESB.setModulo("ERROR");
-      auditoriaESB.setServicio("ERROR");
-      SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      auditoriaESB.setMarcaTiempo(dt.format(new Date()));
-    }
-    ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia =
-        new ObjectInsideRespuestaEnvioJusticia(auditoriaESB.getAplicacion(),
-            auditoriaESB.getModulo(), auditoriaESB.getServicio(), auditoriaESB.getMarcaTiempo(),
-            String.valueOf(enviarAJusticiaResponse.getResultadoEnvioToJusticia().isACK()),
-            codigoEnvio, msg);
-
-    objectInsideRespuestaEnvioJusticia.setCodigoUnidadOrganoRemitente(codigoUnidadOrganoRemitente);
-
-    service.guardarRespuestaRemisionJusticiaExpediente(objectInsideRespuestaEnvioJusticia,
-        identificadorExpediente, versionExpediente);
-
-    return codigoEnvioGeneral;
-  }
-
-  @Override
-  public String guardarResultadoEnvioJusticiaExpedienteNoInside(
-      EnviarAJusticiaResponse enviarAJusticiaResponse, String identificadorExpediente,
-      String versionExpediente, MessageObject mensaje, String codigoUnidadOrganoRemitente)
-      throws InSideServiceException {
-    // ESTE CAMBIO NECESITA VERSION NUEVA DE PUNTOUNICOJUSTICIA Y SUBIRLA A
-    // HOMOVIVUS
-    // abrir proyecto puntounicojusticia y hacer package
-    // codigoEnvioGeneral si ha habido error viene con un codigo inicial ,
-    // una arroba y el mensaje de error
-    // si no hay error viene un codigo de envio valido solamente
-    String codigoEnvioGeneral =
-        enviarAJusticiaResponse.getResultadoEnvioToJusticia().getCodigoEnvio();
-    String codigoEnvio;
-    String msg;
-    if (!enviarAJusticiaResponse.getResultadoEnvioToJusticia().isACK()) {
-      logger.error(
-          "JusticiaController.remitirExpediente --> Error al remitir expediente a justicia ACK falso. "
-              + codigoEnvioGeneral);
-      String[] partesDelMensajeError = codigoEnvioGeneral.split("@");
-      codigoEnvio = partesDelMensajeError[0];
-      if (partesDelMensajeError.length > 1)
-        msg = "ERROR: " + partesDelMensajeError[1];
-      else
-        msg = "ERROR en el envío a justicia. JusticiaController.remitirExpediente";
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR,
-          "Error en envío. Código interno inside de envío erroneo:  Contacte con el administrador.");
-    } else {
-      msg = "Envío realizado correctamente. Código de envío: " + codigoEnvioGeneral;
-      mensaje = new MessageObject(WebConstants.MESSAGE_LEVEL_SUCCESS, msg);
-      codigoEnvio = codigoEnvioGeneral;
-    }
-
-    // Guardar la respuesta del envio asociada al expediente. Se recupera el
-    // objeto expediente y se le actualiza los ResultadosEnvioJusticia
-    AuditoriaEsbType auditoriaESB =
-        enviarAJusticiaResponse.getResultadoEnvioToJusticia().getAuditoriaEsb();
-    if (auditoriaESB == null) {
-      auditoriaESB = new AuditoriaEsbType();
-      auditoriaESB.setAplicacion("ERROR");
-      auditoriaESB.setModulo("ERROR");
-      auditoriaESB.setServicio("ERROR");
-      SimpleDateFormat dt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-      auditoriaESB.setMarcaTiempo(dt.format(new Date()));
-    }
-    ObjectInsideRespuestaEnvioJusticia objectInsideRespuestaEnvioJusticia =
-        new ObjectInsideRespuestaEnvioJusticia(auditoriaESB.getAplicacion(),
-            auditoriaESB.getModulo(), auditoriaESB.getServicio(), auditoriaESB.getMarcaTiempo(),
-            String.valueOf(enviarAJusticiaResponse.getResultadoEnvioToJusticia().isACK()),
-            codigoEnvio, msg);
-
-    objectInsideRespuestaEnvioJusticia.setCodigoUnidadOrganoRemitente(codigoUnidadOrganoRemitente);
-
-    service.guardarRespuestaRemisionJusticiaExpedienteNoInside(objectInsideRespuestaEnvioJusticia,
-        identificadorExpediente, versionExpediente);
-
-    return codigoEnvioGeneral;
-  }
-
   @Override
   public byte[] generateDocXml(TipoDocumentoInsideConMAdicionales docInside)
       throws InSideServiceException {
@@ -1401,8 +1535,15 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       ResultadoValidacion resultado = new ResultadoValidacion();
       resultado.setValido(true);
       comprobarDocumentosExistenEnInside(resultado, listaDocumentos, expediente);
+
+      // Obtengo mapa idDocumento - algoritmo huella para la comprobacion
+      Map<String, String> idDocIndiceExpAndAlgoritmoHuella =
+          service.obtenerDocsExpAndAlgoritmoHuella(
+              expediente.getIndice().getIndiceContenido().getElementosIndizados(), "/");
+
       if (resultado.isValido()) {
-        comprobarCoincidenHashDocumento(resultado, listaDocumentos, expediente);
+        comprobarCoincidenHashDocumento(resultado, listaDocumentos, expediente,
+            idDocIndiceExpAndAlgoritmoHuella);
       }
       return resultado;
     } catch (InsideConverterException e) {
@@ -1413,7 +1554,8 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   }
 
   private void comprobarCoincidenHashDocumento(ResultadoValidacion resultado,
-      List<ObjetoDocumentoInside> listaDocumentos, ObjetoExpedienteInside expediente)
+      List<ObjetoDocumentoInside> listaDocumentos, ObjetoExpedienteInside expediente,
+      Map<String, String> idDocIndiceExpAndAlgoritmoHuella)
       throws InSideServiceException, InsideConverterException {
     for (ObjetoDocumentoInside documento : listaDocumentos) {
       ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado contenidoDoc =
@@ -1424,7 +1566,8 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       String valorHuellaExpediente = contenidoDoc.getValorHuella();
       String valorHuellaInside = DigestUtils.md5DigestAsHex(generateDocXml(
           InsideConverterDocumento.documentoInsideToConMAdicionales(documento, null)));
-      String valorHuellaDocContenidoEnInside = getValorHuellaContenido(documento);
+      String valorHuellaDocContenidoEnInside = utilidadDigestInsideImpl
+          .getValorHuellaContenidoAlgoritmo(documento, idDocIndiceExpAndAlgoritmoHuella);
       if (!valorHuellaInside.equals(valorHuellaExpediente)
           && !valorHuellaDocContenidoEnInside.equals(valorHuellaExpediente)) {
         resultado.setValido(false);
@@ -1493,5 +1636,262 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       logger.debug("No se ha podido cargar el Id por defecto", e);
     }
     return idDefault;
+  }
+
+  @Override
+  public void contieneCarpetasVacias(Object expediente) throws InsideValidationDataException {
+
+    if (expediente instanceof TipoExpedienteInsideConMAdicionales) {
+      compruebaCarpetasVaciasIndice(
+          ((TipoExpedienteInsideConMAdicionales) expediente).getExpediente().getIndice()
+              .getIndiceContenido().getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada());
+    } else if (expediente instanceof TipoExpedienteConversionInside) {
+      compruebaCarpetasVaciasIndice(((TipoExpedienteConversionInside) expediente).getIndice()
+          .getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada());
+    }
+  }
+
+  private void compruebaCarpetasVaciasIndice(List<Object> lista)
+      throws InsideValidationDataException {
+    for (Object object : lista) {
+      if (object instanceof TipoCarpetaIndizadaConversion
+          && (((TipoCarpetaIndizadaConversion) object)
+              .getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada() == null
+              || ((TipoCarpetaIndizadaConversion) object)
+                  .getDocumentoIndizadoOrExpedienteIndizadoOrCarpetaIndizada().isEmpty())) {
+        throw new InsideValidationDataException("No se permiten carpetas sin contenido");
+      }
+    }
+  }
+
+  @Override
+  public ObjetoDocumentoInside convertXmlDocumentToDocumentObject(
+      TipoDocumentoInsideConMAdicionales docConvertido) throws InSideServiceException {
+    try {
+      byte[] contenido = docConvertido.getDocumento().getContenido().getValorBinario();
+      docConvertido.getDocumento().getContenido().setValorBinario(null);
+
+      byte[] data = generateDocXml(docConvertido);
+      TipoDocumentoInsideConMAdicionales tipoDoc = marshaller.unmarshallDataDocumentAditional(data);
+      if (tipoDoc.getDocumento() == null) {
+        tipoDoc = marshaller.unmarshallDataDocumentoArchive(data);
+      }
+      tipoDoc.getDocumento().getContenido().setValorBinario(contenido);
+      return InsideConverterDocumento.documentoEniAndMetadatosToDocumentoInside(
+          tipoDoc.getDocumento(), tipoDoc.getMetadatosAdicionales());
+    } catch (InSideServiceException | JAXBException | ParserConfigurationException | SAXException
+        | IOException | TransformerFactoryConfigurationError | TransformerException
+        | InsideConverterException e) {
+      logger.error(e.getMessage());
+      throw new InsideServiceInternalException(
+          messageSource.getMessage(WebConstants.MSG_GENERAR_DOC_ERROR_XML, null, null));
+    }
+  }
+
+  @Override
+  public boolean aceptarFicheroTamanioYFirma(String pathContenido, String firmaID,
+      EnumeracionEstadoElaboracion enumeracionEstadoElaboracion) throws InSideServiceException {
+
+    boolean tratarComoFicheroNormal = true;
+
+    if (fileUtils.isBigFile(pathContenido)) {
+      tratarComoFicheroNormal = false;
+
+      if (!enumeracionEstadoElaboracion.value().equalsIgnoreCase(
+          ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion.EE_99.value())) {
+        throw new InsideServiceInternalException(messageSource.getMessage(
+            "validarFichero.error.docNoValido.tamanio.firmas", null, Locale.getDefault()));
+      } else {
+        if (firmaID != null) {
+          throw new InsideServiceInternalException(messageSource.getMessage(
+              "validarFichero.error.docNoValido.tamanio.firmas", null, Locale.getDefault()));
+        }
+      }
+
+    }
+
+    return tratarComoFicheroNormal;
+  }
+
+  @Override
+  public ObjetoDocumentoInsideContenido getExternalContent(String idDocumentoInside,
+      String idSession) throws InSideServiceException {
+    ObjetoDocumentoInside objetoDocumentoInside = service.getDocumento(idDocumentoInside);
+
+    String[] referencia = objetoDocumentoInside.getContenido().getReferencia().split("/");
+
+    String sistema = referencia[referencia.length - 2];
+    String uuid = referencia[referencia.length - 1];
+    return getExternalContent(sistema, uuid, idSession);
+  }
+
+  @Override
+  public ObjetoDocumentoInsideContenido getExternalContent(String sistema, String uuid,
+      String idSession) {
+    ObjetoDocumentoInsideContenido retorno = null;
+    try {
+      if ("csvstorage".equals(sistema)) {
+        retorno = csvStorageAdapter.getcontenidoByUuid(uuid, idSession);
+      }
+    } catch (InsideServiceAdapterException | CSVStorageException e) {
+      logger.error("No se ha podido descargar el contenido externo:" + e);
+    }
+    return retorno;
+  }
+
+  @Override
+  public byte[] generateZipFicherosFisicos(Map<String, byte[]> ficheros, JAXBMarshaller marshaller,
+      InSideService insideService, String sessionId) throws Exception {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(outputStream);
+    Iterator it = ficheros.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry e = (Map.Entry) it.next();
+      ZipEntry zipEntry;
+      byte[] data = (byte[]) e.getValue();
+      TipoDocumento docEni = marshaller.unmarshallDataDocument(data);
+
+      ObjetoDocumentoInsideContenido contenido = insideService
+          .getDocumentoContenido(docEni.getMetadatos().getIdentificador(), null, sessionId);
+
+      // if (contenido.getValorBinario() == null ||
+      // contenido.getValorBinario().length <= 0) {
+      // String[] referenciaSplit = contenido.getReferencia().split("/");
+      // String referencia = referenciaSplit[referenciaSplit.length - 1];
+      // contenido =
+      // insideServiceCsvStorageAdapter.getcontenidoByUuid(referencia,
+      // sessionId);
+      //
+      // File filedownload = new File(contenido.getReferencia());
+      // FileInputStream fin = new FileInputStream(filedownload);
+      // byte ficheroBytes[] = new byte[(int)filedownload.length()];
+      // fin.read(ficheroBytes);
+      // contenido.setValorBinario(ficheroBytes);
+      //
+      // }
+
+      String extension = "." + contenido.getNombreFormato();
+      String llave = e.getKey().toString().substring(e.getKey().toString().indexOf('/') + 1);
+      if (org.apache.commons.lang.StringUtils.isNotBlank(extension)) {
+        zipEntry = new ZipEntry(llave + extension);
+      } else {
+        zipEntry = new ZipEntry(llave);
+      }
+      zos.putNextEntry(zipEntry);
+      zos.write(contenido.getValorBinario());
+      zos.closeEntry();
+    }
+    zos.close();
+    return outputStream.toByteArray();
+  }
+
+  @Override
+  public byte[] generateZipFicherosFisicosNoInside(Map<String, byte[]> ficheros,
+      JAXBMarshaller marshaller, InSideService insideService) throws Exception {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(outputStream);
+    Iterator it = ficheros.entrySet().iterator();
+    while (it.hasNext()) {
+      Map.Entry e = (Map.Entry) it.next();
+      ZipEntry zipEntry;
+      byte[] data = (byte[]) e.getValue();
+      ObjetoDocumentoInside documento = InsideConverterDocumento
+          .documentoEniAndMetadatosToDocumentoInside(marshaller.unmarshallDataDocument(data), null);
+
+      ObjetoDocumentoInsideContenido contenido = InsideConverterDocumento
+          .documentoInsideToObjetoDocumentoInsideContenido(documento, infofirmaService, null);
+      byte[] dataBytes = contenido.getValorBinario();
+      String llave = e.getKey().toString().substring(e.getKey().toString().indexOf('/') + 1);
+      if (org.apache.commons.lang.StringUtils.isNotBlank(contenido.getNombreFormato().trim())) {
+        zipEntry = new ZipEntry(llave + "." + contenido.getNombreFormato().trim());
+      } else {
+        zipEntry = new ZipEntry(llave);
+      }
+      zos.putNextEntry(zipEntry);
+      zos.write(dataBytes);
+      zos.closeEntry();
+    }
+    zos.close();
+    return outputStream.toByteArray();
+  }
+
+  public byte[] transformarExpedienteDescargaCompletoParaValidarFirma(TipoExpediente tExpAdi,
+      String contenido) throws InsideServiceInternalException {
+    // Con nodo firma en base64 a ds signature
+    byte[] expedienteAntesTransformacion = contenido.getBytes();
+    byte[] expedienteDespuesTransformacion = null;
+    try {
+      // Para validar solo el ns7:expediente sin metadatosadicionales
+      byte[] dataConFirmaSinIdentar = generateExpXmlParaValidar(tExpAdi);
+
+      // sustituye el nodo <ns7:expediente por el dataConFirmaSinIdentar
+      String data = es.mpt.dsic.inside.service.util.XMLUtils.construirExpedienteENIValido(
+          new String(expedienteAntesTransformacion), new String(dataConFirmaSinIdentar));
+
+      // terminar la transformacion de cambio firmabase64 a dsSignature
+      expedienteDespuesTransformacion = es.mpt.dsic.inside.service.util.XMLUtils
+          .deFirmaBase64_A_DSSignature(data.getBytes("UTF-8"));
+    } catch (Exception e) {
+      logger.error("Error en transformarExpedienteDescargaCompletoParaValidarFirma", e);
+      throw new InsideServiceInternalException("Error al transformar la firma del expediente", e);
+    }
+    return expedienteDespuesTransformacion;
+  }
+
+  public void trataAmpliacionFirmaDocumento(TipoDocumentoInsideConMAdicionales docConvertido)
+      throws InfoFirmaServiceException, IOException {
+    TreeMap<String, byte[]> mapaConFirmaParaAmpliar = extraerFirmaParaAmpliar(docConvertido);
+    ConfiguracionAmpliarFirma configuracionAmpliarFirma = new ConfiguracionAmpliarFirma();
+    configuracionAmpliarFirma.setFormatoAmpliacion(mapaConFirmaParaAmpliar.firstEntry().getKey());
+    configuracionAmpliarFirma.setIgnorarPeriodoDeGracia(true);
+    ByteArrayDataSource dataSourceFirma =
+        new ByteArrayDataSource(mapaConFirmaParaAmpliar.firstEntry().getValue());
+    DataHandler dataHanlerFirma = new DataHandler(dataSourceFirma);
+    introducirFirmaAmpliada(
+        infoFirmaService.ampliarFirma(dataHanlerFirma, configuracionAmpliarFirma), docConvertido);
+  }
+
+  public byte[] tratarFirmaLongevaExpediente(byte[] firmaIndice)
+      throws InfoFirmaServiceException, IOException {
+    ConfiguracionAmpliarFirma configuracionAmpliarFirma = new ConfiguracionAmpliarFirma();
+    configuracionAmpliarFirma.setFormatoAmpliacion(XAdES_A);
+    configuracionAmpliarFirma.setIgnorarPeriodoDeGracia(true);
+    ByteArrayDataSource dataSourceFirma = new ByteArrayDataSource(firmaIndice);
+    DataHandler dataHanlerFirma = new DataHandler(dataSourceFirma);
+    DataHandler firmaAmpliada =
+        infoFirmaService.ampliarFirma(dataHanlerFirma, configuracionAmpliarFirma);
+    InputStream in = firmaAmpliada.getInputStream();
+    byte[] byteArray = org.apache.commons.io.IOUtils.toByteArray(in);
+    return byteArray;
+  }
+
+  private void introducirFirmaAmpliada(DataHandler ampliarFirma,
+      TipoDocumentoInsideConMAdicionales docConvertido) throws IOException {
+    InputStream in = ampliarFirma.getInputStream();
+    byte[] byteArray = org.apache.commons.io.IOUtils.toByteArray(in);
+    if (docConvertido.getDocumento().getContenido().getValorBinario() != null) {
+      docConvertido.getDocumento().getContenido().setValorBinario(byteArray);
+    } else if (docConvertido.getDocumento().getContenido().getDatosXML() != null) {
+      docConvertido.getDocumento().getContenido().setDatosXML(new String(byteArray));
+    } else {
+      docConvertido.getDocumento().getFirmas().getFirma().get(0).getContenidoFirma()
+          .getFirmaConCertificado().setFirmaBase64(byteArray);
+    }
+
+  }
+
+  private TreeMap<String, byte[]> extraerFirmaParaAmpliar(
+      TipoDocumentoInsideConMAdicionales docConvertido) {
+    TreeMap<String, byte[]> respuesta = new TreeMap<String, byte[]>();
+    if (docConvertido.getDocumento().getContenido().getValorBinario() != null) {
+      respuesta.put(PAdES_LTV, docConvertido.getDocumento().getContenido().getValorBinario());
+    } else if (docConvertido.getDocumento().getContenido().getDatosXML() != null) {
+      respuesta.put(XAdES_A,
+          (docConvertido.getDocumento().getContenido().getDatosXML() + "").getBytes());
+    } else {
+      respuesta.put(XAdES_A, docConvertido.getDocumento().getFirmas().getFirma().get(0)
+          .getContenidoFirma().getFirmaConCertificado().getFirmaBase64());
+    }
+    return respuesta;
   }
 }

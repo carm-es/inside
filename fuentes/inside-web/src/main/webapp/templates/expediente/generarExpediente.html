@@ -133,12 +133,22 @@ layout:decorator="common/inside_layout">
         </form>         
         
         <form id="expedienteForm" th:action="@{/generarExpediente}" method="post" class="" th:object="${expedienteMetadatos}">
+        	<input type="hidden" id="metadatoNombreNatural" th:value="${metadatoNombreNatural}"/>
+        	<input type="hidden" id="metadatoFechaFin" th:value="${metadatoFechaFin}"/>        	
             <input type="hidden" name="contenidoExp" id="contenidoExp"/>
             <input type="hidden" id="viewName" name="viewName" value="expediente/generarExpediente" />
             <input type="hidden" name="expedienteBytes" id="expedienteBytes"/>
+            <input type="hidden" name="firmarLongevaExpediente" id="firmarLongevaExpediente"/>
 			<input type="hidden" id="fecCapHidden" th:value="${fechaCaptura}"/>
 			<input type="hidden" id="metadatoAdicionalFechaFinDefecto" th:value="#{generarExpediente.metadato.adicional.valor.fecha.fin.value}"/>
 			<input type="hidden" name="sesionId" id="sesionId" th:value="${#httpServletRequest.getSession().getId()}"/>
+			
+			<!-- lista JSON desde expedienteController para cargar doc de cada unidad -->
+			<input type="hidden" name="listaDocumentosJSON" id="listaDocumentosJSON" th:value="${listaDocumentosJSON}"/>
+			
+			<!-- lista JSON desde expedienteController para cargar exp de cada unidad -->
+			<input type="hidden" name="listaExpedientesJSON" id="listaExpedientesJSON" th:value="${listaExpedientesJSON}"/>
+			
 			
             <div th:fragment="metadatosEniExp">
                 <fieldset class="mf-form__stack">
@@ -231,6 +241,10 @@ layout:decorator="common/inside_layout">
                                 <input type="radio" name="firmaExp" value="server" id="firmaExp"/>&nbsp; 
                                 <label for="firmaExp" th:text="#{generarExpediente.metadato.firma.firmaServidor}"/>
                             </li>
+                            <li>
+                                <input type="checkbox" name="firmaLongevaExpediente" value="firmaLongevaExpediente" id="firmaLongevaExpediente" onclick="checkFirmaLongevaExpediente()"/>&nbsp; 
+                                <label for="firmaLongevaExpediente" th:text="#{generarExpediente.metadato.firma.firmaLongeva}" th:title="#{generarExpediente.metadato.firma.firmaLongeva.ayuda}" />
+                            </li>	
                         </ul>
                         
                     </div>
@@ -270,9 +284,9 @@ layout:decorator="common/inside_layout">
 	                              <div class="fld">
 	                                  <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
 	                                  <input  type="text" class="sticked-input-right" id="valueMetadatoAdicional" style="width:200px"
-	                                  name="valueMetadatoAdicional" maxlength="100"/>
+	                                  name="valueMetadatoAdicional" maxlength="500"/>
 	                              </div>
-	                              <button type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()">
+	                              <button type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()" >
 	                                  <span class="mf-icon mf-icon-circle-plus"></span>
 	                                  <span th:text="#{button.anadir}"></span>
 	                              </button>
@@ -306,10 +320,12 @@ layout:decorator="common/inside_layout">
                         		<span class="mf-icon mf-icon-folder"></span>
                         		<span class="" th:text="#{generarExpediente.button.estructuraCarpeta}"></span>
                         	</a>
+                        	
                         	<a href="" class="mf-button" id="js-crear-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.crearDocumento}"></span>
                         	</a>
+                        	
                         	<a href="" class="mf-button" id="js-insertar-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.adjuntarDocumento}"></span>
@@ -489,7 +505,7 @@ layout:decorator="common/inside_layout">
                   </div>
        </div>   
        
-        <div id="init-modal-importar-documentoInside" data-title="Adjuntar Documento de Inside a Indice" 
+        <div id="init-modal-importar-documentoInside" data-title="Adjuntar Documento de Inside a Indice"
                       data-modal="1" 
                       data-width="450"
                       data-draggable="0"

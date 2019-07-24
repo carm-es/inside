@@ -46,9 +46,6 @@ $(document).ready(function() {
             "bSortable" : false,
             "width" : "10%"
         }, {
-            "bSortable" : false,
-            "width" : "10%"
-        }, {
             "class" : "tc",
             "bSortable" : false,
             "width" : "5%"
@@ -58,6 +55,7 @@ $(document).ready(function() {
 
     $('input[type=search]').parent().parent().css('width', '340px');
     $('input[type=search]').css('width', '320px');
+
 });
 
 function expedienteGenerarTokenDescargaPasoInicial(expediente) {
@@ -136,16 +134,16 @@ function expedienteGenerarTokenDescargaPasoFinal() {
             nifsDesdeModal = nifsDesdeModal + valorNIF;
 
     }
-
     var auxiliarDir3 = $(".mf-dialog #organosModal").val().split("-");
     var dir3DesdeModal = auxiliarDir3[0].trim();
+    var auxiliarDir3 = $(".mf-dialog #organosModal").val().split("-");
 
     var fCadDesdeModal = $(".mf-dialog #doc_fecha_caducidad_token").val();
 
     $('#almacenadosVeil').removeAttr('style').removeClass('hidden');
 
     $.ajax({
-        url : "expedienteGenerarTokenDescarga",
+        url : "expedientesAlmacenados/expedienteGenerarTokenDescarga",
         dataType : 'json',
         type : 'POST',
         data : {
@@ -155,6 +153,7 @@ function expedienteGenerarTokenDescargaPasoFinal() {
             "dir3DesdeModal" : dir3DesdeModal,
             "fCadDesdeModal" : fCadDesdeModal,
             "mailEnvioTokenDesdeModal" : mailEnvioToken
+
         },
         success : function(data) {
             var divData = $('#init-modal-generated-token');
@@ -169,12 +168,14 @@ function expedienteGenerarTokenDescargaPasoFinal() {
             $(".mf-dialog #tokenUuid").val(data.uuid);
             $(".mf-dialog #tokenfechaCaducidad").val(data.fechaCaducidad);
 
+            $(".mf-dialog #mensajesError").html("<b><font color='red'>" + data.mensajeUsuario.message + "</font></b>");
+
             $(".mf-dialog #resultadoEnvioCorreo").val(data.resultadoEnvioCorreo);
 
             $('#almacenadosVeil').addClass('hidden');
         },
         error : function(e) {
-            console.error(e);
+            console.error(e.responseText);
             $('#almacenadosVeil').addClass('hidden');
         }
     });
@@ -328,6 +329,66 @@ function resetear() {
 
 }
 
+function comprobarFormatosDocumentosMJU(expediente, version) {
+    // Comprobamos si algún documento del índice del expediente no tiene formato permitido por el cargador (pdf, jpg, tiff, doc, xls, xlsx, rtf, odt, ods)
+
+    $.ajax({
+        url : "expedientesAlmacenados/compruebaMimeDocumentosParaMJU",
+        dataType : 'json',
+        type : 'POST',
+        data : {
+            "expediente" : expediente,
+            "version" : version
+        },
+        success : function(data) {
+            if (data.formatosNoValidos) {
+                $("#tipoMensaje").val(data.mensajeUsuario.level);
+                $("#valorMensaje").val(data.mensajeUsuario.message);
+                showMessage();
+                $(".mf-dialog #cajaSeleccionDir3").addClass('hidden');
+                ocultarOrden();
+                resetear();
+                $(".mf-dialog #dir3Justicia").autocomplete('close').val('');
+                return false;
+            } else {
+                ocultarMensaje();
+                $(".mf-dialog #cajaSeleccionDir3").removeClass('hidden');
+                // Autocompletado del campo organo.
+                $(".mf-dialog #dir3Justicia").autocomplete({
+                    source : $("#context").val() + '/autocomplete/dir3EnvioJusticiaVigentes',
+                    minLength : 0,
+                    select : function(event, ui) {
+                        $(".mf-dialog #dir3Justicia").val(ui.item.key + " - " + ui.item.value + " - " + ui.item.type);
+                        event.preventDefault();
+                        buscarOrdenByOrganoDIR3Justicia();
+                    }
+                }).bind('focus', function() {
+                    $(this).autocomplete("search");
+                }).data("ui-autocomplete")._renderItem = function(ul, item) {
+                    return $("<li>").append("<a>" + item.key + " - " + item.value + " - " + item.type + "</a>")
+                            .appendTo(ul);
+                };
+                $("ul[id *= ui-id-]").css('zIndex', 9999);
+                return true;
+            }
+
+        },
+        error : function(e) {
+            console.error(e);
+            $('.mf-dialog #almacenadosVeilVersiones').addClass('hidden');
+        }
+    });
+
+}
+function seleccionarVersionExpediente() {
+    if ($("select#versiones_expediente_MJU option:checked").val() > 0
+            && !comprobarFormatosDocumentosMJU($(".mf-dialog #identificador_expediente_MJU").val(), $(
+                    "select#versiones_expediente_MJU option:checked").val())) {
+        $(".mf-dialog #dir3Justicia").autocomplete('close').val('');
+    }
+
+}
+
 function openModalRemitirMJU(expediente) {
     var divData = $('#init-modal-remitirMJU');
     var data = divData.data();
@@ -338,11 +399,13 @@ function openModalRemitirMJU(expediente) {
 
     $("#remitirMJUExpedienteForm #identificador").val(expediente);
 
+    $(".mf-dialog #cajaSeleccionDir3").addClass('hidden');
+
     ocultarOrden();
 
     // incluir combo para elegir version del expediente que se envia a justicia	
     $.ajax({
-        url : "getVersionesExpediente",
+        url : "expedientesAlmacenados/getVersionesExpediente",
         dataType : 'json',
         type : 'POST',
         data : {
@@ -352,6 +415,7 @@ function openModalRemitirMJU(expediente) {
             var DIR3ParaEnvioJusticia = data.DIR3ParaEnvioJusticia;
             $(".mf-dialog #presentadorcodigoOrganoRemitente").val(DIR3ParaEnvioJusticia);
             var listVersiones = data.versiones;
+            var seleccionado = listVersiones[0].version;
             for (var i = 0; i < listVersiones.length; i++) {
                 var fecha = new Date(listVersiones[i].fechaVersion);
                 $('.mf-dialog #versiones_expediente_MJU').append(
@@ -361,7 +425,13 @@ function openModalRemitirMJU(expediente) {
                                     + formatoHora(fecha)
                         }));
                 $('.mf-dialog #identificador_expediente_MJU').val(expediente);
+
             }
+            $('.mf-dialog #versiones_expediente_MJU').append($('<option>', {
+                value : 0,
+                text : 'Seleccionar Versión: '
+            }));
+            $('.mf-dialog #versiones_expediente_MJU option[value=0]').attr('selected', 'selected');
 
             $('.mf-dialog #almacenadosVeilVersiones').addClass('hidden');
         },
@@ -371,22 +441,6 @@ function openModalRemitirMJU(expediente) {
         }
     });
 
-    // Autocompletado del campo organo.
-    $(".mf-dialog #dir3Justicia").autocomplete({
-        source : $("#context").val() + '/autocomplete/dir3EnvioJusticiaVigentes',
-        minLength : 0,
-        select : function(event, ui) {
-            $(".mf-dialog #dir3Justicia").val(ui.item.key + " - " + ui.item.value + " - " + ui.item.type);
-            event.preventDefault();
-            buscarOrdenByOrganoDIR3Justicia();
-        }
-    }).bind('focus', function() {
-        $(this).autocomplete("search");
-    }).data("ui-autocomplete")._renderItem = function(ul, item) {
-        return $("<li>").append("<a>" + item.key + " - " + item.value + " - " + item.type + "</a>").appendTo(ul);
-    };
-
-    $("ul[id *= ui-id-]").css('zIndex', 9999);
 }
 
 function buscarOrganosRemitentes() {
@@ -493,6 +547,7 @@ function buscarOrdenByOrgano() {
 }
 
 function buscarOrdenByOrganoDIR3Justicia() {
+
     if ($(".mf-dialog #dir3Justicia").val() != "") {
         var codigoExternoDIR3 = $(".mf-dialog #dir3Justicia").val().split(" - ")[2].trim();
 
@@ -531,8 +586,9 @@ function buscarOrdenByOrganoDIR3Justicia() {
 
         mostrarOrden();
 
-        $(".mf-dialog #nigcodigoPoblacion").val(codigoPoblacion);
-        $(".mf-dialog #nigtipoOrgano").val(tipoOrgano);
+        // autocompletado comentado si se quiere activar otra vez, descomentar
+        //$(".mf-dialog #nigcodigoPoblacion").val(codigoPoblacion);
+        //$(".mf-dialog #nigtipoOrgano").val(tipoOrgano);		
 
     }
 
@@ -550,7 +606,9 @@ function buscarClaseProcedimientoByOrdenAndOrgano() {
         var numOrgano = codigoExternoDIR3.substring(7, 10);
 
         var ordenNum = $(".mf-dialog #ordenModal").val().split("-")[0].trim();
-        $(".mf-dialog #nigcodigoOrden").val(ordenNum);
+
+        // autocompletado comentado si se quiere activar otra vez, descomentar
+        //$(".mf-dialog #nigcodigoOrden").val(ordenNum);
 
         // Autocompletado del campo orden.
         $(".mf-dialog #claseProcedimiento").autocomplete(
@@ -601,6 +659,7 @@ function remitirMJU() {
     $('#almacenadosVeil').removeAttr('style').removeClass('hidden');
     $(".mf-dialog #almacenadosVeilGeneraToken").removeAttr('style').removeClass('hidden');
     $.ajax({
+        //url : $("#context").val() + "/justicia/remitirExpedienteBIGDOCUMNETOS",
         url : $("#context").val() + "/justicia/remitirExpediente",
         dataType : 'json',
         type : 'POST',
@@ -707,9 +766,11 @@ function createView(expedient, identifierView, openView) {
 
 function selectViewType(expedient, identifierView, openView, signatureServer) {
     if (openView)
-        createViewAjax(expedient, identifierView, openView, '/crearVistaAbiertaExpediente', signatureServer);
+        createViewAjax(expedient, identifierView, openView, '/expedientesAlmacenados/crearVistaAbiertaExpediente',
+                signatureServer);
     else
-        createViewAjax(expedient, identifierView, openView, '/crearVistaCerradaExpediente', signatureServer);
+        createViewAjax(expedient, identifierView, openView, '/expedientesAlmacenados/crearVistaCerradaExpediente',
+                signatureServer);
 }
 
 function createViewAjax(expedient, identifierView, openView, url, signatureServer) {
@@ -945,7 +1006,7 @@ function showModalVersionExpediente(expediente) {
     });
 
     $.ajax({
-        url : "getVersionesExpediente",
+        url : "expedientesAlmacenados/getVersionesExpediente",
         dataType : 'json',
         type : 'POST',
         data : {
@@ -959,7 +1020,7 @@ function showModalVersionExpediente(expediente) {
                         $('<option>', {
                             value : listVersiones[i].version,
                             text : 'Versión: ' + listVersiones[i].version + ' - Fecha: ' + formatoFecha(fecha) + ', '
-                                    + formatoHora(fecha) + ' .-. Remitido MJU: ' + listVersiones[i].remitidoMJU
+                                    + formatoHora(fecha)
                         }));
                 $('.mf-dialog #identificador_expediente').val(expediente);
             }

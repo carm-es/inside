@@ -147,10 +147,20 @@ layout:decorator="common/inside_layout">
             <input type="hidden" name="nivelMensajeUsuario" id="nivelMensajeUsuario"/>
         </form>        
         <form id="expedienteForm" th:action="@{/generarExpediente}" method="post" class="" th:object="${expedienteMetadatos}">
+            <input type="hidden" id="metadatoNombreNatural" th:value="${metadatoNombreNatural}"/>
+        	<input type="hidden" id="metadatoFechaFin" th:value="${metadatoFechaFin}"/>        	
             <input type="hidden" name="contenidoExp" id="contenidoExp" th:value="${contenidoExp}"/>
             <input type="hidden" id="viewName" name="viewName" value="expediente/generarExpediente" />
             <input type="hidden" id="expedienteBytes" name="expedienteBytes" />
+            <input type="hidden" name="firmarLongevaExpediente" id="firmarLongevaExpediente"/>
             <input type="hidden" id="fecCapHidden" th:value="${fechaCaptura}"/>
+            
+            <!-- lista JSON desde expedienteController para cargar exp de cada unidad -->
+			<input type="hidden" name="listaExpedientesJSON" id="listaExpedientesJSON" th:value="${listaExpedientesJSON}"/>
+			
+			<!-- lista JSON desde expedienteController para cargar doc de cada unidad -->
+			<input type="hidden" name="listaDocumentosJSON" id="listaDocumentosJSON" th:value="${listaDocumentosJSON}"/>
+			
             <div th:fragment="metadatosEniExp">
                 <fieldset class="mf-form__stack">
                     <legend>
@@ -297,6 +307,10 @@ layout:decorator="common/inside_layout">
                                 <input type="radio" name="firmaExp" value="server" id="firmaExp"/>&nbsp; 
                                 <label for="firma" th:text="#{generarExpediente.metadato.firma.firmaServidor}"/>
                             </li>
+                            <li>
+                                <input type="checkbox" name="firmaLongevaExpediente" value="firmaLongevaExpediente" id="firmaLongevaExpediente" onclick="checkFirmaLongevaExpediente()"/>&nbsp; 
+                                <label for="firmaLongevaExpediente" th:text="#{generarExpediente.metadato.firma.firmaLongeva}" th:title="#{generarExpediente.metadato.firma.firmaLongeva.ayuda}" />
+                           </li>	                            
                         </ul>
                         <ul class="radio-list" sec:authorize="hasRole('CONSULTA_ROLE')">
                             <li>
@@ -314,7 +328,8 @@ layout:decorator="common/inside_layout">
                     <fieldset id="js-div-metadatos" class="mf-form__stack mf-form__inline"  sec:authorize="!hasRole('CONSULTA_ROLE')">
                         <legend th:text="#{generarExpedienteMetadatos.metadato.adicional}"></legend>
                             <div class="fld">
-                            	<div class="metadata-box">
+                            
+                           <!--   <div class="metadata-box">
 		                      		<div class="fld">
 		                               <label for="metadatoAdicionalNombreNatural" th:text="#{generarDocumento.metadato.adicional.nombre.natural}"></label> 
 		                               <input type="text" id="metadatosAdicionales.metadatoAdicional100.nombre" th:value="#{generarDocumento.metadato.adicional.nombre.natural.value}" 
@@ -325,8 +340,8 @@ layout:decorator="common/inside_layout">
 		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional100.valor" th:value="${valorNombreNatural}"
 		                               		name="metadatosAdicionales.metadatoAdicional[100].valor" maxlength="100" style="width:200px"/>
 		                           </div>
-		                      	</div>
-		                      	<div class="metadata-box">
+	                      	</div>
+	                      	<div class="metadata-box">
 		                      		<div class="fld">
 		                               <label for="metadatoAdicionalFechaFin" th:text="#{generarExpediente.metadato.adicional.nombre.fecha.fin}"></label> 
 		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional101.nombre" th:value="#{generarExpediente.metadato.adicional.nombre.fecha.fin.value}" 
@@ -338,7 +353,36 @@ layout:decorator="common/inside_layout">
 		                               		th:onclick="|javascript:this.value='#{generarExpediente.metadato.adicional.valor.fecha.fin.value}'|" 
 		                               		name="metadatosAdicionales.metadatoAdicional[101].valor" maxlength="100" style="width:200px"/>
 		                           </div>
-		                      	</div>
+	                      	</div>   -->
+	                      	
+                             <div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalNombreNatural" th:text="#{generarDocumento.metadato.adicional.nombre.natural}"></label> 
+		                               <input type="text" id="metadatosAdicionales.metadatoAdicional0.nombre" th:value="#{generarDocumento.metadato.adicional.nombre.natural.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[100].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorNatural" th:text="#{generarDocumento.metadato.adicional.valor.natual}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional0.valor" th:value="${valorNombreNatural}"
+		                               		name="metadatosAdicionales.metadatoAdicional[100].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                      	</div> 
+		                       	<div class="metadata-box">
+		                      		<div class="fld">
+		                               <label for="metadatoAdicionalFechaFin" th:text="#{generarExpediente.metadato.adicional.nombre.fecha.fin}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional1.nombre" th:value="#{generarExpediente.metadato.adicional.nombre.fecha.fin.value}" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].nombre" maxlength="100" style="width:250px"/>
+		                           </div>
+		                           <div class="fld">
+		                               <label for="metadatoAdicionalValorFechaFin" th:text="#{generarExpediente.metadato.adicional.valor.fecha.fin}"></label> 
+		                               <input  type="text" id="metadatosAdicionales.metadatoAdicional1.valor" th:value="${valorFechaFin}" 
+		                               		th:onclick="|javascript:this.value='#{generarExpediente.metadato.adicional.valor.fecha.fin.value}'|" 
+		                               		name="metadatosAdicionales.metadatoAdicional[101].valor" maxlength="100" style="width:200px"/>
+		                           </div>
+		                     	</div>  
+		                      	 
+		                      	
+		                      	
 	                            <div class="metadata-box">
 	                                <div class="fld">
 	                                    <label for="metadatoAdicionalNombre" th:text="#{generarDocumento.metadato.adicional.nombre}"></label> 
@@ -348,7 +392,7 @@ layout:decorator="common/inside_layout">
 	                                <div class="fld">
 	                                    <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
 	                                    <input  type="text" class="sticked-input-right" id="valueMetadatoAdicional" style="width:200px"
-	                                    name="valueMetadatoAdicional" maxlength="100"/>
+	                                    name="valueMetadatoAdicional" maxlength="500"/>
 	                                </div>
 	                                <button type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()">
 	                                    <span class="mf-icon mf-icon-circle-plus"></span>
@@ -419,7 +463,7 @@ layout:decorator="common/inside_layout">
 	                                <div class="fld">
 	                                    <label for="metadatoAdicionalValor" th:text="#{generarDocumento.metadato.adicional.valor}"></label> 
 	                                    <input disabled="disabled" type="text" class="sticked-input-right" id="valueMetadatoAdicional" style="width:200px"
-	                                    name="valueMetadatoAdicional" maxlength="100"/>
+	                                    name="valueMetadatoAdicional" maxlength="500"/>
 	                                </div>
 	                                <button disabled="disabled" type="button" name="button" th:title="#{button.anadir}" onclick="addMetadatoExp()">
 	                                    <span class="mf-icon mf-icon-circle-plus"></span>
@@ -469,10 +513,12 @@ layout:decorator="common/inside_layout">
                         		<span class="mf-icon mf-icon-folder"></span>
                         		<span class="" th:text="#{generarExpediente.button.estructuraCarpeta}"></span>
                         	</a>
+                        	 
                         	<a href="" class="mf-button" id="js-crear-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.crearDocumento}"></span>
                         	</a>
+                        	 
                         	<a href="" class="mf-button" id="js-insertar-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.adjuntarDocumento}"></span>
@@ -500,10 +546,12 @@ layout:decorator="common/inside_layout">
                         		<span class="mf-icon mf-icon-folder"></span>
                         		<span class="" th:text="#{generarExpediente.button.estructuraCarpeta}"></span>
                         	</a>
+                        	<!-- 
                         	<a href="" class="mf-button" id="js-crear-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.crearDocumento}"></span>
                         	</a>
+                        	 -->
                         	<a href="" class="mf-button" id="js-insertar-documento">
                         		<span class="mf-icon mf-icon-doc-plus"></span>
                         		<span class="" th:text="#{generarExpediente.button.adjuntarDocumento}"></span>
@@ -694,62 +742,6 @@ layout:decorator="common/inside_layout">
                     </button>
                 </fieldset>
  
- 
- 
- 
- 
-
-				<!-- tabla de remisiones a justicia de este expediente -->
-				<fieldset id="remisionJusticia">
-				    <legend th:text="#{remisionJusticia.remisiones.justicia}"></legend>
-					<table id="remisionList" class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
-						<thead>
-							<tr>
-							<!-- 
-								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbaplicacion.title}" th:text="#{remisionJusticia.AuditoriaEsbaplicacion}"></th>
-								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbmodulo.title}" th:text="#{remisionJusticia.AuditoriaEsbmodulo}"></th>
-								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.AuditoriaEsbservicio.title}" th:text="#{remisionJusticia.AuditoriaEsbservicio}"></th>
-							 -->	
-								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.AuditoriaEsbmarcaTiempo.title}" th:text="#{remisionJusticia.AuditoriaEsbmarcaTiempo}"></th>
-								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.ack.title}" th:text="#{remisionJusticia.ack}"></th>
-								<th class="mf-sort-ln" href="·" th:title="#{remisionJusticia.codigoEnvio.title}" th:text="#{remisionJusticia.codigoEnvio}"></th>
-								<th class="mf-sort-ln" href="·"	th:title="#{remisionJusticia.accion.title}" th:text="#{remisionJusticia.mensaje.accion}"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="registro, iterationStatus  : ${listaRespuestaEnvioJusticiaLista}">
-							<!-- 
-								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_aplicacion}"></td>					
-								<td class="grid-column-creador"	th:text="${registro.AuditoriaEsb_modulo}"></td>
-								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.AuditoriaEsb_servicio}"></td>
-							 -->
-								<td class="grid-column-contenidos.titulo"  th:text="${registro.AuditoriaEsb_marcaTiempo}"></td>	
-												
-								<td class="grid-column-creador"	 th:if="${registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.correcto}"></td>
-								<td class="grid-column-creador"	 th:if="${not registro.ack.equals('true') }" th:text="#{remisionJusticia.resultado.incorrecto}"></td>
-								
-								<td class="grid-column-articulo_tipo.codigo" th:text="${registro.codigoEnvio}"></td>												
-								<td class="grid-column-__actions last-column">
-									<ul class="grid-row-actions">
-										<li class="grid-row-action">
-											<a class="mf-table-data--row-action  mf-action  mf-action__revisar "
-												th:if="${not registro.AuditoriaEsb_aplicacion.equals('Error') }" 
-												th:onclick="|javascript:consultaRemisionJusticia('${registro.AuditoriaEsb_aplicacion}','${registro.AuditoriaEsb_modulo}','${registro.AuditoriaEsb_servicio}','${registro.AuditoriaEsb_marcaTiempo}','${registro.codigoEnvio}')|"
-												target="_self"
-												th:title="#{remisionJusticia.accion.consultaEstadoRemision}"> <span
-												class="mf-icon mf-icon-globes-info"></span>
-											</a>
-										</li>
-									</ul>
-
-								</td>
-							</tr>
-						</tbody>
-					</table>
-							
-				</fieldset>
- 
- 
                 
                 <script th:inline="javascript">
                     /*<![CDATA[*/
@@ -773,264 +765,7 @@ layout:decorator="common/inside_layout">
         </form>
         
     </div>
-    
-    
-    
-    
-    	<!-- modal consulta remision a justicia de un expediente -->
-		<div id="init-modal-consultaRemisionMJU" data-title="Consulta Remisión Expediente MJU"
-			data-modal="1" data-width="800" data-draggable="0"
-			data-clazz="tr-dialog tr-help-dialog mf-document-dialog js-dialog-documento"
-			data-position_h="center" data-position_v="center"
-			class="mf-buttonbar--btn simbutton">
-
-
-			<form id="visualizaDescargarResguardoJusticiaForm" th:fragment="visualizaDescargarResguardoJusticiaForm" th:action="@{/visualizaDescargarResguardoJusticia}" method="post">
-	         	<input type="hidden" name="dataResguardoDocBase64" id="dataResguardoDocBase64"/>
-	         	<input type="hidden" name="codigoEnvioResguardo" id="codigoEnvioResguardo"/>
-	       	</form>	
-	       	
-				<div class="fld">
-					<label  for="identificadorEstado" th:text="#{puntounicojusticia.identificadorEstado}"></label>
-					<div class="input-auxbtn">
-						<div>
-							<input type="text" class="sticked-input-right"	id="identificadorEstado" name="identificadorEstado" readonly="readonly"/>
-						</div>
-					</div>
-				</div>
-
-				<div class="fld">
-					<label  for="descripcionEstado" th:text="#{puntounicojusticia.descripcionEstado}"></label>
-					<div class="input-auxbtn">
-						<div>
-							<input type="text" class="sticked-input-right" id="descripcionEstado"	name="descripcionEstado"  readonly="readonly"/>
-						</div>
-					</div>
-				</div>
-				
-<!-- 				<fieldset class="mf-form__stack" id="fieldsetComentario"> -->
-<!-- 					<div class="fld"> -->
-<!-- 						<label  for="comentario" th:text="#{puntounicojusticia.comentario}"></label> -->
-<!-- 						<textarea id="comentario" name="comentario" class="large" rows="2" cols="100"  readonly="readonly"></textarea> -->
-<!-- 					</div>				 -->
-<!--   				</fieldset> -->
-  				
-  				<fieldset class="mf-form__stack">
-  					<a href="#"  onclick="conmutaVisibilidad();" id="enlaceOnOff">
-						<span class="mf-icon mf-icon-circle-wheel"></span>
-                    	<span th:text="#{puntounicojusticia.resguardo.datosenvio}"></span>
-                	</a>
-  				</fieldset>
-  				
-  				  				
-  				
-  				<!-- datos del envio a justicia -->
-                 <fieldset id="fieldsetDatosEnvio">
-                   <legend>
-						<span th:text="#{puntounicojusticia.resguardo.datosenvioLegend}"></span>
-				   </legend>				   
-				   
-						<div class="fld">
-							<label class="required" for="provinciasModalConsulta" th:text="#{puntounicojusticia.codigo.provincia}"></label>
-							<div class="input-auxbtn">
-								<div>
-									<input type="text" class="sticked-input-right"	id="provinciasModalConsulta" name="provinciasModalConsulta" readonly="readonly"/>
-								</div>
-							</div>
-						</div>
-		
-						<div class="fld">
-							<label class="required" for="organosConsulta" th:text="#{puntounicojusticia.codigo.organo}"></label>
-							<div class="input-auxbtn">
-								<div>
-									<input type="text" class="sticked-input-right" id="organosConsulta"	name="organosConsulta"  readonly="readonly"/>
-								</div>
-							</div>
-						</div>
-		
-						<div class="fld">
-							<label class="required" for="ordenModalConsulta" th:text="#{puntounicojusticia.codigo.orden}"></label>
-							<div class="input-auxbtn">
-								<div>
-									<input type="text" class="sticked-input-right" id="ordenModalConsulta" name="ordenModalConsulta"  readonly="readonly"/>
-								</div>
-							</div>
-						</div>
-		
-		
-		
-						<fieldset class="mf-form__stack">
-							<legend>
-								<span th:text="#{puntounicojusticia.labelProcedimiento}"></span>
-							</legend>
-							<div class="fld">
-								<label class="required" for="claseProcedimientoConsulta"
-									th:text="#{puntounicojusticia.codigo.claseProcedimiento}"></label>
-								<div class="input-auxbtn">
-									<div>
-										<input type="text" class="sticked-input-right" id="claseProcedimientoConsulta" name="claseProcedimientoConsulta"  readonly="readonly"/>
-									</div>
-								</div>
-							</div>
-		
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="procedimientoanioConsulta"	th:text="#{puntounicojusticia.procedimientoanio}"></label> 
-									<input type="text" id="procedimientoanioConsulta" name="procedimientoanioConsulta" value="" readonly="readonly"/>
-								</div>
-		
-								<div class="fld">
-									<label class="required" for="procedimientonumeroConsulta" th:text="#{puntounicojusticia.procedimientonumero}"></label> 
-									<input type="text" id="procedimientonumeroConsulta" name="procedimientonumeroConsulta" value="" readonly="readonly"/>
-								</div>
-							</div>
-						</fieldset>
-		
-		
-						<fieldset class="mf-form__stack">
-							<legend>
-								<span th:text="#{puntounicojusticia.labelNIG}"></span>
-							</legend>
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="niganioAsuntoConsulta" th:text="#{puntounicojusticia.niganioAsunto}"></label> 
-									<input type="text" id="niganioAsuntoConsulta" name="niganioAsuntoConsulta" value="" readonly="readonly"/>
-								</div>
-		
-								<div class="fld">
-									<label class="required" for="nigcodigoOrdenConsulta" th:text="#{puntounicojusticia.nigcodigoOrden}"></label> 
-									<input type="text" id="nigcodigoOrdenConsulta" name="nigcodigoOrdenConsulta" value="" readonly="readonly"/>
-								</div>
-							</div>
-		
-							<div class="block">
-								<div class="fld"></div>
-							</div>
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="nigcodigoPoblacionConsulta" th:text="#{puntounicojusticia.nigcodigoPoblacion}"></label> 
-									<input type="text" id="nigcodigoPoblacionConsulta" name="nigcodigoPoblacionConsulta" value="" readonly="readonly"/>
-								</div>
-		
-								<div class="fld">
-									<label class="required" for="nignumeroAsuntoConsulta" th:text="#{puntounicojusticia.nignumeroAsunto}"></label> 
-									<input type="text" id="nignumeroAsuntoConsulta" name="nignumeroAsuntoConsulta" value="" readonly="readonly"/>
-								</div>
-							</div>
-							<div class="block">
-								<div class="fld"></div>
-							</div>
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="nigtipoOrganoConsulta" th:text="#{puntounicojusticia.nigtipoOrgano}"></label> 
-									<input type="text" id="nigtipoOrganoConsulta" name="nigtipoOrganoConsulta" value="" readonly="readonly"/>
-								</div>
-								<div class="fld"></div>
-							</div>
-						</fieldset>
-		
-						<fieldset class="mf-form__stack">
-							<legend>
-								<span th:text="#{puntounicojusticia.labelPieza}"></span>
-							</legend>
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="piezaclaseProcedimientoConsulta" th:text="#{puntounicojusticia.piezaclaseProcedimiento}"></label>
-									<input type="text" id="piezaclaseProcedimientoConsulta" name="piezaclaseProcedimientoConsulta" value="" readonly="readonly"/>
-								</div>
-		
-								<div class="fld">
-									<label class="required" for="piezaanioProcedimientoConsulta" th:text="#{puntounicojusticia.piezaanioProcedimiento}"></label>
-									<input type="text" id="piezaanioProcedimientoConsulta" name="piezaanioProcedimientoConsulta" value="" readonly="readonly"/>
-								</div>
-							</div>
-		
-							<div class="block">
-								<div class="fld"></div>
-							</div>
-							<div class="block">
-								<div class="fld">
-									<label class="required" for="piezanumeroPiezaConsulta" th:text="#{puntounicojusticia.piezanumeroPieza}"></label> 
-									<input type="text" id="piezanumeroPiezaConsulta" name="piezanumeroPiezaConsulta" value="" readonly="readonly"/>
-								</div>
-		
-								<div class="fld">
-									<label class="required" for="piezanumeroProcedimientoConsulta" th:text="#{puntounicojusticia.piezanumeroProcedimiento}"></label>
-									<input type="text" id="piezanumeroProcedimientoConsulta" name="piezanumeroProcedimientoConsulta" value="" readonly="readonly"/>
-								</div>
-							</div>
-						</fieldset>
-		
-		
-						<fieldset class="mf-form__stack">
-							<legend>
-								<span th:text="#{puntounicojusticia.labelpresentador}"></span>
-							</legend>
-		
-		
-							<div class="fld">
-								<label class="required" for="presentadorcodigoOrganoRemitenteConsulta" th:text="#{puntounicojusticia.presentadorcodigoOrganoRemitente}"></label>
-								<div class="input-auxbtn">
-									<div>
-										<input type="text" class="sticked-input-right" id="presentadorcodigoOrganoRemitenteConsulta" name="presentadorcodigoOrganoRemitenteConsulta" readonly="readonly"/>
-									</div>
-								</div>
-							</div>
-		
-		
-		
-							<div class="fld">
-								<label class="required" for="presentadordescripcionPresentadorExpedienteConsulta" th:text="#{puntounicojusticia.presentadordescripcionPresentadorExpediente}"></label>
-								<input class="large" type="text" id="presentadordescripcionPresentadorExpedienteConsulta" name="presentadordescripcionPresentadorExpedienteConsulta" value="" readonly="readonly"/>
-							</div>
-						</fieldset>				   
-				   
-				   
-				   
-               	</fieldset>			
-  				
-  				
-                 <fieldset id="bloqueResguardoEnvio">
-                 
-                   <legend id="recepcion1">
-						<span th:text="#{puntounicojusticia.resguardoRecepcion}">:</span>
-				   </legend>
-				   <legend id="recepcion2">
-						<font size="2"><span th:text="#{puntounicojusticia.textoRecepcion}"></span></font>
-				   </legend>
-				   
-				   <legend id="envio1">
-						<span th:text="#{puntounicojusticia.resguardoEnvio}">:</span>
-				   </legend>
-				   <legend id="envio2">
-						<font size="2"><span th:text="#{puntounicojusticia.textoEnvio}"></span></font>
-				   </legend>
-				   
-				   
-				   
-                   <div class="block" th:if="${!navegador}">
-                      <div class="fld">
-                            <iframe id="visorResguardo" class="js-gallery-ver--visor" style="width:750px; height:300px;"></iframe>
-                       </div>
-                       <div class="js-timer-veil mf-veil hidden">
-                       </div>
-                    </div>
-                    
-                   <div class="block" th:if="${navegador}">
-                      <span>                    	                
-                	    <a href="#!" onclick="visualizaDescargarResguardoJusticia()"  th:title="#{generarDocumento.descargarArchivo.title}">
-	                        <span class="mf-icon mf-icon-doc-download"></span>
-	                        <span th:text="#{generarDocumento.descargarArchivo}"></span>
-	                    </a>
-                    	</span>
-                    </div>
-                    
-                 </fieldset>
-                 
-                
-			<div id="modalConsultaRemisionVeil" class="mf-veil hidden"></div>
-		</div>
-		
+ 		
 		<div id="init-modal-importar-subExpediente" data-title="Adjuntar Expediente a Indice" 
                       data-modal="1" 
                       data-width="450"

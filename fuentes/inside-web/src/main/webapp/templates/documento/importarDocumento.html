@@ -44,6 +44,11 @@
         <div id="contentData">
             <form id="importarDocumentoForm" th:action="@{/importNewDocumentXml}" method="post">
             	<input type="hidden" name="documentId" id="documentId"/>
+            	
+            	<!-- lista JSON desde expedienteController para cargar exp de cada unidad -->
+				<input type="hidden" name="listaExpedientesJSON" id="listaExpedientesJSON" th:value="${listaExpedientesJSON}"/>
+			
+			
                 <fieldset>
                     <legend>
                         <span th:text="#{validarDocumento.xmldocumentoeni}"></span>

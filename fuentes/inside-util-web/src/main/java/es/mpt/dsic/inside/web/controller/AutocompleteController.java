@@ -28,15 +28,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideDocumentoUnidad;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideExpedienteUnidad;
+import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatosEnumeracionEstados;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.util.InsideUtils;
+import es.mpt.dsic.inside.service.util.WebConstants;
 import es.mpt.dsic.inside.store.hibernate.entity.UnidadOrganica;
 import es.mpt.dsic.inside.web.object.ComboItem;
 import es.mpt.dsic.inside.web.util.MetadatosEEMGDE;
-import es.mpt.dsic.inside.web.util.WebConstants;
 import es.mpt.dsic.loadTables.hibernate.service.impl.UnidadOrganicaServiceImpl;
 
 @Controller
@@ -88,24 +89,27 @@ public class AutocompleteController {
   }
 
   /**
-   * Recupera las unidades DIR3 vigentes para el autocompletado. Son los de estado en V o T
+   * Recupera las unidades DIR3 vigentes para el autocompletado. Son los de estado en V, T, E
+   * Estados de la unidad (Vigente, Transitorio, Extinguido o Anulado).
    * 
    * @param codigo String con el código a completar o parte de él
    * @return List<SelectItemVO> lista a mostrar en el autocomplete
    */
-  @RequestMapping(value = "/autocomplete/dir3Vigentes", method = RequestMethod.GET)
+  @RequestMapping(value = "/autocomplete/dir3VTE", method = RequestMethod.GET)
   @ResponseBody
-  public List<ComboItem> autocompleteCodigoDIRVigentes(
+  public List<ComboItem> autocompleteCodigoDIRVTE(
       @RequestParam(value = "term") final String codigo) {
 
-    logger.info("[INI] Entramos en autocompleteCodigoDIRVigentes. ");
+    logger.info("[INI] Entramos en autocompleteCodigoDIRVTE. ");
 
     // Se obtienen las unidades que cumplen con la búsqueda
     logger.info("Buscamos las unidades...");
     List<Criterion> criterios = new ArrayList<Criterion>();
     criterios.add(Restrictions.or(Restrictions.like("nombreUnidadOrganica", "%" + codigo + "%"),
         Restrictions.like("codigoUnidadOrganica", "%" + codigo + "%")));
-    criterios.add(Restrictions.or(Restrictions.eq("estado", "T"), Restrictions.eq("estado", "V")));
+    criterios.add(Restrictions.or(
+        Restrictions.or(Restrictions.eq("estado", "T"), Restrictions.eq("estado", "V")),
+        Restrictions.eq("estado", "E")));
 
     List<UnidadOrganica> unidades =
         unidadOrganicaService.findByCriterias(0, 10, UnidadOrganica.class, criterios);
@@ -118,8 +122,8 @@ public class AutocompleteController {
           new ComboItem(unidad.getCodigoUnidadOrganica(), unidad.getNombreUnidadOrganica(), null));
     }
 
-    logger.info(
-        "[FIN] Salimos de autocompleteCodigoDIRVigentes. Total a mostrar: " + listaReturn.size());
+    logger
+        .info("[FIN] Salimos de autocompleteCodigoDIRVTE. Total a mostrar: " + listaReturn.size());
 
     return listaReturn;
   }
@@ -229,6 +233,35 @@ public class AutocompleteController {
     ObjetoInsideUsuario usuario =
         (ObjetoInsideUsuario) request.getSession().getAttribute(WebConstants.USUARIO_SESSION);
 
+    if (usuario != null && !usuario.isUsuarioInvitado()) {
+      try {
+        List<ObjetoInsideExpedienteUnidad> expedientes =
+            insideService.getExpedientesUnidadAutocompleter(usuario, uniAct);
+
+        if (CollectionUtils.isNotEmpty(expedientes)) {
+          addElementsComboExpedient(allExp, codigo, listaReturn, expedientes);
+        }
+      } catch (InSideServiceException e) {
+        logger.error("Error en el autocompleteExpedientes" + codigo, e);
+      }
+    } else {
+      ComboItem comboItem =
+          new ComboItem("", "Perdió la sesión del usuario, acceda de nuevo a Inside", null);
+      listaReturn.add(comboItem);
+    }
+    logger.info("[FIN] Salimos de autocompleteExpediente.");
+
+    return listaReturn;
+  }
+
+
+  public List<ComboItem> autocompleteExpedientes(ObjetoInsideUsuario usuario, final boolean allExp,
+      final boolean uniAct, final String codigo) {
+    List<ComboItem> listaReturn = new ArrayList<ComboItem>();
+    logger.info("[INI] Entramos en autocompleteExpediente. ");
+
+
+
     if (usuario != null) {
       try {
         List<ObjetoInsideExpedienteUnidad> expedientes =
@@ -291,10 +324,10 @@ public class AutocompleteController {
     ObjetoInsideUsuario usuario =
         (ObjetoInsideUsuario) request.getSession().getAttribute(WebConstants.USUARIO_SESSION);
 
-    if (usuario != null) {
+    if (usuario != null && !usuario.isUsuarioInvitado()) {
       try {
         List<ObjetoInsideDocumentoUnidad> documentos =
-            insideService.getDocumentosUnidad(usuario, false);
+            insideService.getDocumentosUnidad(usuario, true);
 
         if (CollectionUtils.isNotEmpty(documentos)) {
           addElementsComboDocs(codigo, listaReturn, documentos);
@@ -316,20 +349,19 @@ public class AutocompleteController {
       List<ObjetoInsideDocumentoUnidad> documentos) {
     int i = 0;
     for (ObjetoInsideDocumentoUnidad documento : documentos) {
-      if (isCandidateForComboDocs(codigo, i, documento)) {
+      if (isCandidateForComboDocs(codigo, i, documento, documentos.size())) {
         i++;
         listaReturn
             .add(new ComboItem(documento.getIdentificador(), documento.getIdentificador(), null));
-      } else if (i == MAX_RESULTS) {
+      } else if (i == documentos.size()) {
         break;
       }
     }
   }
 
   public boolean isCandidateForComboDocs(final String codigo, int i,
-      ObjetoInsideDocumentoUnidad documento) {
-    return like(documento.getIdentificador().toLowerCase(), codigo.toLowerCase())
-        && i < MAX_RESULTS;
+      ObjetoInsideDocumentoUnidad documento, int total) {
+    return like(documento.getIdentificador().toLowerCase(), codigo.toLowerCase()) && i < total;
   }
 
   /**
@@ -338,32 +370,75 @@ public class AutocompleteController {
    * @param codigo String con el código a completar o parte de él
    * @return List<SelectItemVO> lista a mostrar en el autocomplete
    */
-  @RequestMapping(value = "/autocomplete/metadatos", method = RequestMethod.GET)
+  @RequestMapping(value = "/autocomplete/metadatosExpediente", method = RequestMethod.GET)
   @ResponseBody
-  public List<ComboItem> autocompleteMetadatos(@RequestParam(value = "term") final String codigo) {
+  public List<ComboItem> autocompleteMetadatosExpediente(
+      @RequestParam(value = "term") final String codigo) {
     logger.info("[INI] Entramos en autocompleteMetadatos");
 
     List<ComboItem> listaReturn = new ArrayList<ComboItem>();
     List<MetadatosEEMGDE> metadatos = Arrays.asList(MetadatosEEMGDE.values());
-    addElementsComboMetadatos(codigo, listaReturn, metadatos);
+    addElementsComboMetadatosExpediente(codigo, listaReturn, metadatos);
 
     logger.info("[FIN] Salimos de autocompleteDocumentos");
 
     return listaReturn;
   }
 
-  public void addElementsComboMetadatos(final String codigo, List<ComboItem> listaReturn,
+  /**
+   * Recupera los metadatos para el autocompletado.
+   * 
+   * @param codigo String con el código a completar o parte de él
+   * @return List<SelectItemVO> lista a mostrar en el autocomplete
+   */
+  @RequestMapping(value = "/autocomplete/metadatosDocumento", method = RequestMethod.GET)
+  @ResponseBody
+  public List<ComboItem> autocompleteMetadatosDocumento(
+      @RequestParam(value = "term") final String codigo) {
+    logger.info("[INI] Entramos en autocompleteMetadatos");
+
+    List<ComboItem> listaReturn = new ArrayList<ComboItem>();
+    List<MetadatosEEMGDE> metadatos = Arrays.asList(MetadatosEEMGDE.values());
+    addElementsComboMetadatosDocumentos(codigo, listaReturn, metadatos);
+
+    logger.info("[FIN] Salimos de autocompleteDocumentos");
+
+    return listaReturn;
+  }
+
+
+
+  private void addElementsComboMetadatosExpediente(final String codigo, List<ComboItem> listaReturn,
       List<MetadatosEEMGDE> metadatos) {
     int i = 0;
     for (MetadatosEEMGDE metadato : metadatos) {
-      if (isCandidateForComboMetadatos(codigo, i, metadato)) {
-        i++;
-        listaReturn.add(new ComboItem(metadato.getValue(), metadato.getValue(), null));
-      } else if (i == MAX_RESULTS) {
-        break;
+      if (!(metadato == MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL)
+          && !(metadato == MetadatosEEMGDE.METADATO_FECHAS_FECHA_FIN)) {
+        if (isCandidateForComboMetadatos(codigo, i, metadato)) {
+          i++;
+          listaReturn.add(new ComboItem(metadato.getValue(), metadato.getValue(), null));
+        } else if (i == MAX_RESULTS) {
+          break;
+        }
       }
     }
   }
+
+  public void addElementsComboMetadatosDocumentos(final String codigo, List<ComboItem> listaReturn,
+      List<MetadatosEEMGDE> metadatos) {
+    int i = 0;
+    for (MetadatosEEMGDE metadato : metadatos) {
+      if (!(metadato == MetadatosEEMGDE.METADATO_NOMBRE_NOMBRE_NATURAL)) {
+        if (isCandidateForComboMetadatos(codigo, i, metadato)) {
+          i++;
+          listaReturn.add(new ComboItem(metadato.getValue(), metadato.getValue(), null));
+        } else if (i == MAX_RESULTS) {
+          break;
+        }
+      }
+    }
+  }
+
 
   public boolean isCandidateForComboMetadatos(final String codigo, int i,
       MetadatosEEMGDE metadato) {
@@ -378,6 +453,39 @@ public class AutocompleteController {
       return false;
     }
 
+  }
+
+  /**
+   * Recupera las unidades DIR3 para las que hay dados de alta usuarios de Inside para el
+   * autocompletado.
+   * 
+   * @param codigo String con el código a completar o parte de él
+   * @return List<SelectItemVO> lista a mostrar en el autocomplete
+   */
+  @RequestMapping(value = "/autocomplete/dir3/UsuariosInside", method = RequestMethod.GET)
+  @ResponseBody
+  public List<ComboItem> autocompleteCodigoDIRUsuariosInside(
+      @RequestParam(value = "term") final String codigo) {
+
+    logger.info("[INI] Entramos en autocompleteCodigoDIRUsuariosInside. ");
+    List<ObjetoUnidadOrganica> unidades = new ArrayList<ObjetoUnidadOrganica>();
+    try {
+      unidades = insideService.getUnidadesOrganicasUsuariosInside(codigo);
+    } catch (InSideServiceException e) {
+      logger.error("Error getUnidadesOrganicasUsuariosInside");
+    }
+    // Se carga la lista a devolver convirtiendo los resultados
+    logger.info("Transformamos en tipo SelectIntemVO para mostrar lista de autocompletado...");
+    List<ComboItem> listaReturn = new ArrayList<ComboItem>();
+    for (ObjetoUnidadOrganica unidad : unidades) {
+      listaReturn.add(
+          new ComboItem(unidad.getCodigoUnidadOrganica(), unidad.getNombreUnidadOrganica(), null));
+    }
+
+    logger.info("[FIN] Salimos de autocompleteCodigoDIRUsuariosInside. Total a mostrar: "
+        + listaReturn.size());
+
+    return listaReturn;
   }
 
 }

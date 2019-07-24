@@ -32,6 +32,7 @@ public class AuditoriaAccesoDocumento implements java.io.Serializable {
   private String usuarioPeticionario;
   private String idDocumento;
   private Date fecha;
+  private Integer idDir3;
 
   @Id
   @TableGenerator(name = "GeneradorPk_AuditoriaAccesoDocumento", table = "GeneradorClaves",
@@ -57,7 +58,7 @@ public class AuditoriaAccesoDocumento implements java.io.Serializable {
     this.idPeticion = idPeticion;
   }
 
-  @Column(name = "DIR3_Peticionario", nullable = false)
+  @Column(name = "DIR3_Peticionario")
   public String getDir3Peticionario() {
     return dir3Peticionario;
   }
@@ -82,6 +83,15 @@ public class AuditoriaAccesoDocumento implements java.io.Serializable {
 
   public void setFecha(Date fecha) {
     this.fecha = fecha;
+  }
+
+  @Column(name = "idDir3")
+  public Integer getIdDir3() {
+    return idDir3;
+  }
+
+  public void setIdDir3(Integer idDir3) {
+    this.idDir3 = idDir3;
   }
 
   @Column(name = "Usuario_Peticionario")

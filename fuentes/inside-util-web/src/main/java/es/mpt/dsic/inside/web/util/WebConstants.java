@@ -201,6 +201,7 @@ public class WebConstants {
   public static final String MIME_TXT = "text/plain";
   public static final String ALGORITMO_MD5 = "MD5";
 
+  // REMISION EN LA NUBE
   public static final String MSG_REMISION_TOKEN_SOLICITUD_NUBE_EXP_ERROR_BUSCAR_SOLICITUDES =
       "solicitudAccesoExpediente.remitirToken.mensaje.error.buscar.solicitudes";
   public static final String MSG_REMISION_TOKEN_SOLICITUD_NUBE_EXP_INFO_BUSCAR_SOLICITUDES =
@@ -227,6 +228,11 @@ public class WebConstants {
       "comunicaciones.token.expediente.usuario.error.sw.remitente";
   public static final String MSG_REMISION_COMUNICACIONES_TOKEN_EXPEDIENTE_ERROR_RECUPERAR_DOCUMENTO =
       "comunicaciones.token.expediente.usuario.error.sw.remitente.documento";
+  public static final String MSG_REMISION_COMUNICACIONES_TOKEN_EXPEDIENTE_ERROR_DESTINO_NOURL =
+      "comunicaciones.token.expediente.usuario.error.sw.destino.nourl";
+  public static final String MSG_REMISION_COMUNICACIONES_TOKEN_EXPEDIENTE_ERROR_DESTINO_ERROR_SW_DESTINO =
+      "comunicaciones.token.expediente.usuario.error.sw.destino.error.sw.destino";
+
 
   private WebConstants() {}
 }
