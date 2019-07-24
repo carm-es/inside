@@ -1,0 +1,39 @@
+// Not optimized!l
+/***************/
+/*    Error    */
+
+.#{$ns}-error-note {
+    padding: 5% 5% 5% 25%;
+    min-height: 150px;
+
+    background: url('images/note_marker.png') no-repeat 15% 33%;
+
+    .#{$ns}-error-title {
+        color: #444;
+
+        font-size: 2.333em;
+        font-style: normal;
+        font-weight: normal;
+    }
+
+	.#{$ns}-error-subtitle {
+	    margin-bottom: 1em;
+
+	    color: #999;
+	    font-size: 1.333em;
+	    font-style: normal;
+	    font-weight: bold;
+	}
+
+	.#{$ns}-error-note p {
+	    font-size: 1em;
+	}
+}
+
+.#{$ns}-error-note.#{$ns}-404 {
+    padding-right: 25%;
+    padding-bottom: 120px;
+
+	background: url('images/note_marker.png') no-repeat 15% 33%,
+				url('images/error_404.png') no-repeat right bottom;
+}

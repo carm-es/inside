@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="wsSIAConsultarActuacionesIdentificacion" targetNamespace="http://www.map.es/sgca/consultar" xmlns:msgIn_v3_0="http://www.map.es/sgca/consultar/messages/v3_0/ParamSIA" xmlns:msgOut_v3_0="http://www.map.es/sgca/consultar/messages/v3_0/EnviaSIA" xmlns:msgIn_v2_4="http://www.map.es/sgca/consultar/messages/v2_4/ParamSIA" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://www.map.es/sgca/consultar" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msgOut_v2_4="http://www.map.es/sgca/consultar/messages/v2_4/EnviaSIA" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:msgOut="http://www.map.es/sgca/consultar/messages/EnviaSIA" xmlns:msgIn="http://www.map.es/sgca/consultar/messages/ParamSIA">
+  <wsdl:types>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    		<xsd:import namespace="http://www.map.es/sgca/consultar/messages/ParamSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=ParamSIA.xsd">
+			</xsd:import>
+			<xsd:import namespace="http://www.map.es/sgca/consultar/messages/EnviaSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=EnviaSIA.xsd">
+            </xsd:import>
+			<xsd:import namespace="http://www.map.es/sgca/consultar/messages/v2_4/ParamSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=ParamSIA_v2_4.xsd">
+			</xsd:import>
+			<xsd:import namespace="http://www.map.es/sgca/consultar/messages/v2_4/EnviaSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=EnviaSIA_v2_4.xsd">
+            </xsd:import>
+			<xsd:import namespace="http://www.map.es/sgca/consultar/messages/v3_0/ParamSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=ParamSIA_v3_0.xsd">
+			</xsd:import>
+			<xsd:import namespace="http://www.map.es/sgca/consultar/messages/v3_0/EnviaSIA" schemaLocation="wsSIAConsultarActuacionesIdentificacion?xsd=EnviaSIA_v3_0.xsd">
+            </xsd:import>
+	</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="consultarSIAResponse">
+    <wsdl:part name="parameters" element="msgOut:enviaSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarSIARequest_v3_0">
+    <wsdl:part name="parameters" element="msgIn_v3_0:paramSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarSIAResponse_v3_0">
+    <wsdl:part name="parameters" element="msgOut_v3_0:enviaSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarSIARequest">
+    <wsdl:part name="parameters" element="msgIn:paramSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarSIAResponse_v2_4">
+    <wsdl:part name="parameters" element="msgOut_v2_4:enviaSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="consultarSIARequest_v2_4">
+    <wsdl:part name="parameters" element="msgIn_v2_4:paramSIA">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="wsSIAConsultarActuacionesIdentificacion">
+    <wsdl:operation name="consultarSIA">
+      <wsdl:input message="tns:consultarSIARequest">
+    </wsdl:input>
+      <wsdl:output message="tns:consultarSIAResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarSIA_v2_4">
+      <wsdl:input message="tns:consultarSIARequest_v2_4">
+    </wsdl:input>
+      <wsdl:output message="tns:consultarSIAResponse_v2_4">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarSIA_v3_0">
+      <wsdl:input message="tns:consultarSIARequest_v3_0">
+    </wsdl:input>
+      <wsdl:output message="tns:consultarSIAResponse_v3_0">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="wsSIAConsultarActuacionesIdentificacionSOAP" type="tns:wsSIAConsultarActuacionesIdentificacion">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="consultarSIA">
+      <soap:operation soapAction="http://www.map.es/sgca/consultar/consultarSIA"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarSIA_v2_4">
+      <soap:operation soapAction="http://www.map.es/sgca/consultar/consultarSIA_v2_4"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="consultarSIA_v3_0">
+      <soap:operation soapAction="http://www.map.es/sgca/consultar/consultarSIA_v3_0"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="wsSIAConsultarActuacionesIdentificacion">
+    <wsdl:port name="wsSIAConsultarActuacionesIdentificacionSOAP" binding="tns:wsSIAConsultarActuacionesIdentificacionSOAP">
+      <soap:address location="https://pre-sia2.redsara.es/axis2/services/wsSIAConsultarActuacionesIdentificacion?wsdl"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

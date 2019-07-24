@@ -1,0 +1,79 @@
+// windowheader
+
+.#{$ns}-window-header {
+    margin: $wheader-margin;
+    padding: $wheader-padding;
+    
+    @include pie-clearfix();
+
+    @include mf-background($wheader-bg);
+}
+
+.#{$ns}-window-header--hgroup {
+    clear: left;
+    margin: $wheader-hgroup-margin;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+    }
+}
+    
+.#{$ns}-window-header--title {
+    padding: 0;
+    margin: $wheader-title-margin;
+    
+    color: $wheader-title-color;
+    font-size: $wheader-title-font-size;
+    font-weight: $wheader-title-font-weight;
+    font-style: $wheader-title-font-style;
+}
+
+.#{$ns}-window-header--subtitle {
+    display: block;
+    margin: 0;
+    
+    color: $wheader-subtitle-color;
+    font-size: $wheader-subtitle-font-size;
+    font-weight: $wheader-subtitle-font-weight;
+    font-style: $wheader-subtitle-font-style;
+}
+
+.#{$ns}-window-header--more-info {
+    margin: $wheader-moreinfo-margin;
+}
+
+.#{$ns}-window-header--back-btn {
+    @extend %button;
+
+    float: left;
+    padding: $wheader-backbtn-padding;
+    margin: $wheader-backbtn-margin; 
+    
+    @include fontSize($wheader-backbtn-font-size);
+
+    @include border($wheader-backbtn-border-width, $wheader-backbtn-border-style, $wheader-backbtn-border-color);
+    
+    @include background($wheader-backbtn-bg);
+    @include box-shadow($wheader-backbtn-shadow);
+
+    @include morfont-icon($wheader-backbtn-icon, $margin: $wheader-backbtn-icon-margin, $size: $wheader-backbtn-icon-size);
+
+    &:link, 
+    &:visited {
+        color: $wheader-backbtn-color;
+    }
+
+    &:hover,
+    &:active,
+    &:focus {
+        color: $wheader-backbtn-hover-color;
+        
+        @include mf-background($wheader-backbtn-hover-bg);
+
+        @include box-shadow($wheader-backbtn-hover-shadow);
+    }
+
+    &:focus {
+        
+    }
+}

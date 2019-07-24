@@ -1,0 +1,147 @@
+
+
+.#{$ns}-gallery {
+    @extend %media-list;
+
+}
+
+.#{$ns}-gallery--list {
+    // display: block;
+    list-style:none;
+    margin: 0;
+
+    line-height: 1;
+
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content:flex-start;
+
+    /* .flexbox & {
+        display: flex;
+    } */
+}
+
+.#{$ns}-gallery--item {
+    
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+        width: 33%;
+        padding: 0.5em;
+    }
+
+    @include breakpoint($break-tablet, $no-query: $noquery) {
+        float: left;
+        width: 25%;
+        padding: 0.5em;
+    }
+
+    @include breakpoint($break-tablet, $no-query: $noquery) {
+        float: left;
+        width: 20%;
+        padding: 0.5em;
+    }
+
+    .#{$ns}-dialog & {
+        width: 33%;
+    }
+}
+
+.#{$ns}-gallery--fig {
+    position: relative;
+    width: 100%;
+    margin: 0;
+
+    @include mf-background(#FFF);
+
+    @include box-shadow(0 1px 1px rgba(0,0,0,0.3));
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        min-height: 20em;
+    }
+}
+
+.#{$ns}-gallery--preview-link {
+    @include ir;
+
+    display: block;
+    // height: 70%;
+    min-height: 200px;
+    overflow: hidden;
+
+    text-align: center;
+
+    background-size: cover;
+    background-position: center;
+}
+
+.#{$ns}-gallery--preview {
+    @include visuallyhidden();
+
+    max-height: 100%;
+    max-width: 100%;
+    margin: auto;
+}
+
+.#{$ns}-gallery--item-name {
+    margin-bottom: 0.5em;
+
+    color: $app-color;
+}
+
+.#{$ns}-gallery--item-caption {
+    
+}
+
+.#{$ns}-gallery--item-footer {
+    position: relative;
+    padding: 1em;
+    // height: 30%;
+    height: 90px;
+    //max-height: 90px;
+    overflow: hidden;
+    
+    border-top: 1px solid #CCC;
+}
+
+.#{$ns}-gallery--item-toolbar {
+    @include visuallyhidden();
+
+    position: absolute;
+    display: table;
+    bottom: -100px;
+    left: 0;
+    width: 100%;
+    padding: 2.5em 0.5em 0.5em;
+
+    @include mf-background(linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,0.9) 50%));
+
+    @include transition(all 0.25s linear);
+
+    .#{$ns}-toolbar--tool {
+        display: table-cell;
+    
+        text-align: center;
+    }
+
+    .#{$ns}-gallery--fig:hover & {
+        @include visible;
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+    }
+}
+
+.#{$ns}-gallery--overlay-form {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    @include mf-background(rgba(255, 255, 238, 0.9));
+
+    &.is-hidden {
+        @include visuallyhidden();
+    }
+}

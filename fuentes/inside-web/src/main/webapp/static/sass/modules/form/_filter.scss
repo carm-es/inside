@@ -1,0 +1,84 @@
+// Filter
+
+.#{$ns}-filter {
+    margin-bottom: 1em;
+    // text-align: right;
+    
+    @include border-radius(3px);
+
+    fieldset {
+        /* margin-bottom: 0;
+        padding-top: 6px;
+        padding-bottom: 6px; */
+    }
+    
+    label {
+        /* float: none;
+        display: block;
+        width: auto;
+        margin-bottom: 3px;
+    
+        text-align: left; */
+    }
+
+    select {
+        /* width: auto; */
+    }
+
+    .fld {
+        /* float: left;
+        text-align: left;
+        clear: none;
+        
+        margin-bottom: 0;
+        margin-right: 0.5em; */
+    }
+
+    .mf-filter--reset {
+        /* float: right;
+        margin: 4px 2px 0 1em;
+        padding: 3px 4px 3px 3px;
+        
+        @include border-radius(2px);
+        
+        @include box-shadow(0 1px rgba(255, 255, 255, 0.6) inset, 
+                            0 0 1px rgba(0, 0, 0, 0.5));
+
+        .ie8 & {
+            border: 1px solid #CCCCCC;
+        } */
+    }
+
+    input[type=submit] {
+        /* float: right;
+        padding: 6px 15px; */
+    }
+
+    .fsubmit {
+        /* clear: both;
+        text-align: right;
+        padding-right: 30px; */
+
+        /* input[type=submit] {
+            margin-top: 0;
+        }
+
+        a.clearForm {
+            margin: 3px 0 0 1em;
+        } */
+    }
+
+    .chckBox_alone {
+        /* padding-left: 0;
+        padding-top: 2em; */
+    }
+
+    .chckLabel {
+        /* display: inline; */
+    }
+
+    .ui-dialog & {
+        /* padding-left: 12px;
+        padding-right: 12px; */
+    }
+}

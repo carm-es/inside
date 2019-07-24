@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:insideexp="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e"
+xmlns:eniexp="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e"
+xmlns:insidemeta="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">DATOS DEL DOCUMENTO ELECTRONICO INSIDE (v1.0) (ENI + Datos propios)</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e" schemaLocation="ExpedienteEni.xsd"/>	
+	<xsd:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" schemaLocation="TipoMetadatosAdicionales.xsd"/>
+	<xsd:complexType name="TipoExpedienteInsideConMAdicionales">
+		<xsd:sequence>			
+			<xsd:element ref="eniexp:expediente"/>
+			<xsd:element name="metadatosAdicionales" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

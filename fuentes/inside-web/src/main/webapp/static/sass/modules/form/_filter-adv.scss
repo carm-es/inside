@@ -1,0 +1,48 @@
+// Filtro avanzado desplegable
+
+.mf-filteradv {
+	float: left;
+	position: relative;
+}
+
+/* 
+.mf-filteradv--filter-wrapper {
+	
+}
+ */
+ 
+.mf-filteradv--container {
+	position: absolute;
+	
+	@include background(#FFF);
+	@include box-shadow(0 1px 7px rgba(0,0,0,0.6));
+}
+
+.mf-filteradv--filter-content {
+	margin: 0;
+	max-height: 400px;
+	overflow: auto;
+}
+
+.mf-filteradv--fieldset {
+	margin-right: 1em;
+	margin-left: 1em;
+
+	&:first-child {
+		margin-top: 1em;
+	}
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.mf-filteradv--submitbar {
+	display: block;
+	// width: 100%;
+	margin: 0;
+	/* position: absolute;
+	bottom: 0; */
+
+	@include background(#DDD);
+}

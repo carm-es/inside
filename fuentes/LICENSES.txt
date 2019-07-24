@@ -1,0 +1,16 @@
+/****************************************************************************************
+					LICENSES.TXT
+*****************************************************************************************/
+Los componentes incluidos en la distribución se enumeran a continuación. 
+Todos ellos se distribuyen bajo la licencia EUPL 1.1
+
+	- inside-mvn-base
+	- inside-model
+	- inside-services
+	- inside-web
+	- inside-cliente-firma
+	- infofirma-service
+	- eeutil-client
+	- integration-cmis
+	- inside-util-web
+	- load-tables

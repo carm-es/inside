@@ -1,0 +1,107 @@
+/**********/
+/* Report */
+
+.#{$ns}-report {
+    @include pie-clearfix;
+    
+    .fld {
+        margin: $report-fld-margin;
+    }
+    
+    label, 
+    .label,
+    .#{$ns}-report--label {
+        color: $report-label-color;
+    }
+    
+    %form-control-list .label, 
+    %form-control-list label {
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            float: none;
+        }
+    }
+}
+
+.#{$ns}-report--label {
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+    }
+}
+    
+.#{$ns}-report--fieldset {
+    clear: both;
+    margin: $report-fieldset-margin;
+    padding: $report-fieldset-padding;
+        
+    border: $report-fieldset-border;
+
+    @include pie-clearfix();
+}
+
+.#{$ns}-report--legend {
+    margin: emCalc($legend-margin);
+    
+    @include font-dec(
+        $font-size: $legend-font-size, 
+        $color: $legend-font-color,
+        $font-weight: $legend-font-weight,
+        $font-style: $legend-font-style,
+        $line-height: $legend-line-height,
+        $text-decoration: $legend-text-decoration
+    );
+}
+
+.#{$ns}-report--label {
+    @extend .label;
+}
+
+.#{$ns}-report--data {
+    @include clearfix();
+    
+    margin: $report-data-margin;
+
+    color: $report-data-color;
+    line-height: $report-data-line-height;
+
+    .#{$ns}-report--label + & {
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            // margin-left: $report-data-margin;
+        }
+    }
+}
+
+.#{$ns}-report--textarea {
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        max-width: $textarea-desktop-width;
+    }
+}
+
+// Campos centrados
+
+.#{$ns}-report__centred {
+
+    .#{$ns}-report--label {
+        text-align: right;
+    }
+}
+
+// Campos en línea
+
+.#{$ns}-report__inline {
+    .fld {
+        display: inline-block;
+        margin: 0 1em 0 0;
+    }
+}
+
+// Campos apilados
+
+.#{$ns}-report__stack {
+    .fld > label, 
+    .fld > .label, 
+    &.fld > label, 
+    &.fld > .label {
+        display: block;
+        float: none;
+    }
+}

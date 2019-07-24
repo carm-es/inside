@@ -1,0 +1,46 @@
+/**
+* @desc         Tag - etiquetas
+* @name         tag
+* @author       Ignacio Calleja
+* @tested       
+* @requires     
+*/
+
+%tag {
+    padding: $tag-padding;
+
+    color: $tag-color;
+    @include fontSize($tag-font-size);
+    line-height: $tag-line-height;
+    
+    @include border($tag-border-width, $tag-border-style, $tag-border-color);
+    @include border-radius($tag-border-radius);
+    
+    @include mf-background($tag-bg);
+
+    &:visited {
+        color: $tag-visited-color;
+    }
+
+    &:hover {
+        color: $tag-hover-color;
+    }
+}
+
+.#{$ns}-tag {
+    @extend %tag;
+}
+
+%tag--list {
+    @extend %media-list !optional;
+
+    line-height: 2.2;
+
+    li {
+        display: inline-block;
+    }
+}
+
+.#{$ns}-tag--list {
+    @extend %tag--list;
+}

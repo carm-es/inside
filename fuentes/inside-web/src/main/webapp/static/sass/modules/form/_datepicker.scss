@@ -1,0 +1,9 @@
+// inputs especiales
+
+input.fecha, 
+input.datepicker, 
+input.datetimepicker {
+    background-image: $datepicker-icon;
+    background-position: $datepicker-bg-pos;
+    background-repeat: no-repeat;
+}

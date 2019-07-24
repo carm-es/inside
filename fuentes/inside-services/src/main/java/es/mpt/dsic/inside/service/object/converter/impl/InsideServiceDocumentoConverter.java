@@ -1,0 +1,119 @@
+/*
+ * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
+ * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
+ * (at your option) any later version as soon as they are approved by the European Commission.
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and more details. You
+ * should have received a copy of the EUPL1.1 license along with this program; if not, you may find
+ * it at http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+ */
+
+package es.mpt.dsic.inside.service.object.converter.impl;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
+import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatos;
+import es.mpt.dsic.inside.service.object.converter.InsideServiceObjectConverter;
+import es.mpt.dsic.inside.service.object.converter.InsideServiceObjectConverterException;
+import es.mpt.dsic.inside.service.object.converter.impl.cmis.InsideServiceCmisAdapter;
+import es.mpt.dsic.inside.service.object.converter.impl.csvstorage.InsideServiceCsvStorageAdapter;
+
+public class InsideServiceDocumentoConverter
+    implements InsideServiceObjectConverter<ObjetoDocumentoInside, ObjetoDocumentoInsideMetadatos> {
+
+  protected InsideServiceCmisAdapter cmisAdapter;
+
+  protected InsideServiceCsvStorageAdapter csvStorageAdapter;
+
+  protected Boolean cmis;
+
+  protected static final Log logger = LogFactory.getLog(InsideServiceDocumentoConverter.class);
+
+  @Override
+  public ObjetoDocumentoInside fromRepository(ObjetoDocumentoInside objeto)
+      throws InsideServiceObjectConverterException {
+    ObjetoDocumentoInside objetoDocumentoInside = null;
+    try {
+      if (cmis) {
+        objetoDocumentoInside = cmisAdapter.recuperaDocumentoInside(objeto);
+      } else {
+        objetoDocumentoInside = csvStorageAdapter.recuperaDocumentoInside(objeto);
+      }
+
+    } catch (InsideServiceAdapterException e) {
+      throw new InsideServiceObjectConverterException(
+          "Excepción trasladando el documento electrónico al repositorio CSVSTORAGE", e);
+    }
+    return objetoDocumentoInside;
+  }
+
+  @Override
+  /**
+   * Convierte un ObjetoDocumentoInside. El objeto de entrada debe contener metadatos. El objeto de
+   * salida tendrá relleno: - El identificador del documento, con el identificador del objeto de
+   * entrada. - El identificador del repositorio del documento, con el identificador de objeto . -
+   * Metadatos del documento, con los metadatos del del objeto de entrada. - La versión del
+   * documento. - Las firmas, con las firmas del objeto de entrada, EXCEPTO los bytes de la firma.
+   */
+  public ObjetoDocumentoInside toRepository(ObjetoDocumentoInside documento)
+      throws InsideServiceObjectConverterException {
+
+    try {
+      if (cmis) {
+        cmisAdapter.almacenaObjetoDocumentoInside(documento);
+      } else {
+        csvStorageAdapter.almacenaObjetoDocumentoInside(documento);
+      }
+
+    } catch (InsideServiceAdapterException e) {
+      throw new InsideServiceObjectConverterException(
+          "Excepción trasladando el documento electrónico al repositorio CSVSTORAGE", e);
+    }
+
+    return documento;
+  }
+
+  @Override
+  public ObjetoDocumentoInside delete(ObjetoDocumentoInside documento)
+      throws InsideServiceObjectConverterException {
+    try {
+      if (cmis) {
+        cmisAdapter.eliminaDocumentoInside(documento);
+      } else {
+        csvStorageAdapter.eliminaDocumentoInside(documento);
+      }
+    } catch (InsideServiceAdapterException e) {
+      throw new InsideServiceObjectConverterException(
+          "Excepción eliminando el documento electrónico del repositorio CSVSTORAGE", e);
+    }
+    return documento;
+  }
+
+  public Boolean getCmis() {
+    return cmis;
+  }
+
+  public void setCmis(Boolean cmis) {
+    this.cmis = cmis;
+  }
+
+  public InsideServiceCmisAdapter getCmisAdapter() {
+    return cmisAdapter;
+  }
+
+  public void setCmisAdapter(InsideServiceCmisAdapter cmisAdapter) {
+    this.cmisAdapter = cmisAdapter;
+  }
+
+  public InsideServiceCsvStorageAdapter getCsvStorageAdapter() {
+    return csvStorageAdapter;
+  }
+
+  public void setCsvStorageAdapter(InsideServiceCsvStorageAdapter csvStorageAdapter) {
+    this.csvStorageAdapter = csvStorageAdapter;
+  }
+
+
+}

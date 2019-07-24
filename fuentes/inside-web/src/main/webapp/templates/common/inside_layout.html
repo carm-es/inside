@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie ie6 no-js" lang="es" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 7 ]> <html class="ie ie7 no-js" lang="es" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if IE 8 ]> <html class="ie ie8 no-js" lang="es" xmlns:th="http://www.thymeleaf.org"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en" xmlns:th="http://www.thymeleaf.org"> <!--<![endif]-->
+
+<head th:fragment="head">	
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+	
+	<title th:text="#{application.title}"></title>
+	<meta name="description" content=""/>
+	<meta name="keywords" content="Ministerio de Hacienda y Administraciones Públicas, Secretaría de Estado de Administraciones Públicas, MINHAP, Nombre de aplicación"/>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+	<!-- CSS -->
+	<!--<link rel="stylesheet" media="all" href="css/morfos-min.css"/> -->
+		
+	<!--  No es necesario el css dataTables de jQuery. Morfos tiene todos los estilos necesarios. Mantener ambos puede crear conflictos -->	
+	<!-- <link th:href="|${#httpServletRequest.getContextPath()}/css/jquery.dataTables.css?v=${session.versionNumber}|" rel="stylesheet" media="screen" /> -->
+	
+	<!-- estilos para el autocompleter de jquery -->
+	<link th:href="|${#httpServletRequest.getContextPath()}/css/jquery-ui-1.9.2.custom.min.css?v=${session.versionNumber}|" rel="stylesheet" media="screen" />
+ 	
+ 	<link th:href="|${#httpServletRequest.getContextPath()}/css/styles.css?v=${session.versionNumber}|" rel="stylesheet" media="screen" />
+ 	<link th:href="|${#httpServletRequest.getContextPath()}/css/icons.css?v=${session.versionNumber}|" rel="stylesheet" media="screen" />
+
+
+	<!--SCRIPTS -->
+ 	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/modernizr/modernizr.custom.94470.js?v=${session.versionNumber}|"></script> 
+  	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/jquery/jquery-1.10.2.js?v=${session.versionNumber}|"></script> 
+  	
+  
+  	<!-- SCRIPTS JQUERY UI --> 		      
+
+	<script th:src="|${#httpServletRequest.getContextPath()}/js/libs/jquery/jquery-ui-1.9.2.custom.js?v=${session.versionNumber}|"></script>	
+
+</head>
+
+	<body>
+	
+		<!-- CONTAINER -->
+		<div id="container" class="mf-container">
+		
+			<!-- BROWSERS / JS -->
+			<div th:replace="common/header :: nocompl"></div>
+			
+			<!-- HEADER -->
+			<div th:replace="common/header :: header"></div>
+			
+			<!-- WRAPPER -->
+			<div id="wrap" class="mf-wrapper">
+			
+				<!-- CAJAS DE ADVERTENCIA-->
+				<div th:replace="common/message :: message"></div>
+				<div th:include="common/message :: js"></div>
+				
+				<div th:replace="common/ayuda :: contenido"></div>
+            	<div th:include="common/ayuda :: js"></div>
+			
+				<!-- AQUI EL CONTENIDO-->
+				<div class="mf-main" id="tabla">
+					<div layout:fragment="content"></div>
+	            </div>
+			</div>
+		</div>
+		
+		<!-- FOOTER -->
+		<div th:replace="common/footer :: footer"></div>
+		<div th:include="common/footer :: js"></div>
+		
+		<div th:if="${aditionalScript != null}" th:remove="tag">
+			<script th:inline="javascript">
+			/*<![CDATA[*/
+			    
+			 aditionalScript = [[${aditionalScript}]];
+			 adtionalScriptParams = [[${adtionalScriptParams}]];
+			/*]]>*/
+			</script>
+		</div>
+		
+	</body>
+	
+</html>

@@ -1,0 +1,45 @@
+/****************/
+/* Loading-AJAX */
+
+.loading-ajax {
+    /* position:fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10002; */
+    cursor: wait;
+    
+    background-color: #FFFFFF;
+    background-color: rgba(255,255,255,0.5);
+    filter:alpha(opacity=60);
+}
+
+.loading-image {
+    /* width: 75px;
+    height: 75px;
+    margin: 25% auto;
+    
+    @include border-radius(6px);
+    
+    background-color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.6);
+    background-image: url("images/ajax-loader.gif");
+    background-position: center center;
+    background-repeat: no-repeat;
+    
+    @include box-shadow(0 1px 7px rgba(0,0,0,0.4)); */
+}
+
+.loading-image {
+    display: block;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto;
+
+    text-indent: -99999em;
+    
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-image: url("morfos/images/ajax-loader.gif");
+}

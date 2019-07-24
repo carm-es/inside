@@ -1,0 +1,87 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>inside-remision-nube</artifactId>
+  
+  	<parent>
+		<groupId>es.mpt.dsic</groupId>
+		<artifactId>inside-mvn-base</artifactId>
+		<version>2.0.7</version>
+		<relativePath>../inside-mvn-base</relativePath>
+	</parent>
+ 
+  	<dependencies>
+  			
+  		<dependency>
+			<groupId>es.mpt.dsic</groupId>
+			<artifactId>inside-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>es.mpt.dsic</groupId>
+			<artifactId>inside-util-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>es.mpt.dsic</groupId>
+			<artifactId>inside-justicia</artifactId>
+			<version>1.1</version>
+		</dependency>			
+		
+		<dependency>
+			<groupId>quartz</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+		
+		<!-- cxf -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-core</artifactId>
+			<version>${cxf.version}</version>
+		<!-- 	<exclusions>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+			</exclusions> -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${cxf.version}</version>
+			<!-- <exclusions>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+			</exclusions> -->
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${cxf.version}</version>
+		</dependency>
+		
+	<!-- 	<dependency>
+		    <groupId>com.sun.xml.bind</groupId>
+		    <artifactId>jaxb-impl</artifactId>
+		    <version>2.2.5</version>
+		</dependency> -->
+		
+	</dependencies>
+</project>

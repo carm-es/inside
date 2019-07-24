@@ -1,0 +1,28 @@
+//
+/*FOOTER MENU*/
+
+#footer--menu {
+    @extend %menu;
+
+    @include pie-clearfix();
+
+    li {
+        /* float: left; */
+        margin: $footermenu-item-margin;
+        
+        a {
+            /* display: block; */
+            padding: $footermenu-item-padding;
+            
+            color: $footermenu-item-color;
+            font-size: emCalc($footermenu-item-font-size, $ul-font-size);
+            font-weight: $footermenu-item-font-weight;
+            background: $footermenu-item-bg;
+
+            &:hover{
+                background-color: $footermenu-item-hover-bg;
+                color: $footermenu-item-hover-color;
+            }
+        }
+    }
+}

@@ -1,0 +1,443 @@
+// Not optimized!
+/* Application Menu */
+
+.#{$ns}-appmenu {
+    position: fixed;
+    left: -100%;
+
+    background: $appmenu-mobile-bg;
+
+    @include transition(all 0.25s linear);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        position: static;
+        
+        border-top: 1px solid #666;
+        border-top: $appmenu-desktop-border-top;
+        
+        background: $appmenu-desktop-bg;
+
+        @include box-shadow($appmenu-desktop-shadow);
+
+        .portal & {
+            clear: both;
+            margin: 0 auto;
+            width: 960px;
+        }
+
+        .sede & {
+            clear: both;
+        }
+
+        .#{$ns}-header__compact & {
+            float: left;
+            max-width: none;
+
+            background: transparent;
+
+            @include box-shadow(none);
+        }
+    }
+
+    .sede & {
+        @extend %adaptable-container;
+    }
+}
+
+.#{$ns}-appmenu--title {
+    display: none;
+}
+
+%appmenu-menu,
+.#{$ns}-appmenu--menu {
+    @extend %menu;
+    
+    overflow: hidden;
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        padding: $appmenu-ulmenubar-desktop-padding;
+        border-top: $appmenu-ulmenubar-desktop-border-top;
+        
+        @include background($appmenu-ulmenubar-desktop-bg);
+    }
+
+    .sede & {
+        
+    }
+
+    .#{$ns}-header__compact & {
+        max-width: none;
+
+        border-top: none;
+
+        @include background(transparent);
+    }
+}
+
+%appmenu-item,
+.#{$ns}-appmenu--item {
+    // display: block;
+
+    & > .#{$ns}-appmenu--item-title,
+    & > a {
+        display: block;
+        
+        padding: $appmenu-mobile-link-padding;
+        overflow: hidden;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin: $appmenu-desktop-link-margin;
+            padding: $appmenu-desktop-link-padding;
+        }
+    }
+
+    &.has-submenu {
+        & > span,
+        & > .sticky-wrapper > span,
+        & > a {
+            display: block;
+            float: none;
+            width: auto;
+            overflow: hidden;
+            padding: $appmenu-mobile-dropdown-padding;
+
+            @include morfont-icon($dropdown-icon-s, "after", 2px 0 0 0.5em, 10px);
+        }
+    }
+}
+
+.#{$ns}-appmenu--item__L1 {
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+        margin: $appmenu-desktop-item-margin;
+        //margin-bottom: 0;
+        //margin-right: 1px;
+        //margin-left: 1px;
+        
+        @include box-shadow($appmenu-ulmenubar-item-shadow);
+    }
+        
+    & > a {
+        color: $appmenu-mobile-color;
+        @include fontSize($appmenu-mobile-font-size);
+        font-style: $appmenu-mobile-font-style;
+        font-weight: $appmenu-mobile-font-weight;
+        line-height: emCalc($appmenu-mobile-line-height);
+        text-transform: $appmenu-mobile-text-transform;
+        text-shadow: $appmenu-mobile-text-shadow;
+
+        border-top: $appmenu-mobile-border-top;
+        border-bottom: $appmenu-mobile-border-bottom;
+
+        @include box-shadow(0 1px 2px rgba(255,255,255,0.01) inset,
+                            0 0px 2px rgba(0,0,0,0.1));
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            margin:$appmenu-desktop-link-margin;
+            padding: $appmenu-desktop-link-padding;
+
+            color: $appmenu-desktop-color;
+            @include fontSize($appmenu-desktop-font-size);
+            font-style: $appmenu-desktop-font-style;
+            font-weight: $appmenu-desktop-font-weight;
+            line-height: $appmenu-desktop-line-height;
+            text-transform: $appmenu-desktop-text-transform;
+            text-shadow: $appmenu-desktop-text-shadow;
+
+            border-top: none;
+            border-bottom: none;
+
+            @include box-shadow(none);
+        }
+
+        .ie & {
+            padding: $appmenu-desktop-link-padding-ie;
+        }
+    }
+
+    &.has-submenu {
+        
+        & > span,
+        & > .sticky-wrapper > span,
+        & > a {
+            line-height: emCalc($appmenu-mobile-line-height);
+            @include font-dec(  $appmenu-mobile-dropdown-font-size,
+                                $appmenu-mobile-dropdown-font-weight,
+                                $appmenu-mobile-dropdown-color,
+                                $appmenu-mobile-dropdown-font-style,
+                                $appmenu-mobile-line-height);
+
+            text-transform: $appmenu-mobile-dropdown-text-transform;
+            text-shadow: $appmenu-mobile-dropdown-text-shadow;
+            
+            border-top: $appmenu-mobile-dropdown-border-top;
+            border-bottom: $appmenu-mobile-dropdown-border-bottom;
+
+            cursor: pointer;
+
+            @include box-shadow($appmenu-mobile-dropdown-shadow);
+
+            @include breakpoint($break-mobile, $no-query: $noquery) {
+                margin: $appmenu-desktop-link-margin;
+                padding: $appmenu-desktop-link-padding;
+                
+                line-height: $appmenu-desktop-line-height;
+                @include font-dec(  $appmenu-desktop-dropdown-font-size,
+                                    $appmenu-desktop-font-weight,
+                                    $appmenu-desktop-color,
+                                    $appmenu-desktop-font-style,
+                                    $appmenu-desktop-line-height);
+
+                text-transform: $appmenu-desktop-dropdown-text-transform;
+                text-shadow: $appmenu-desktop-text-shadow;
+
+                border-top: none;
+                border-bottom: none;
+
+                cursor: default;
+
+                @include box-shadow(none);
+            }
+        }
+
+        &:hover,
+        &.is-open {
+            > .#{$ns}-appmenu--submenu {
+                @include dropdown-menu-hover($padding: 1px 0 4px);
+                
+                @include transition(opacity 0.25s linear);
+            }
+        }
+
+        & > .sticky-wrapper > span.sticked {
+            position: fixed;
+            width: 85%;
+            top: 0;
+            left: 0;
+
+            background: $appmenu-mobile-bg;
+        }
+    }
+
+    &:hover,
+    &.is-open {
+
+        & > a,
+        & > span {
+            @include breakpoint($break-mobile, $no-query: $noquery) {
+                color: $appmenu-desktop-hover-color;
+                @include background($appmenu-desktop-hover-bg);
+            }
+        }
+    }
+
+    &.is-selected {
+
+        & > a,
+        & > span {
+            padding: $appmenu-desktop-link-selected-padding;
+
+            @include breakpoint($break-mobile, $no-query: $noquery) {
+                @include border($appmenu-ulmenubar-item-selected-border-width,
+                                $appmenu-ulmenubar-item-selected-border-style,
+                                $appmenu-ulmenubar-item-selected-border-color);
+            }
+        }
+    }
+
+}
+
+.#{$ns}-appmenu--submenu {
+    @extend %menu;
+
+    margin: 0;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        @include dropdown-menu;
+
+        min-width: 180px;
+        max-width: 20%;
+        
+        background: #FFF;
+
+        @include box-shadow(0 2px 2px rgba(0,0,0,0.4));
+    }
+}
+
+.#{$ns}-appmenu--submenu-item {
+    @extend %appmenu-item;
+
+    /* display: block;
+    z-index: auto; */
+    margin-left: $appmenu-mobile-submenu-item-margin-left;
+    margin-right: $appmenu-mobile-submenu-item-margin-right;
+
+    @include mf-background($appmenu-mobile-submenu-item-bg);
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        margin-top: $appmenu-desktop-submenu-item-margin-top;
+        
+        border-bottom: $appmenu-desktop-submenu-item-border-bottom;
+        
+        @include mf-background($appmenu-desktop-submenu-item-bg);
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    &.has-submenu {
+        position: relative;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            @include morfont-icon($dropdown-icon-e, "after", 0 0 0 0.5em, 11px, $position: absolute, $pos-top: 50%, $pos-right: 10px);
+
+        }
+    }
+
+    & > span {
+        display: block;
+        overflow: hidden;
+        padding: $appmenu-mobile-submenu-item-padding;
+        
+        color: $appmenu-mobile-submenu-color;
+        font-size: emCalc($appmenu-mobile-submenu-font-size, $ul-font-size);
+        font-style: $appmenu-mobile-submenu-font-style;
+        font-weight: $appmenu-mobile-submenu-font-weight;
+
+        border-top: $appmenu-mobile-border-top;
+        border-bottom: $appmenu-mobile-border-bottom;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            
+            padding: $appmenu-desktop-submenu-item-padding;
+            
+            color: $appmenu-desktop-submenu-color;
+            font-size: $appmenu-desktop-submenu-font-size;
+            font-weight: $appmenu-desktop-submenu-font-weight;
+            font-style: $appmenu-desktop-submenu-font-style;
+            text-shadow: none;
+
+            border-top: none;
+            border-bottom: none;
+
+            cursor: default;
+        }
+    }
+
+    & > a {
+        float: none;
+        display: block;
+        width: auto;
+        padding: $appmenu-mobile-submenu-item-padding;
+        
+        color: $appmenu-mobile-submenu-color;
+        font-size: emCalc($appmenu-mobile-submenu-font-size);
+        font-style: $appmenu-mobile-submenu-font-style;
+        font-weight: $appmenu-mobile-submenu-font-weight;
+
+        border-top: $appmenu-mobile-border-top;
+        border-bottom: $appmenu-mobile-border-bottom;
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            padding: $appmenu-desktop-submenu-item-padding;
+
+            color: $appmenu-desktop-submenu-color;
+            font-size: emCalc($appmenu-desktop-submenu-font-size);
+
+            border-top: none;
+            border-bottom: none;
+        }
+    }
+
+    &:first-child > * {
+        border-top: none;
+    }
+
+    &:hover,
+    &.is-open {
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            background-color: $appmenu-desktop-submenu-item-hover-bg;
+        
+            border-bottom: $appmenu-desktop-submenu-item-hover-border-bottom;
+        }
+
+        & > a {
+            color: $appmenu-mobile-submenu-hover-color;
+        }
+        
+        .appmenu-l3-submenu {
+
+            @include breakpoint($break-mobile, $no-query: $noquery) {
+                @include dropdown-menu-hover($padding: 5px 0);
+            }
+            
+            top: 0;
+            left: 100%;
+
+            @include ie-shadow;
+            
+            @include transition(opacity 0.25s linear);
+        }
+    }
+}
+
+.appmenu-l3-submenu {
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        @include dropdown-menu;
+        
+        min-width: 180px;
+        max-width: 20%;
+        
+        background-color: #FFF;
+        
+        @include border-radius(2px);
+        
+        @include box-shadow(0 2px 2px rgba(0,0,0,0.4));
+        
+        @include transition(opacity 0.25s linear);
+    }
+}
+
+.#{$ns}-appmenu--item__L2 {
+    & > a {
+        // color: $appmenu-mobile-submenu-color;
+        @include fontSize($appmenu-mobile-font-size);
+        //font-style: $appmenu-mobile-font-style;
+        //font-weight: $appmenu-mobile-font-weight;
+        line-height: emCalc($appmenu-mobile-line-height);
+        //text-transform: $appmenu-mobile-text-transform;
+        //text-shadow: $appmenu-mobile-text-shadow;
+
+        //border-top: $appmenu-mobile-border-top;
+        //border-bottom: $appmenu-mobile-border-bottom;
+
+        //@include box-shadow(0 1px 2px rgba(255,255,255,0.01) inset,
+        //                    0 0px 2px rgba(0,0,0,0.1));
+
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+        //    margin:$appmenu-desktop-link-margin;
+        //    padding: $appmenu-desktop-link-padding;
+
+            // color: $appmenu-desktop-submenu-color;
+            @include fontSize($appmenu-desktop-font-size);
+        /*     font-style: $appmenu-desktop-font-style;
+            font-weight: $appmenu-desktop-font-weight; */
+            line-height: $appmenu-desktop-line-height;
+        /*    text-transform: $appmenu-desktop-text-transform;
+            text-shadow: $appmenu-desktop-text-shadow;
+
+            border-top: none;
+            border-bottom: none;
+
+            @include box-shadow(none); */
+        }
+
+        /* .ie & {
+            padding: $appmenu-desktop-link-padding-ie;
+        } */
+    }
+}

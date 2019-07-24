@@ -1,0 +1,112 @@
+<!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
+   This program is licensed and may be used, modified and redistributed under the terms
+   of the European Public License (EUPL), either version 1.1 or (at your
+   option) any later version as soon as they are approved by the European Commission.
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+   or implied. See the License for the specific language governing permissions and
+   more details.
+   You should have received a copy of the EUPL1.1 license
+   along with this program; if not, you may find it at
+   http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd 
+                        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<bean id="serverAuthenticationCallback"
+		class="es.mpt.dsic.inside.ws.security.wss4j.ServerAuthenticationCallback" />
+		
+	<bean id="wSS4JUserTokenInInterceptor" class="org.apache.cxf.ws.security.wss4j.WSS4JInInterceptor">
+		<constructor-arg>
+			<map>
+				<entry value="UsernameToken">
+					<key>
+						<util:constant
+							static-field="org.apache.ws.security.handler.WSHandlerConstants.ACTION" />
+					</key>
+				</entry>
+				<entry value="PasswordText">
+					<key>
+						<util:constant
+							static-field="org.apache.ws.security.handler.WSHandlerConstants.PASSWORD_TYPE" />
+					</key>
+				</entry>
+				<entry key="passwordCallbackRef">
+					<ref bean="serverAuthenticationCallback" />
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<util:properties id="cryptoProperties">
+		<prop key="org.apache.ws.security.crypto.provider">${org.apache.ws.security.crypto.provider}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.truststore.file">${org.apache.ws.security.crypto.merlin.truststore.file}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.truststore.type">${org.apache.ws.security.crypto.merlin.truststore.type}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.truststore.password">${org.apache.ws.security.crypto.merlin.truststore.password}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.keystore.alias">${org.apache.ws.security.crypto.merlin.keystore.alias}</prop>
+		
+		<prop key="org.apache.ws.security.crypto.merlin.keystore.password">${org.apache.ws.security.crypto.merlin.keystore.password}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.file">${org.apache.ws.security.crypto.merlin.file}</prop>
+		
+		<prop key="org.apache.ws.security.crypto.merlin.keystore.type">${org.apache.ws.security.crypto.merlin.keystore.type}</prop>
+		<prop key="org.apache.ws.security.crypto.merlin.keystore.private.password">${org.apache.ws.security.crypto.merlin.keystore.private.password}</prop>
+		<prop key="WSHandlerConstants.USER">${WSHandlerConstants.USER}</prop>
+		<prop key="passwordCertificado">${passwordCertificado}</prop>
+		
+		<prop key="trustedStore">${trustedStore}</prop>
+		<prop key="trustedStorePassword">${trustedStorePassword}</prop>
+		
+		<prop key="keyStore">${keyStore}</prop>
+		<prop key="keyStorePassword">${keyStorePassword}</prop>
+		<prop key="keyPasswordKey">${keyPasswordKey}</prop>
+
+	</util:properties>
+
+	<bean id="wSS4JCertificateInInterceptor" class="es.mpt.dsic.inside.ws.security.interceptor.CustomWSS4JInInterceptor">
+		<constructor-arg>
+			<map>
+				<entry value="Signature">
+					<key>
+						<util:constant
+							static-field="org.apache.ws.security.handler.WSHandlerConstants.ACTION" />
+					</key>
+				</entry>
+			</map>
+		</constructor-arg>
+		<property name="cryptoProperties" ref="cryptoProperties"></property>
+	</bean>
+
+	<bean id="customUserTokenValidator"
+		class="es.mpt.dsic.inside.ws.security.wss4j.CustomUserTokenValidator" />
+		
+		
+	<bean id="soapAuthenticationInterceptor"
+		class="es.mpt.dsic.inside.ws.security.interceptor.SoapAuthenticationInterceptor">
+		<property name="authenticationManager" ref="autenticationManager" />
+	</bean>
+	
+	<bean id="certificateAuthenticationInterceptor"
+		class="es.mpt.dsic.inside.ws.security.interceptor.CertificateAuthenticationInterceptor">
+		<property name="insideUsersService" ref="InsideUsersService" />		
+		<property name="authenticationManager" ref="certificateAutenticationManager" />
+	</bean>
+	
+	<bean id="userTokenAuthenticationInterceptor"
+		class="es.mpt.dsic.inside.ws.security.interceptor.UserTokenAuthenticationInterceptor">
+		<property name="insideUsersService" ref="InsideUsersService" />		
+		<property name="authenticationManager" ref="certificateAutenticationManager" />
+	</bean>
+	
+	<bean id="certificateInterceptor"
+		class="es.mpt.dsic.inside.ws.security.interceptor.CertificateInterceptor">
+	</bean>
+	
+
+</beans>

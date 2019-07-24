@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="common/inside_layout">
+<head>
+<script
+	th:src="|${#httpServletRequest.getContextPath()}/js/remisionNubeComunicacionesTokenExpedienteUsuario.js?v=${session.versionNumber}|"></script>
+
+</head>
+
+<body>
+
+	<div layout:fragment="content">
+	
+		<div class="mf-window-header">
+			<div class="mf-window-header--hgroup">
+				<nav class="mf-breadcrumb" role="navigation">
+					<ol class="mf-breadcrumb--menu">
+						<li class="mf-breadcrumb--item"><a href="principal"
+							th:text="#{layout.menu.option.inicio}"></a></li>
+					</ol>
+				</nav>
+				<h3	class="mf-window-header--title" th:utext="#{comunicaciones.token.expediente.usuario.title}"></h3>
+			</div>
+		</div>
+		<form id="puestaDisposicionExpedienteNoInsideForm" class="mf-form__stack"
+			th:action="@{/puestaDisposicionExpedienteNoInside}" method="post">
+			<input type="hidden" name="identificador" id="identificador" />
+		</form>
+		<div id="contentData">
+			<table id="comunicacionesTokenExpedienteUsuarioTabla"
+				class="mf-table-data mf-table-data__sortable mf-table-data__zebra fld">
+				<thead>
+					<tr>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.idPeticion}"
+							th:text="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.idPeticion}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.idExpediente}"
+							th:text="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.idExpediente}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.endpoint.remitente}"
+							th:text="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.endpoint.remitente}"></th>
+						<th class="mf-sort-ln" href="·"
+							th:title="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.fecha}"
+							th:text="#{listadoComunicacionesTokenExpedienteUsuario.tabla.title.token.fecha}"></th>
+						<th></th>	
+					</tr>
+				</thead>
+				<tbody>
+					<tr
+						th:each="comunicacionTokenExpediente,iterationStatus : *{listadoComunicacionesTokenExpediente}"
+						th:id="'comunicacionTokenExpediente_'+${iterationStatus.count - 1}">
+						<td class="grid-column-creador"
+							th:text="${comunicacionTokenExpediente.idPeticion}"></td>
+						<td class="grid-column-creador"
+							th:text="${comunicacionTokenExpediente.tokenIdExpEni}"></td>
+						<td class="grid-column-articulo_tipo.codigo"
+							th:text="${comunicacionTokenExpediente.endpointRemitenteCorto}" th:title="${comunicacionTokenExpediente.endpointRemitente}"></td>
+						<td class="grid-column-articulo_tipo.fecha"
+							th:text="${#dates.format(comunicacionTokenExpediente.fechaPeticion, 'dd-MM-yyyy HH:mm:ss')}"></td>	
+						<td class="grid-column-articulo_tipo.fecha">
+							<ul class="grid-row-actions">
+								<li class="grid-row-action"><a
+									class="mf-table-data--row-action  mf-action  mf-action__revisar "
+									th:onclick="|javascript:${'verExpedienteNoInside(&quot;' + comunicacionTokenExpediente.id + '&quot;)'}|"
+									target="_self"
+									th:title="#{comunicaciones.token.expediente.usuario.recuperar.expediente}"><span
+										class="mf-icon mf-icon-doc-check"></span> </a></li>
+							</ul>	
+						</td>								
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+	<div class="mf-veil" style="display:none"></div>
+	</div>
+
+	<script>
+		var tablaComunicacionesTokenExpedienteUsuario;
+		showMessage();
+	</script>
+
+</body>
+</html>

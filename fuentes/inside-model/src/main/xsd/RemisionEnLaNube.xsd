@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		   xmlns:ns="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube"
+		   xmlns:eniexpind="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e"
+   		   xmlns:eniexpmeta="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos"
+		   xmlns:enidocmeta="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"
+		   xmlns:eniexp="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e" 
+		   xmlns:enidoc="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"
+		   xmlns:enifile="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido" 
+		   xmlns:insidemeta="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"
+		   targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/remisionNube" 
+		   elementFormDefault="qualified" attributeFormDefault="unqualified">
+		   
+<!-- ******************************************************************************************************************************
+******************************                   TIPOS COMPLEJOS                   ************************************************
+***********************************************************************************************************************************-->	
+
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/indice-e"	
+				schemaLocation="IndiceExpedienteEni.xsd" />
+				
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e/metadatos"	
+				schemaLocation="MetadatosExpedienteEni.xsd" />
+				
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos"	
+				schemaLocation="MetadatosDocumentoEni.xsd" />
+	
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e"	
+				schemaLocation="ExpedienteEni.xsd" />
+				
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e"	
+				schemaLocation="DocumentoEni.xsd" />
+	
+	<xs:import	namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido"	
+				schemaLocation="ContenidoDocumentoEni.xsd" />
+	
+	<xs:import	namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" 
+				schemaLocation="TipoMetadatosAdicionales.xsd" />
+		
+	<xs:complexType name="StringTokenType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa un token</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="idexp_eni" type="xs:string" minOccurs="1"/>
+			<xs:element name="csv" type="xs:string" minOccurs="1"/>
+			<xs:element name="uuid" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="ParametrosRemision">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa parametros de entrada</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="parametro" type="xs:string" minOccurs="1"/>
+			<xs:element name="valor" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="PeticionType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa datos comunes en una peticion en Remisión en la nube</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dir3" type="xs:string" minOccurs="1"/>
+			<xs:element name="id" type="xs:string" minOccurs="0"/>
+			<xs:element name="usuario" type="xs:string" minOccurs="0"/>			
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="DatosRemisionJusticiaType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa datos comunes en una peticion en Remisión en la nube</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dir3Remitente" type="xs:string" minOccurs="1"/>
+			<xs:element name="nig" type="xs:string" minOccurs="1"/>
+			<xs:element name="claseProcedimiento" type="xs:string" minOccurs="1"/>
+			<xs:element name="anyoProcedimiento" type="xs:string" minOccurs="1"/>			
+			<xs:element name="numeroProcedimiento" type="xs:string" minOccurs="1"/>
+			<xs:element name="descripcion" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RespuestaType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa datos comunes en una respuesta en la Remisión en la nube</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="codigo" type="xs:int" minOccurs="1"/>
+			<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+ 	 
+
+<!-- ************************************************************************************************************************************************* -->
+<!-- 	1.- SISTEMA PETICIONARIO solicita el acceso al SISTEMA REMITENTE (a través del nodo central). 											   	   -->		
+<!-- ************************************************************************************************************************************************* -->	
+
+	<xs:complexType name="PeticionSolicitarAccesoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una peticion de solicitud de acceso a expediente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="peticion" type="ns:PeticionType" minOccurs="1"/>
+			<xs:element name="asunto" type="xs:string" minOccurs="1"/>
+			<xs:element name="adjunto" type="enifile:TipoContenido" minOccurs="0"/>
+			<xs:element name="id_exped_pedido" type="xs:string" minOccurs="0"/>
+			<xs:element name="codigo_sia" type="xs:int" minOccurs="1"/>
+			<xs:element name="metadatos" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0"/>
+			<xs:element name="endpoint_peticionario" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="RespuestaSolicitarAccesoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta a la solicitud de acceso a expediente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="1"/>
+			<xs:element name="idPeticion" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+<!-- ************************************************************************************************************************************************* 		-->
+<!--  	2.- SISTEMA REMITENTE comunica al SISTEMA PETICIONARIO (en este caso sería el nodo central), las credenciales o claves de acceso al expediente      -->
+<!--		solicitado	   																												                    -->
+<!-- ************************************************************************************************************************************************* 		-->
+
+
+	<xs:complexType name="PeticionComunicacionTokenExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una comunicación de credenciales o claves de acceso del expediente solicitado</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="peticion" type="ns:PeticionType" minOccurs="1"/>
+			<xs:element name="asunto" type="xs:string" minOccurs="0"/>
+			<xs:element name="adjunto" type="enifile:TipoContenido" minOccurs="0"/>
+			<xs:element name="metadatosExp" type="eniexpmeta:TipoMetadatos" minOccurs="0"/>
+			<xs:element name="indiceExp" type="eniexp:TipoExpediente" minOccurs="0"/>
+			<xs:element name="token" type="ns:StringTokenType" minOccurs="1"/>
+			<xs:element name="datosRemisionJusticia" type="ns:DatosRemisionJusticiaType" minOccurs="0"/>
+			<xs:element name="endpoint_remitente" type="xs:string" minOccurs="1"/>
+			<xs:element name="url_accesoWeb" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="RespuestaComunicacionTokenExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta a la solicitenud de acceso a expediente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="1"/>
+			<xs:element name="idPeticion" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+<!-- ************************************************************************************************************************************************* 	-->
+<!-- 	3.- SISTEMA PETICIONARIO pide al SISTEMA REMITENTE (a través del nodo central), el acceso al índice del expediente, indicando el token.			-->		
+<!-- ************************************************************************************************************************************************* 	-->	
+
+	<xs:complexType name="PeticionAccesoIndiceExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una peticion de acceso al indice del expediente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="peticion" type="ns:PeticionType" minOccurs="1"/>
+			<xs:element name="token" type="ns:StringTokenType" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+		<!-- OBJETO RESPUESTA -->	
+	<xs:complexType name="RespuestaAccesoIndiceExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta al acceso al indice del expediente</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="0"/>
+			<xs:element name="expedienteEni" type="eniexp:TipoExpediente" minOccurs="0"/>
+			<xs:element name="metadatosAdicionales" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0"/>
+			<xs:element name="metadatos_documento" type="enidocmeta:TipoMetadatos" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="endpoint_remitente" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+<!-- ************************************************************************************************************************************************* -->
+<!-- 	4.-SISTEMA PETICIONARIO solicita documento de expediente a SISTEMA REMITENTE (sin pasar por Punto Único Justicia, ya se hablan directamente    -->
+<!--	PETICIONARIO y REMITENTE mediante el endpoint)											   													   -->		
+<!-- ************************************************************************************************************************************************* -->	
+	
+	<xs:complexType name="PeticionAccesoDocumentoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una peticion de una descarga de un documentoENI</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="peticion" type="ns:PeticionType" minOccurs="1"/>
+			<xs:element name="token" type="ns:StringTokenType" minOccurs="1"/>
+			<xs:element name="id_Documento" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	
+	<!-- OBJETO RESPUESTA -->	
+	<xs:complexType name="RespuestaAccesoDocumentoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta con un documentoEni</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="0"/>
+			<xs:element name="documento" type="enidoc:TipoDocumento" minOccurs="0"/>
+			<xs:element name="metadatosAdicionales" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+<!-- ************************************************************************************************************************************************* -->	
+
+
+<!-- ************************************************************************************************************************************************* 	-->
+<!-- 	5.-NODO CENTRAL informa del estado del envío a Justicia al Sistema Remitente										-->		
+<!-- ************************************************************************************************************************************************* 	-->	
+
+	<xs:complexType name="PeticionComunicacionResultadoEnvioMJUType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una comunicación de resultado de un envio a MJU</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="codigo" type="xs:string" minOccurs="1"/>
+			<xs:element name="descripcion" type="xs:string" minOccurs="0"/>
+			<xs:element name="idExpediente" type="xs:string" minOccurs="1"/>
+			<xs:element name="codigoEnvioMJU" type="xs:string" minOccurs="0"/>
+			<xs:element name="idPeticion" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="RespuestaComunicacionResultadoEnvioMJUType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una comunicación de resultado de un envio a MJU</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+<!-- ************************************************************************************************************************************************* 	-->
+<!-- 	6.-SISTEMA PETICIONARIO y REMITENTE informan a NODO CENTRAL (PUNTO ÚNICO DE JUSTICIA) del ACCESO EFECTUADO										-->		
+<!-- ************************************************************************************************************************************************* 	-->	
+
+	<xs:complexType name="PeticionInformarAccesoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una peticion de informar el acceso a documento</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>			
+			<xs:element name="peticion" type="ns:PeticionType" minOccurs="1"/>
+			<xs:element name="id_Documento" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	
+		<!-- OBJETO RESPUESTA -->	
+	<xs:complexType name="RespuestaInformarAccesoExpedienteType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta de informar el acceso a documento</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="respuesta" type="ns:RespuestaType" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+<!-- ************************************************************************************************************************************************* 	-->
+<!-- 	7.-SISTEMA PETICIONARIO realiza una remisión de un expediente almacenado a Justicia. NO corresponde a remisión en la nube en si.									-->		
+<!-- ************************************************************************************************************************************************* 	-->	
+	
+    <xs:complexType name="PeticionRemisionAJusticiaType">
+    	<xs:sequence>
+			<xs:element name="idexp_eni" type="xs:string" minOccurs="1"/>
+			<xs:element name="dir3Juzgado" type="xs:string" minOccurs="1"/>
+    		<xs:element name="datosRemisionJusticia" type="ns:DatosRemisionJusticiaType" minOccurs="1"/>
+    	</xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="RespuestaRemisionAJusticiaType">
+		<xs:annotation>
+			<xs:documentation>Esquema que representa una respuesta a la petición de remision a justicia</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+	      <xs:element name="Respuesta" type="ns:RespuestaType" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+    
+</xs:schema>
+

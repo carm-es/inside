@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+xmlns:insidedocaltaMtom="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e/alta/mtom"
+xmlns:enidocmeta="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" 
+xmlns:insidemeta="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales"
+xmlns:xmime="http://www.w3.org/2005/05/xmlmime"
+targetNamespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/documento-e/alta/mtom" 
+elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:annotation>
+		<xsd:documentation xml:lang="es">XSD PARA ALTA DE DOCUMENTO EN INSIDE</xsd:documentation>
+	</xsd:annotation>
+	<xsd:import namespace="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" schemaLocation="MetadatosDocumentoEni.xsd"/>
+	<xsd:import namespace="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/metadatosAdicionales" schemaLocation="TipoMetadatosAdicionales.xsd"/>
+	<xsd:element name="documentoAltaMtom" type="insidedocaltaMtom:TipoDocumentoAltaInsideMtom">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">Tipo de datos para dar de alta documentos en Inside con MTOM</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<xsd:complexType name="TipoDocumentoAltaInsideMtom">
+		<xsd:sequence>
+			<xsd:element name="contenido" type="xsd:base64Binary" xmime:expectedContentTypes="application/octet-stream">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">El contenido en datahandler del documento. Puede ser el contenido incluido en una firma implicita</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="firmadoConCertificado" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Especifica si el contenido incluido en el nodo contenido está firmado o no.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="metadatosEni">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Metadatos del ENI para el documento.</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Organo" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+						<xsd:element name="FechaCaptura" type="xsd:dateTime"/>
+						<xsd:element name="OrigenCiudadanoAdministracion" type="xsd:boolean"/>
+						<xsd:element name="TipoDocumental" type="enidocmeta:tipoDocumental">
+							<xsd:annotation>
+								<xsd:documentation xml:lang="es">/*Documentos de decisión*/
+			- TD01 - Resolución.
+			- TD02 - Acuerdo.
+			- TD03 - Contrato.
+			- TD04 - Convenio.
+			- TD05 - Declaración.
+			/*Documentos de transmisión*/
+			- TD06 - Comunicación.
+			- TD07 - Notificación.
+			- TD08 - Publicación.
+			- TD09 - Acuse de recibo.
+			/*Documentos de constancia*/
+			- TD10 - Acta.
+			- TD11 - Certificado.
+			- TD12 - Diligencia.
+			/*Documentos de juicio*/
+			- TD13 - Informe.
+			/*Documentos de ciudadano*/
+			- TD14 - Solicitud.
+			- TD15 - Denuncia.
+			- TD16 - Alegación.
+			- TD17 - Recursos.
+			- TD18 - Comunicación ciudadano.
+			- TD19 - Factura.
+			- TD20 - Otros incautados.
+			/*Otros*/
+			- TD99 - Otros.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="metadatosAdicionales" type="insidemeta:TipoMetadatosAdicionales" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Metadatos adicionales a los del ENI.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="csv" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Opcionalmente se puede indicar los datos del CSV del documento</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="valorCSV" type="xsd:string"/>
+						<xsd:element name="regulacionCSV" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="asociadoaExpediente" minOccurs="0" type="insidedocaltaMtom:TipoDocumentoAsociadoaExpedienteMtom">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Opcionalmente se puede indicar que el documento está asociado a un expediente.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="firmadoEnServidor" type="xsd:boolean">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="es">Fuerza a Inside a firmar el documento con su sello .</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="TipoDocumentoAsociadoaExpedienteMtom">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="es">Indica la asociación de un documento a un expediente .</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="identificadorExpediente" type="xsd:string" />
+			<xsd:element name="identificadorCarpeta" type="xsd:string"  minOccurs="0" />
+		</xsd:sequence>
+	
+	</xsd:complexType>
+</xsd:schema>

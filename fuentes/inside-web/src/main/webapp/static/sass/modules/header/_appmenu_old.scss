@@ -1,0 +1,410 @@
+// Not optimized!
+/* Application Menu */
+    
+#appMenu {
+    position: fixed;
+    left: -100%;
+
+    background: $appmenu-mobile-bg;
+
+    @include transition(all 0.25s linear);
+    
+    //@include box-shadow($appmenu-mobile-shadow);
+
+    @include at-breakpoint($break-mobile ie) {
+        position: static;
+        display: block;
+        // width: 100%;
+        // margin-left: 375px;
+        
+        border-top: 1px solid #666;
+        border-top: $appmenu-desktop-border-top;
+        
+        background: $appmenu-desktop-bg;
+
+        @include box-shadow($appmenu-desktop-shadow);
+
+        .portal & {
+            clear: both;
+            margin: 0 auto;
+            width: 960px;
+        }
+
+        .sede & {
+            clear: both;
+            margin-left: 0;
+        }
+    }
+
+    & > h4 {
+        display: none;
+    }
+
+    .ie8 & {
+        // margin-left: -2px;
+
+        // border-top: 1px solid #D0D0D0;
+    }
+
+    ul.menu {
+        margin: 0;
+
+        @include at-breakpoint($break-mobile ie) {
+            padding: $appmenu-ulmenubar-desktop-padding;
+            border-top: $appmenu-ulmenubar-desktop-border-top;
+            
+            @include background($appmenu-ulmenubar-desktop-bg);
+
+            .portal & {
+
+            }
+
+            .sede & {
+                width: 960px;
+                margin: 0 auto;
+            }
+        }
+
+        & > li {
+            display: block;
+
+            @include at-breakpoint($break-mobile ie) {
+                // display: inline;
+                float: left;
+                margin-bottom: 0;
+                margin-right: 1px;
+                margin-left: 1px;
+                
+                @include box-shadow($appmenu-ulmenubar-item-shadow);
+            }
+
+            & > a {
+                display: block;
+                float: none;
+                width: auto;
+                
+                padding: $appmenu-mobile-link-padding;
+                overflow: hidden;
+                
+                color: $appmenu-mobile-color;
+                @include fontSize($appmenu-mobile-font-size);
+                font-style: $appmenu-mobile-font-style;
+                font-weight: $appmenu-mobile-font-weight;
+                line-height: emCalc($appmenu-mobile-line-height);
+                text-transform: $appmenu-mobile-text-transform;
+                text-shadow: $appmenu-mobile-text-shadow;
+
+                border-top: $appmenu-mobile-border-top;
+                border-bottom: $appmenu-mobile-border-bottom;
+
+                @include box-shadow(0 1px 2px rgba(255,255,255,0.01) inset,
+                                    0 0px 2px rgba(0,0,0,0.1));
+
+                @include at-breakpoint($break-mobile ie) {
+                    margin: 0 5px;
+                    padding: $appmenu-desktop-link-padding;
+
+                    color: $appmenu-desktop-color;
+                    @include fontSize($appmenu-desktop-font-size);
+                    font-style: $appmenu-desktop-font-style;
+                    font-weight: $appmenu-desktop-font-weight;
+                    line-height: $appmenu-desktop-line-height;
+                    text-transform: $appmenu-desktop-text-transform;
+                    text-shadow: $appmenu-desktop-text-shadow;
+
+                    border-top: none;
+                    border-bottom: none;
+
+                    @include box-shadow(none);
+                }
+            }
+
+            &:hover {
+
+                & > a {
+                    @include at-breakpoint($break-mobile ie) {
+                        @include background($appmenu-desktop-hover-bg);
+                    }
+                }
+                
+                & > span {
+                    @include at-breakpoint($break-mobile ie) {
+                        /* @include background(linear-gradient(top, rgba(51,51,51,0) 0%, rgba(51,51,51,0.2) 89%, rgba(0,0,0,0.05) 100%), 
+                                            url('images/icons/sort-down_16white.png') no-repeat right 3px); */
+                        @include background($appmenu-desktop-hover-bg);
+                    }
+                }
+                
+                ul.subMenu {
+                    visibility: visible;
+                    opacity: 1;
+                    height: auto;
+                    
+                    @include transition(opacity 0.25s linear);
+                }
+            }
+
+            &.dropdown {
+                /* border-bottom: $appmenu-mobile-border-bottom; */
+
+                & > span,
+                & > .sticky-wrapper > span,
+                & > a {
+                    display: block;
+                    float: none;
+                    width: auto;
+                    padding: $appmenu-mobile-dropdown-padding;
+
+                    @include font-dec(  $appmenu-mobile-dropdown-font-size,
+                                        $appmenu-mobile-dropdown-font-weight,
+                                        $appmenu-mobile-dropdown-color,
+                                        $appmenu-mobile-dropdown-font-style,
+                                        $appmenu-mobile-line-height);
+
+                    text-transform: $appmenu-mobile-dropdown-text-transform;
+                    text-shadow: $appmenu-mobile-dropdown-text-shadow;
+                    
+                    border-top: $appmenu-mobile-dropdown-border-top;
+                    border-bottom: $appmenu-mobile-dropdown-border-bottom;
+
+                    @include background($appmenu-mobile-dropdown-bg);
+
+                    @include box-shadow($appmenu-mobile-dropdown-shadow);
+
+                    @include at-breakpoint($break-mobile ie) {
+                        margin: 0 5px;
+                        padding: $appmenu-desktop-link-padding;
+                        
+                        @include font-dec(  $appmenu-desktop-dropdown-font-size,
+                                            $appmenu-desktop-font-weight,
+                                            $appmenu-desktop-color,
+                                            $appmenu-desktop-font-style,
+                                            $appmenu-desktop-line-height);
+
+                        text-transform: $appmenu-desktop-dropdown-text-transform;
+                        text-shadow: $appmenu-desktop-text-shadow;
+
+                        border-top: none;
+                        border-bottom: none;
+
+                        cursor: default;
+
+                        background: url('images/icons/sort-down_16white.png') no-repeat right 3px;    
+
+                        @include box-shadow(none);
+                    }    
+                }
+
+                & > .sticky-wrapper > span.sticked {
+                    position: fixed;
+                    width: 85%;
+                    top: 0;
+                    left: 0;
+
+                    background: $appmenu-mobile-bg;
+                }
+            }
+        }
+
+
+    }
+
+    ul.subMenu {
+        margin: 0;
+
+        @include at-breakpoint($break-mobile ie) {
+            visibility: hidden;
+            height: 0;
+            opacity: 0;
+            float: left;
+            position: absolute;
+            clear: both;
+            min-width: 180px;
+            max-width: 20%;
+            padding: 1px 5px 4px 5px;
+            
+            z-index: 100;
+
+            background: #FFF;
+
+            @include box-shadow(0 2px 2px rgba(0,0,0,0.4));
+        }
+
+        .ie8 & {
+            border: 1px solid #CCC;
+            border-width: 0 1px 1px 1px;
+        }
+
+        & > li {
+            display: block;
+
+            background-color: rgba(0,0,0,0.15);
+            
+            @include at-breakpoint($break-mobile ie) {
+                margin-bottom: 1px;
+                
+                border-bottom: 1px solid #BBB;
+                
+                background-color: #D9D9D9;
+            }
+
+            &.dropdown {
+
+                @include at-breakpoint($break-mobile ie) {
+                    background: #D9D9D9 url('images/dropdownarrow.png') no-repeat 95% center;
+                }
+            }
+
+            & > span {
+                display: block;
+                overflow: hidden;
+                padding: $appmenu-mobile-submenu-item-padding;
+                
+                color: $appmenu-mobile-submenu-color;
+                font-size: emCalc($appmenu-mobile-submenu-font-size, $ul-font-size);
+                font-style: $appmenu-mobile-submenu-font-style;
+                font-weight: $appmenu-mobile-submenu-font-weight;
+
+                border-top: $appmenu-mobile-border-top;
+                border-bottom: $appmenu-mobile-border-bottom;
+
+                @include at-breakpoint($break-mobile ie) {
+                    
+                    padding: 10px 5px 10px 20px;
+                    
+                    color: $appmenu-desktop-submenu-color;
+                    font-size: $appmenu-desktop-submenu-font-size;
+                    font-weight: $appmenu-desktop-submenu-font-weight;
+                    font-style: $appmenu-desktop-submenu-font-style;
+                    text-shadow: none;
+
+                    border-top: none;
+                    border-bottom: none;
+
+                    cursor: default;
+                }
+            }
+
+            & > a {
+                float: none;
+                display: block;
+                width: auto;
+                padding: $appmenu-mobile-submenu-item-padding;
+                
+                color: $appmenu-mobile-submenu-color;
+                font-size: emCalc($appmenu-mobile-submenu-font-size);
+                font-style: $appmenu-mobile-submenu-font-style;
+                font-weight: $appmenu-mobile-submenu-font-weight;
+
+                border-top: $appmenu-mobile-border-top;
+                border-bottom: $appmenu-mobile-border-bottom;
+
+                @include at-breakpoint($break-mobile ie) {
+                    padding: $appmenu-desktop-submenu-item-padding;
+
+                    color: $appmenu-desktop-submenu-color;
+                    font-size: emCalc($appmenu-desktop-submenu-font-size);
+
+                    border-top: none;
+                    border-bottom: none;
+                }
+            }
+
+            &:first-child > * {
+                border-top: none;
+            }
+
+            &:hover ul {
+                visibility: visible;
+                opacity: 1;
+                height: auto;
+                
+                @include at-breakpoint($break-mobile ie) {
+                    @include border-radius(2px);
+                    @include transition(opacity 0.25s linear);
+
+                    @include box-shadow(0 2px 2px rgba(0,0,0,0.4));
+                }
+
+                .ie8 & {
+                    border-top: 1px solid #CCC;
+                    border-right: 1px solid #666;
+                    border-bottom: 1px solid #666;
+                    border-left: 1px solid #AAA;
+                }
+            }   
+
+            & > ul {
+                display: block;
+                margin: 0;
+                list-style: disc inside;
+
+                @include at-breakpoint($break-mobile ie) {
+                    visibility: hidden;
+                    height: 0;
+                    opacity: 0;
+                    float: right;
+                    position: absolute;
+                    clear: both;
+                    min-width: 180px;
+                    max-width: 20%;
+                    margin-left: 94%;
+                    margin-top: -30px;
+                    padding: 5px;
+                
+                    background-color: #FFF;
+                }
+
+                & > li {
+                    display: block;
+
+                    list-style: disc;
+                    list-style-position: inside;
+
+                    @include at-breakpoint($break-mobile ie) {
+                        overflow: hidden;
+                        background-color: #D9D9D9;
+                        margin-bottom: 0;
+                        
+                        border-bottom: 1px solid #CCC;
+                        border-top: 1px solid #FFF;
+                    }
+
+                    a {
+                        display: block;
+                        float: none;
+                        width: auto;
+
+                        padding: $appmenu-mobile-submenu-submenu-item-padding;
+
+                        color: $appmenu-mobile-submenu-color;
+                        font-size: emCalc($appmenu-mobile-submenu-font-size, $ul-font-size);
+                        font-style: $appmenu-mobile-submenu-font-style;
+                        font-weight: $appmenu-mobile-submenu-font-weight;
+                        
+                        border-top: $appmenu-mobile-border-top;
+                        border-bottom: $appmenu-mobile-border-bottom;
+
+                        @include at-breakpoint($break-mobile ie) {
+                            padding: 7px 12px;
+                            
+                            border-top: none;
+                            border-bottom: none;
+                            
+                            font-size: $appmenu-desktop-submenu-font-size;
+                            color: #666;
+                        }
+                    }
+                }
+            }
+        }
+
+        li:hover {
+            @include at-breakpoint($break-mobile ie) {
+                background-color: #BBB;
+            
+                border-bottom: 1px solid #AAA;
+            }
+        }
+    }
+}

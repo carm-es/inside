@@ -1,0 +1,29 @@
+// UI Morfos veil 
+
+.#{$ns}-veil {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 5000;
+	padding: 3px;
+
+	@include mf-background($veil-bg);
+
+	.ie & {
+		background: $veil-ie-bg;
+		filter: alpha(opacity = $veil-ie-opacity);
+	}
+
+	&.#{$ns}-veil__tabs {
+		z-index: 1;
+
+		@include mf-background($veil-tabs-bg);
+
+		.ie & {
+			background: $veil-tabs-ie-bg;
+			filter: alpha(opacity = $veil-tabs-ie-opacity);
+		}
+	}
+}

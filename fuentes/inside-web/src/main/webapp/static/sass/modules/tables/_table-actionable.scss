@@ -1,0 +1,40 @@
+
+.#{$ns}-table__actionable {
+	td {
+	    padding: 0;
+
+	    & > a,
+	    & > a:link {
+	    	display: block;
+	    	padding: 0.3em 0.5em;
+	    }
+	}
+} 
+
+td.actions {
+    white-space: nowrap;
+}
+    
+table.data tr.emptyTableMsg td {
+    color: #CCC;
+    color: rgba(0,0,0,0.5);
+ 	
+    height: 200px;
+    text-align: center;
+}
+
+.#{$ns}-table-data--row-action {
+    
+    &,
+    &:link, 
+    &:visited {
+        margin: $tdata-action-margin;
+        padding: $tdata-action-padding;
+
+        color: $tdata-action-color;
+    }
+
+    &:hover {
+        color: $tdata-action-hover-color;
+    }
+}

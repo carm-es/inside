@@ -1,0 +1,24 @@
+/* Sort column links */
+
+.#{$ns}-table-data__sortable {
+
+}
+
+.#{$ns}-sort-ln__asc,
+.#{$ns}-sort-ln__desc {
+    font-weight: $tdata-theadth-sorted-font-weight;
+}
+
+.#{$ns}-sort-ln__asc {
+    @include morfont-icon($sort-asc-icon, "after", 0 0.3em, 11px);
+}
+
+.#{$ns}-sort-ln__desc {
+    @include morfont-icon($sort-desc-icon, "after", 0 0.3em, 11px);
+}
+
+.#{$ns}-sort-ln,
+.#{$ns}-sort-ln:link,
+.#{$ns}-sort-ln:visited {
+    color: $tdata-theadth-font-color;
+}

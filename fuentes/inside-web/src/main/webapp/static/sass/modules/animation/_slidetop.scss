@@ -1,0 +1,21 @@
+.slide-in {
+    -moz-animation-name: slidein;
+    -moz-animation-duration: .35s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-delay: 0.7s;
+    
+    -webkit-animation-name: slidein;
+    -webkit-animation-duration: .35s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-delay: 0.7s;
+}
+
+@keyframes slidein {
+    from {
+        bottom: 100%;
+    }
+
+    to {
+        bottom: auto;
+    }
+}

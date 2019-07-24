@@ -1,0 +1,231 @@
+/**
+* @desc         Top bar layout
+* @name         topbar
+* @author       Ignacio Calleja
+* @tested       
+* @requires     menu
+*/
+
+/* 
+
+<div class="mf-topbar">
+    <div class="mf-topbar--container">
+        
+        <!--- Accesibility items -->
+        <a href="#wrap" class="mf-accesibility-item">Ir al contenido</a>
+        
+        <!--- Time -->
+        <time datetime="" class="mf-topbar--time">
+            <span id="reloj_front_fecha">13:30</span>
+            {#<span id="hora"></span>
+        </time>
+
+        <!--- Language menu -->
+
+        <!--- User menu -->
+
+    </div>
+</div>
+
+*/
+
+/*    Topbar    */
+
+.#{$ns}-topbar {
+    position: fixed;
+    left: 100%;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        position: static;
+		float: right;
+        right: 0;
+    	margin: $topbar-margin;
+
+        .portal &,
+        .sede & {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            float: none;
+            margin: 0;
+            
+            text-align: right;
+
+        }
+
+        .#{$ns}-header__compact & {
+            // position: fixed;
+            padding: $appmenu-ulmenubar-desktop-padding;
+
+            .portal &,
+            .sede & {
+                position: static;
+                float: right; 
+            }
+        }
+	}
+
+    a {
+        display: block;
+        
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            color: $topbar-item-desktop-color;   
+        }
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.#{$ns}-topbar--container {
+
+    .portal &,
+    .sede & {
+        @extend %adaptable-container;
+    }
+
+    .#{$ns}-header__compact & {
+        padding: 0;
+        max-width: none;
+    }
+}
+
+.#{$ns}-topbar--item,
+%topbar--item {
+    margin: $topbar-item-mobile-margin;
+    padding: $topbar-item-mobile-padding;
+
+    color: $topbar-item-mobile-color;
+    font-size: $topbar-item-mobile-font-size;
+    line-height: $topbar-item-mobile-line-height;
+    
+    @include mf-background($topbar-item-mobile-bg);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        margin: $topbar-item-desktop-margin;
+        padding: $topbar-item-desktop-padding;
+
+        color: $topbar-item-desktop-color;
+        font-size: $topbar-item-desktop-font-size;
+        line-height: $topbar-item-desktop-line-height;
+        
+        @include mf-background($topbar-item-desktop-bg);
+    }
+
+    &.has-submenu {
+        @include morfont-icon($dropdown-icon-s, "after", $size: 10px, $margin: 0 0 0 3px);
+    }
+    
+    .#{$ns}-header__compact & {
+        padding: $topbar-item-mobile-padding;
+    }
+}
+
+.#{$ns}-topbar--time {
+    display: block;
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        float: left;
+        
+        .portal &,
+        .sede & {
+            float: none;
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+}
+
+.#{$ns}-topbar--menu,
+%topbar--menu {
+    @extend %menu;
+
+    text-align: left;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        @include dropdown-menu();
+    
+        @include border-radius($topbar-menu-desktop-border-radius);
+
+        @include box-shadow($topbar-menu-desktop-shadow);
+        
+        background: $topbar-menu-desktop-bg;
+    }
+} 
+
+.#{$ns}-topbar--menu-item,
+%topbar--menu-item {
+    @include border($topbar-menuitem-border-width,
+                    $topbar-menuitem-border-style,
+                    $topbar-menuitem-border-color);
+                
+    background-color: rgba(0,0,0,0.4);
+    
+    &:hover {
+        background-color: $topbar-menuitem-bg-hover;
+    }
+    
+    a {
+        padding: $topbar-menuitem-mobile-padding;
+        
+        color: $topbar-menuitem-mobile-color;
+        
+        @include breakpoint($break-mobile, $no-query: $noquery) {
+            padding: $topbar-menuitem-desktop-padding;
+            
+            color: $topbar-menuitem-desktop-color;
+        }
+    }
+    
+    &.is-selected a {
+        @include morfont-icon($topbar-menuitem-selected-icon, $margin: 0 4px 0 -16px, $size: 12px);
+    }
+
+    &.is-unread a,
+    &.is-new a {
+        
+        @include morfont-icon(  $topbar-menuitem-unread-icon,
+                                $float: left, 
+                                $margin: 7px 0 -12px -14px, 
+                                $size: 6px);
+        
+        &:link, 
+        &:visited {
+            color: #FFF;
+        }
+        
+        &:hover {
+            background-color: rgba(0,0,0,0.3);
+        }
+    }
+}
+
+%topbar--menu-item-title {
+    display: block;
+}
+
+%topbar--menu-item-subtitle {
+    display: block;
+    
+    color: $topbar-menuitem-subtitle-mobile-color;
+    font-size: $topbar-menuitem-subtitle-mobile-font-size;
+    font-weight: $topbar-menuitem-subtitle-mobile-font-weight;
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        color: $topbar-menuitem-subtitle-desktop-color;
+        font-size: $topbar-menuitem-subtitle-desktop-font-size;
+        font-weight: $topbar-menuitem-subtitle-desktop-font-weight;
+    }
+}
+
+%topbar--menu-item-anotation {
+    
+}
+
+.#{$ns}-topbar--secondary-item {
+    text-align: right;
+    font-style: italic;
+}
+

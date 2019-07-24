@@ -1,0 +1,357 @@
+
+
+/* HEADER */
+
+.#{$ns}-header {
+    
+    position: fixed;
+    width: 100%;
+    
+    z-index: 10;
+
+    background: $headercontent-mobile-bg;
+    
+    @include box-shadow($header-mobile-shadow);
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        position: static;
+        /* overflow: hidden; */
+        width: auto;
+        
+        background: transparent;
+        
+        @include box-shadow($header-desktop-shadow);
+        
+        .portal ,
+        .sede & {
+            @include box-shadow(none);
+        }
+
+        &.#{$ns}-header__compact {
+            position: fixed;
+            width: 100%;
+            
+            @include mf-background($headercontent-desktop-bg);
+
+            @include box-shadow($headercompact-shadow);
+
+            @include transition(all 0.25s linear);
+
+            &:hover {
+                @include mf-background($headercontent-desktop-bg);
+            }
+        }
+
+        &.#{$ns}-header__fixed {
+            position: fixed;
+            width: 100%;
+            
+            @include mf-background($headercontent-desktop-bg);
+
+            @include box-shadow($header-desktop-shadow);
+
+            @include transition(all 0.25s linear);
+
+            &:hover {
+                @include mf-background($headercontent-desktop-bg);
+            }
+        }
+    }
+}
+
+.#{$ns}-header--container {
+    
+    min-height: $header-height;
+    
+    background-color: $header-logo-bg;
+    background-image: url($header-logo-image);
+    background-position: $header-logo-padding center;
+    background-repeat: no-repeat;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        min-height: $header-desktop-height;
+        
+        background-color: $header-logo-bg;
+        background-image: url($header-logo-image);
+        background-position: $header-logo-padding center;
+        background-repeat: no-repeat;
+        
+        .portal &,
+        .sede & {
+            padding-top: 4em;
+        }
+
+        .#{$ns}-header__compact & {
+            padding-top: 0;
+            min-height: 0;
+            
+            background-color: $headercompact-bg;
+            background-size: auto 100%;
+            background-position: 0 center;
+        }
+
+        .portal &,
+        .sede & {
+            min-height: 0;
+            overflow: hidden;
+            
+            background-color: transparent;
+            background-image: none;
+        }
+
+        .sede .#{$ns}-header__compact & {
+            background-image: url($header-logo-image);
+            background-size: auto 45px;
+        }
+    }
+
+
+}
+    
+// #mainHeader
+.#{$ns}-header--logo {
+    
+    border-bottom: 1px solid #CCC;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        border-bottom: none;
+    }
+
+    .portal &,
+    .sede & {
+        @extend %adaptable-container;
+
+        margin: 0 auto;
+
+        &:after {
+            content: "";
+            display: none;
+        }
+    }
+
+    .#{$ns}-header__compact & {
+        float: left;
+        max-width: none;
+    }
+}
+
+.#{$ns}-logo {
+    position: static;
+
+    // $header-height: $header-mobile-height;
+
+    margin: 0;
+
+    // .mob-nav & {
+        height: $header-mobile-height;
+        overflow: hidden;
+    // }
+    
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        // $header-height: $header-desktop-height;
+
+        float: left;
+        min-height: $header-desktop-height;
+        width: $header-logo-width + $header-logo-padding*2;
+
+        .portal & {
+            float: right;
+            height: $headerportal-logo-height + $headerportal-logo-padding*2;
+            width: $headerportal-logo-width + $headerportal-logo-padding*2;
+
+            @include box-shadow($headerportal-logo-shadow);
+        }
+
+        .sede & {
+            height: $headersede-logo-height + $headersede-logo-padding*2 + $headersede-logo-border-width*2;
+            width: $headersede-logo-width + $headersede-logo-padding*2 + $headersede-logo-border-width*2;
+            margin: $headersede-logo-margin;
+            
+            // @include border($headersede-logo-border-width, $headersede-logo-border-style, $headersede-logo-border-color);
+        }
+
+        .#{$ns}-header__compact & {
+            height: auto;
+            min-height: 0;
+            // height: $headersede-logo-height + $headersede-logo-padding*2 + $headersede-logo-border-width*2;
+            width: $headercompact-logo-width;
+        }
+    }
+}
+
+.#{$ns}-logo--link {
+    display: block;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        width: $header-logo-width + $header-logo-padding*2;
+        min-height: $header-desktop-height;
+
+        .portal & {
+            min-height: 0;
+            width: $headerportal-logo-width + $header-logo-padding*2;
+            height: $headerportal-logo-height + $headerportal-logo-padding*2;
+            padding: $headerportal-logo-padding;
+        }
+
+        .sede & {
+            /* min-height: 0;
+            width: $headersede-logo-width + $headersede-logo-padding*2;
+            height: $headersede-logo-height + $headersede-logo-padding*2;
+            padding: $headersede-logo-padding; */
+        }
+
+        .#{$ns}-header__compact & {
+            min-height: 0;
+            // height: $headersede-logo-height + $headersede-logo-padding*2 + $headersede-logo-border-width*2;
+            width: $headercompact-logo-width;
+        }
+    }
+}
+
+.#{$ns}-logo--img {
+    width: 100%;
+    max-width: $header-logo-width;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: none;
+
+        .portal &,
+        .sede & {
+            display: block;
+        }
+
+        .#{$ns}-header__compact & {
+            @include visuallyhidden;
+        }
+    }
+}
+
+.app-title {
+    width: $header-title-mobile-width;
+    margin: $header-title-mobile-margin;
+    padding-top: 4px;
+    
+    @include font-dec(
+        $header-title-mobile-font-size,
+        $header-title-mobile-font-weight,
+        $header-title-mobile-color,
+        $header-title-mobile-font-style
+    );
+
+    text-align: $header-title-mobile-text-align;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        width: $header-title-desktop-width;
+        margin: $header-title-desktop-margin;
+        padding-top: 0;
+        
+        @include font-dec(
+            $header-title-desktop-font-size,
+            $header-title-desktop-font-weight,
+            $header-title-desktop-color,
+            $header-title-desktop-font-style
+        );
+
+        text-align: $header-title-desktop-text-align;
+
+        .portal &,
+        .sede & {
+            width: auto;
+            margin: 0;
+        }
+
+        .#{$ns}-header__compact & {
+            float: left;
+            margin-left: 10px;
+        }
+    }
+}
+    
+.app-subtitle {
+    display: none;
+    margin: $header-subtitle-margin;
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        display: block;
+
+        .portal &,
+        .sede & {
+            width: auto;
+            margin: 0;
+        }
+
+        .#{$ns}-header__compact & {
+            @include visuallyhidden;
+        }
+    }
+    color: $header-subtitle-color;
+    @include fontSize($header-subtitle-font-size);
+    font-weight: $header-subtitle-font-weight;
+}
+    
+.#{$ns}-header--content {
+    padding: 2px;
+
+    // @include pie-clearfix();
+
+    @include border($headercontent-mobile-border-width, 
+                    $headercontent-mobile-border-style,
+                    $headercontent-mobile-border-color);
+
+    @include background($headercontent-mobile-bg);
+
+    @include box-shadow($headercontent-mobile-shadow);
+
+    // @include transition(margin 0.25s linear);
+
+    @include breakpoint($break-mobile, $no-query: $noquery) {
+        /* position: relative; */
+        min-height: $header-desktop-height;
+        margin-left: $header-logo-width + $header-logo-padding*2;
+        padding: 5px 0 0;
+        
+        border-style: $headercontent-desktop-border-style;
+        border-width: $headercontent-desktop-border-width;
+        border-color: $headercontent-desktop-border-color;
+        
+        @include background($headercontent-desktop-bg);
+        
+        @include box-shadow($headercontent-desktop-shadow);
+        
+
+        .portal & {
+            width: 960px;
+            margin: 5em auto 2em;
+            padding: 0;
+
+            @include pie-clearfix();
+
+            border: none;
+
+            background: transparent;
+        }
+
+        .sede & {
+            min-height: 0;
+            margin: $headersede-headercontent-margin;
+
+            @include pie-clearfix();
+
+            border: none;
+
+            background: transparent;
+        }
+
+        .#{$ns}-header__compact & {
+            overflow: hidden;
+            margin-left: $headercompact-headercontent-margin-left;
+            margin-top: 0;
+            min-height: 0;
+            padding-top: 0;
+            
+            @include pie-clearfix();
+
+            @include background($headercompact-headercontent-bg);
+        }
+    }
+}
