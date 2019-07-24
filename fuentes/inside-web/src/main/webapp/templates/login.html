@@ -84,6 +84,20 @@
 							<li th:text="#{login.requisitos.java}"></li> 
 							<li th:text="#{login.requisitos.navegador}"></li>
 						</ul>		
+						<!-- CARM ### v2.0.7.1 -->
+						<div th:if="${#httpServletRequest.getParameter('showSysprops') != null}">
+							<p class="mf-login--title" th:utext="Sysprops"></p>
+							<ul>
+								<li th:text="${'config.path: ' + @sysprops['config.path']}"></li>
+								<li th:text="${'tmpShared.path: ' + @sysprops['tmpShared.path']}"></li>
+								<li th:text="${'inside.hostDomainPort: ' + @sysprops['inside.hostDomainPort']}"></li>
+								<li th:text="${'javax.net.ssl.trustStore: ' + @sysprops['javax.net.ssl.trustStore']}"></li>
+								<li th:text="${'java.io.tmpdir: ' + @sysprops['java.io.tmpdir']}"></li>
+								<li th:text="${'catalina.base: ' + @sysprops['catalina.base']}"></li>
+								<li th:text="${'catalina.home: ' + @sysprops['catalina.home']}"></li>
+							</ul>
+						</div>
+						<!-- CARM 2.0.7.1 ### -->
 					</div>
 
 				</div>
