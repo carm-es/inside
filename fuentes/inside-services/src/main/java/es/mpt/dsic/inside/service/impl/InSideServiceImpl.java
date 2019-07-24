@@ -1039,7 +1039,11 @@ public class InSideServiceImpl implements InSideService {
     }
 
     Validaciones validaciones = configurarValidacionesExpediente(false);
-    return consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
+    return
+    // CARM ### v2.0.7.1
+    !consumidorValidacionENI.isActivo() ? null :
+    // CARM 2.0.7.1 ###
+        consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
   }
 
   @Override
@@ -1056,7 +1060,11 @@ public class InSideServiceImpl implements InSideService {
 
     Validaciones validaciones = configurarValidacionesExpediente(validarSIA);
 
-    return consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
+    return
+    // CARM ### v2.0.7.1
+    !consumidorValidacionENI.isActivo() ? null :
+    // CARM 2.0.7.1 ###
+        consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
   }
 
   public void validacionClasificacionExp(List<OpcionValidacionExpediente> opciones,
@@ -1214,7 +1222,10 @@ public class InSideServiceImpl implements InSideService {
 
     Validaciones validaciones = configurarValidacionesDocumento(documentoInside, opciones);
     List<ResultadoValidacionDocumento> resultados =
-        consumidorValidacionENI.validaDocumentoENI(documento, validaciones);
+        // CARM ### v2.0.7.1
+        !consumidorValidacionENI.isActivo() ? null :
+        // CARM 2.0.7.1 ###
+            consumidorValidacionENI.validaDocumentoENI(documento, validaciones);
 
     return resultados;
   }

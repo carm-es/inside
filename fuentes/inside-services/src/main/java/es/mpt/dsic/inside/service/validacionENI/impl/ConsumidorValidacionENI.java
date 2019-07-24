@@ -27,10 +27,12 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
+import org.springframework.beans.factory.annotation.Value;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionExpediente;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpediente;
+import es.mpt.dsic.inside.service.validacionENI.exception.InsideServiceValidacionException;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.ApplicationLogin;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.Detalle;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.EeUtilValidacionENIServiceMtom;
@@ -46,6 +48,13 @@ import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoRes
 
 public class ConsumidorValidacionENI {
 
+  // CARM ### v2.0.7.1
+  @Value("${ws.validacionENI.activo:S}")
+  private String wsValidacionEniActivo;
+  private boolean activo;
+  private static String activoCadena = "S";
+  // CARM 2.0.7.1 ###
+
   // private EeUtilValidacionENIService sc;
 
   private EeUtilValidacionENIServiceMtom scMtom;
@@ -58,6 +67,12 @@ public class ConsumidorValidacionENI {
 
   protected static final Log logger = LogFactory.getLog(ConsumidorValidacionENI.class);
 
+  // CARM ### v2.0.7.1
+  public boolean isActivo() {
+    return this.activo;
+  }
+  // CARM 2.0.7.1 ###
+
   @PostConstruct
   public void configure() {
     // EeUtilValidacionENIServiceImplService servicio = new EeUtilValidacionENIServiceImplService();
@@ -66,23 +81,33 @@ public class ConsumidorValidacionENI {
     // BindingProvider bp = (BindingProvider)sc;
     // bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURL);
 
+    // CARM ### v2.0.7.1
+    if (wsValidacionEniActivo.equals(activoCadena)) {
+      activo = true;
+      logger.debug(String.format("El WS de VALIDACION se encuentra en %s", url));
+      // CARM 2.0.7.1 ###
 
-    EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
-    try {
-      servicioMtom = new EeUtilValidacionENIServiceMtomImplService(new URL(url));
-    } catch (MalformedURLException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
+      try {
+        servicioMtom = new EeUtilValidacionENIServiceMtomImplService(new URL(url));
+      } catch (MalformedURLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      scMtom = servicioMtom.getPort(EeUtilValidacionENIServiceMtom.class);
+
+      disableChunking(ClientProxy.getClient(scMtom));
+
+      String endpointURLMtom = url;
+      BindingProvider bpMtom = (BindingProvider) scMtom;
+      bpMtom.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURLMtom);
+
+      // CARM ### v2.0.7.1
+    } else {
+      logger.info("El WS de VALIDACIÓN no está activo");
+      activo = false;
     }
-    scMtom = servicioMtom.getPort(EeUtilValidacionENIServiceMtom.class);
-
-    disableChunking(ClientProxy.getClient(scMtom));
-
-    String endpointURLMtom = url;
-    BindingProvider bpMtom = (BindingProvider) scMtom;
-    bpMtom.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpointURLMtom);
-
-
+    // CARM 2.0.7.1 ###
 
     aplicacionInfo = new ApplicationLogin();
     aplicacionInfo.setIdaplicacion(user);
@@ -100,7 +125,14 @@ public class ConsumidorValidacionENI {
   }
 
   public List<ResultadoValidacionDocumento> validaDocumentoENI(byte[] docuemnto,
-      Validaciones validaciones) {
+      Validaciones validaciones) throws InsideServiceValidacionException {
+
+    // CARM ### v2.0.7.1
+    if (!this.isActivo()) {
+      throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
+    }
+    // CARM 2.0.7.1 ###
+
     logger.debug("Inicio validaDocumentoENI");
 
     DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
@@ -117,7 +149,13 @@ public class ConsumidorValidacionENI {
 
 
 
-  public List<ResultadoValidacionDocumento> validaFirmaDocumentoENI(byte[] docuemnto) {
+  public List<ResultadoValidacionDocumento> validaFirmaDocumentoENI(byte[] docuemnto)
+      throws InsideServiceValidacionException {
+    // CARM ### v2.0.7.1
+    if (!this.isActivo()) {
+      throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
+    }
+    // CARM 2.0.7.1 ###
     logger.debug("Inicio validaFirmaDocumentoENI");
 
     DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
@@ -133,7 +171,12 @@ public class ConsumidorValidacionENI {
 
 
   public List<ResultadoValidacionExpediente> validaExpedienteENI(byte[] expediente,
-      Validaciones validaciones) {
+      Validaciones validaciones) throws InsideServiceValidacionException {
+    // CARM ### v2.0.7.1
+    if (!this.isActivo()) {
+      throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
+    }
+    // CARM 2.0.7.1 ###
     logger.debug("Inicio validaExpedienteENI");
 
     DocumentoEntradaMtom expEntrada = new DocumentoEntradaMtom();
@@ -149,7 +192,13 @@ public class ConsumidorValidacionENI {
 
 
 
-  public List<ResultadoValidacionExpediente> validaFirmaExpedienteENI(byte[] expediente) {
+  public List<ResultadoValidacionExpediente> validaFirmaExpedienteENI(byte[] expediente)
+      throws InsideServiceValidacionException {
+    // CARM ### v2.0.7.1
+    if (!this.isActivo()) {
+      throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
+    }
+    // CARM 2.0.7.1 ###
     logger.debug("Inicio validaFirmaExpedienteENI");
 
     DocumentoEntradaMtom expEntrada = new DocumentoEntradaMtom();
