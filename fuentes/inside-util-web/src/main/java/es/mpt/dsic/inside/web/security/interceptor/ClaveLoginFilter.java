@@ -1,4 +1,5 @@
 /*
+ *
  * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
  * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
  * (at your option) any later version as soon as they are approved by the European Commission.
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -58,6 +60,9 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
   private Boolean validateUser;
 
   private Boolean validarUsuarioEnPortales;
+
+  @Value("${clave.auth.fail.fake.nif:}")
+  private String claveAuthFailFakeNif;
 
   @Autowired
   private Environment env;
@@ -100,7 +105,15 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
         authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
 
         if (authnResponse.isFail()) {
-          throw new BadCredentialsException("Error en la autenticacion");
+          // CARM ### v2.0.7.1
+          if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
+                                                                               // autenticación
+                                                                               // clave para
+                                                                               // invitado
+            return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
+          else
+            // CARM 2.0.7.1 ###
+            throw new BadCredentialsException("Error en la autenticacion");
         } else {
           List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 
