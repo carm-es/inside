@@ -30,6 +30,11 @@
           <url>https://github.com/carm-es/inside/issues</url>
           <system>GitHub Issues</system>
         </issueManagement>
+ 
+        <properties>	
+          <version.java>1.8</version.java>
+          <codificacion>UTF-8</codificacion>
+        </properties>		
 
 	<repositories>
           <repository>
@@ -91,6 +96,23 @@
                        <hooks>
                           <pre-commit>mvn net.revelc.code.formatter:formatter-maven-plugin:format</pre-commit>
                        </hooks>
+                    </configuration>
+                 </plugin>
+                 <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                       <source>${version.java}</source>
+                       <target>${version.java}</target>
+		       <encoding>${codificacion}</encoding>
+                    </configuration>
+                 </plugin>
+                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                       <encoding>${codificacion}</encoding>
                     </configuration>
                  </plugin>
               </plugins>
