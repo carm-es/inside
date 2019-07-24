@@ -416,13 +416,20 @@ public class ExpedientController {
 
       expedienteInside = insideService.obtenerVisualizacionIndiceSiActivo(expedienteInside, false,
           false, null, false, null, true);
-      tipoExpedienteMA.getExpediente().setVisualizacionIndice(InsideConverterDocumento.Contenido
-          .contenidoInsideToEni(expedienteInside.getVisualizacionIndice(), null));
+      tipoExpedienteMA.getExpediente().setVisualizacionIndice(
+          // CARM ### v2.0.7.1
+          !serviceVisualizar.isActivo() ? null :
+          // CARM 2.0.7.1 ###
+              InsideConverterDocumento.Contenido
+                  .contenidoInsideToEni(expedienteInside.getVisualizacionIndice(), null));
 
       String data = incluirAdicionales(tipoExpedienteMA, retorno);
 
       retorno.put("visualizar", Base64.encodeBase64String(
-          tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario()));
+          // CARM ### v2.0.7.1
+          !serviceVisualizar.isActivo() ? null :
+          // CARM 2.0.7.1 ###
+              tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario()));
 
       // Para validar la firma recoger solo el ns7:expediente sin
       // metadatosadicionales
@@ -2805,12 +2812,19 @@ public class ExpedientController {
       if (tipoExpedienteMA.getExpediente().getVisualizacionIndice() == null) {
         ObjetoExpedienteInside expedienteInside = insideService
             .obtenerVisualizacionIndiceSiActivo(exp, false, false, null, false, null, true);
-        tipoExpedienteMA.getExpediente().setVisualizacionIndice(InsideConverterDocumento.Contenido
-            .contenidoInsideToEni(expedienteInside.getVisualizacionIndice(), null));
+        tipoExpedienteMA.getExpediente().setVisualizacionIndice(
+            // CARM ### v2.0.7.1
+            !serviceVisualizar.isActivo() ? null :
+            // CARM 2.0.7.1 ###
+                InsideConverterDocumento.Contenido
+                    .contenidoInsideToEni(expedienteInside.getVisualizacionIndice(), null));
       }
 
       retorno.addObject("visualizar", Base64.encodeBase64String(
-          tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario()));
+          // CARM ### v2.0.7.1
+          !serviceVisualizar.isActivo() ? null :
+          // CARM 2.0.7.1 ###
+              tipoExpedienteMA.getExpediente().getVisualizacionIndice().getValorBinario()));
 
       // Contruimos el contenido del expediente editado
       TipoExpediente expAuxiliar = new TipoExpediente();
