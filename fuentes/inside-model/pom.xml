@@ -151,6 +151,15 @@
 				</includes>
 				<targetPath>src/main/resources/es/mpt/dsic/inside/xsd</targetPath>
 			</resource>
+                        <!-- CARM ### v2.0.7.1 -->
+                        <resource>
+                               <directory>src/main/context</directory>
+                               <includes>
+                                       <include>**/*.xml</include>
+                               </includes>
+                               <targetPath>es/mpt/dsic/inside/context</targetPath>
+                        </resource>
+                        <!-- CARM 2.0.7.1 ### -->
 			<resource>
 				<directory>src/main/java/es/mpt/dsic/inside/store/hibernate/entity</directory>
 				<includes>
