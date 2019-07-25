@@ -11,8 +11,7 @@
    along with this program; if not, you may find it at
    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>inside-util-web</artifactId>
 	<packaging>jar</packaging>
@@ -20,7 +19,7 @@
 	<parent>
 		<groupId>es.mpt.dsic</groupId>
 		<artifactId>inside-mvn-base</artifactId>
-		<version>2.0.8.3-CARM.1-SNAPSHOT</version>
+		<version>2.0.8.3-CARM.1</version>
 		<relativePath>../inside-mvn-base</relativePath>
 	</parent>
 
