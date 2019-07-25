@@ -162,6 +162,30 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
           break;
         }
       }
+      /*
+       * CARM ### v2.0.7.1 El conector CMIS busca la carpeta server.cmis.pathRootFolder en la raíz
+       * del repositorio documental. Cuando no la encuentra, si se ha proporcionado el property
+       * complementario server.cmis.complementary.root.defaultUserHomeSpacesFolder, la búsqueda se
+       * amplía a todas las carpetas que cuelguen de la raíz y contengan el nombre de la raíz
+       * complementaria
+       */
+      if (this.root == null && this.defaultUserHomeSpacesFolder != null
+          && !this.defaultUserHomeSpacesFolder.isEmpty()) {
+        for (final CmisObject children : session.getRootFolder().getChildren()) {
+          if (children.getName().contains(this.defaultUserHomeSpacesFolder)) {
+            Folder userHomeFolder = (Folder) children;
+            for (final CmisObject uhc : userHomeFolder.getChildren()) {
+              if (StringUtils.equals(uhc.getName(), pathRootFolder)) {
+                root = (Folder) uhc;
+                break;
+              }
+            }
+            if (root != null)
+              break;
+          }
+        }
+      }
+      // CARM 2.0.7.1 ###
       if (root == null) {
         final Map<String, String> newFolderProps = new HashMap<String, String>();
         newFolderProps.put(PropertyIds.OBJECT_TYPE_ID, "cmis:folder");
@@ -214,6 +238,10 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
    */
   private String bindingType;
 
+  // CARM ### v2.0.7.1
+  private String defaultUserHomeSpacesFolder;
+  // CARM 2.0.7.1 ###
+
   /**
    * Duración máxima (milisegundos) para permitir conectarse al servidor
    */
@@ -259,5 +287,11 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
   public void setBindingType(String bindingType) {
     this.bindingType = bindingType;
   }
+
+  // CARM ### v2.0.7.1
+  public void setDefaultUserHomeSpacesFolder(final String defaultUserHomeSpacesFolder) {
+    this.defaultUserHomeSpacesFolder = defaultUserHomeSpacesFolder;
+  }
+  // CARM 2.0.7.1 ###
 
 }

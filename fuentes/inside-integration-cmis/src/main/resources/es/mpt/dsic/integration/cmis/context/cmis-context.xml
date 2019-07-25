@@ -12,7 +12,6 @@
    along with this program; if not, you may find it at
    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
 
-
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -45,6 +44,9 @@
 		<property name="bindingType" value="${server.cmis.bindingType}" />
 		<property name="url" value="${server.cmis.url}" />
 		<property name="pathRootFolder" value="${server.cmis.pathRootFolder}"/>
+		<!-- CARM ### v2.0.7.1 -->
+		<property name="defaultUserHomeSpacesFolder" value="${server.cmis.complementary.root.defaultUserHomeSpacesFolder:}"/>
+		<!-- CARM 2.0.7.1 ### -->
 		<property name="username" value="${server.cmis.username}" />
 		<property name="password" value="${server.cmis.password}" />
 		<property name="connectTimeout" value="${server.cmis.connectTimeout}" />
@@ -63,6 +65,10 @@
 	<bean id="repoDocIntegration"
 		class="es.mpt.dsic.integration.cmis.adapter.CmisAdapter">
 		<property name="sessionManager" ref="sessionManager" />
+		<!-- CARM ### v2.0.7.2 -->
+		<property name="numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation" 
+			value="${server.cmis.extended.number.retries.get.folder.with.half.second.delay.to.avoid.concurrent.creation:0}"/>
+		<!-- CARM 2.0.7.2 ### -->		
 	</bean>
 
 	<bean id="cmisSessionInterceptor"
