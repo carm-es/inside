@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
    This program is licensed and may be used, modified and redistributed under the terms
    of the European Public License (EUPL), either version 1.1 or (at your
@@ -74,7 +73,10 @@
 		<property name="documentoDIR3" value="${server.cmis.document.property.dir3}"/>
 		<property name="documentoIdENI" value="${server.cmis.document.property.idEni}"/>
 		<property name="documentoCSV" value="${server.cmis.document.property.csv}"/>
-				
+
+	  	<!-- CARM ### v2.0.7.1 -->	  
+	  	<property name="extendedBalancedFolderPathIntervalMinutes" value="${server.cmis.extended.balanced.folder.path.interval.minutes:}"/>
+	  	<!-- CARM 2.0.7.1 ### -->				
 	</bean>
 	
 </beans>
