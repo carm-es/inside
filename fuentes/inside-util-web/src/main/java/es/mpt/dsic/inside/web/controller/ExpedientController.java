@@ -221,6 +221,9 @@ public class ExpedientController {
   private static final String RESGUARDODOCBASE63 = "dataResguardoDocBase64";
   private static final String CONTENT_DISPOSITION = "Content-Disposition";
   private static final String ATTACHMENT_FILENAME = "attachment; filename=\"";
+  // CARM ### v2.0.7.1
+  private static final String MAIL_SERVICE_ACTIVO = "mailServiceActivo";
+  // CARM 2.0.7.1 ###
 
   @RequestMapping(value = "/generarExpediente", method = RequestMethod.GET)
   public ModelAndView generarExpediente(Locale locale, HttpSession session,
@@ -1820,6 +1823,9 @@ public class ExpedientController {
       retorno.addObject(EXPEDIENTES, new ArrayList<ObjetoInsideExpedienteUnidad>());
       retorno.addObject(EXPEDIENTES_ALMACENADOS, false);
     }
+    // CARM ### v2.0.7.1
+    retorno.addObject(MAIL_SERVICE_ACTIVO, mailService.isActive());
+    // CARM 2.0.7.1 ###
     return retorno;
   }
 
@@ -2582,8 +2588,14 @@ public class ExpedientController {
           : messageSource.getMessage(WebConstants.MSG_KEY_ERROR_GENERIC, null, locale);
       msg = new MessageObject(WebConstants.MESSAGE_LEVEL_ERROR, msgError);
       retorno.addObject(MENSAJE_USU, msg);
-      retorno.setViewName("redirect:/expedientesAlmacenados?textoMensajeUsuario=" + msg.getMessage()
-          + "&nivelMensajeUsuario=" + msg.getLevel());
+      /*
+       * CARM ### v2.0.7.1
+       * retorno.setViewName("redirect:/expedientesAlmacenados?textoMensajeUsuario=" +
+       * msg.getMessage() + "&nivelMensajeUsuario=" + msg.getLevel());
+       */
+      retorno.addObject("textoMensajeUsuario", msg.getMessage());
+      retorno.setViewName("redirect:/expedientesAlmacenados?nivelMensajeUsuario=" + msg.getLevel());
+      // CARM 2.0.7.1 ###
     }
     return retorno;
   }

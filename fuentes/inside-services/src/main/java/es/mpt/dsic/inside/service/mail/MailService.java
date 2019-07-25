@@ -15,6 +15,10 @@ import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 
 public interface MailService {
 
+  // CARM ### v2.0.7.1
+  public boolean isActive();
+
+  // CARM 2.0.7.1 ###
   public String sendToken(ObjetoExpedienteToken objetoExpedienteToken, String idSesion,
       String URLDeEntornoEjecucion) throws Exception;
 
