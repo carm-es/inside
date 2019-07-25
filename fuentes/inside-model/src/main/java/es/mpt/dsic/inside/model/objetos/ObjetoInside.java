@@ -72,6 +72,12 @@ public abstract class ObjetoInside<T extends ObjetoInsideMetadatos> implements S
     this.metadatos.setIdentificadorObjetoInside(identificador);
   }
 
+  // CARM ### v2.0.7.1
+  public final void setNullIdentificador() {
+    this.identificador = null;
+  }
+  // CARM 2.0.7.1 ###
+
   /**
    * Devuelve el identificador del repositorio asociado al objeto.
    * 

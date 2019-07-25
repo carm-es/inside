@@ -47,6 +47,14 @@
 	<import resource="inside-ws-namespaces-bindings.xml"/>
 	<import resource="locale.xml"/>
 	
+	<!-- CARM ### v2.0.7.1 -->
+	<import resource="classpath:es/mpt/dsic/inside/context/inside-model-context.xml" />	
+	<bean id="wsEnhancedConf" class="es.mpt.dsic.inside.ws.config.InsideEnhancedConf">
+		<property name="altaDocumentoEniAutogenerarIdentificadorActivo" 	value="${ws.inside.altaDocumentoEni.autogenerar.identificador.activo:N}"></property>
+		<property name="altaExpedientEniAutogenerarIdentificadorActivo" 	value="${ws.inside.altaExpedientEni.autogenerar.identificador.activo:N}"></property>
+		<property name="altaExpedientEniDocumentoIndizadoAceptaVacioActivo"	value="${ws.inside.altaExpedientEni.documentoIndizado.acepta.vacio.activo:N}"></property>
+	</bean>
+	<!-- CARM 2.0.7.1 ### -->
 	
 	<!-- seguridad ws -->
 	<import
