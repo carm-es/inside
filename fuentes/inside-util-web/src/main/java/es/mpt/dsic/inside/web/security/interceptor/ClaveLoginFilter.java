@@ -1,5 +1,4 @@
 /*
- *
  * Copyright (C) 2016 MINHAP, Gobierno de España This program is licensed and may be used, modified
  * and redistributed under the terms of the European Public License (EUPL), either version 1.1 or
  * (at your option) any later version as soon as they are approved by the European Commission.
@@ -64,6 +63,10 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
   @Value("${clave.auth.fail.fake.nif:}")
   private String claveAuthFailFakeNif;
 
+  public String getClaveAuthFailFakeNif() {
+    return claveAuthFailFakeNif;
+  }
+
   @Autowired
   private Environment env;
 
@@ -91,6 +94,13 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
     IPersonalAttributeList personalAttributeList = null;
 
     try {
+      // CARM ### v2.0.7.1
+      if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
+                                                                           // autenticación clave
+                                                                           // para invitado
+        return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
+      // CARM 2.0.7.1 ###
+
       /* Recuperamos la respuesta de la aplicación */
       String samlResponse = request.getParameter(ConstantsClave.ATRIBUTO_SAML_RESPONSE);
       if (!StringUtils.isBlank(samlResponse)) {
@@ -103,17 +113,8 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
         /* Validamos el token SAML */
 
         authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
-
         if (authnResponse.isFail()) {
-          // CARM ### v2.0.7.1
-          if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
-                                                                               // autenticación
-                                                                               // clave para
-                                                                               // invitado
-            return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
-          else
-            // CARM 2.0.7.1 ###
-            throw new BadCredentialsException("Error en la autenticacion");
+          throw new BadCredentialsException("Error en la autenticacion");
         } else {
           List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 

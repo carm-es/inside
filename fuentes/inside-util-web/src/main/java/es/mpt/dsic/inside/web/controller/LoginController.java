@@ -12,7 +12,6 @@
 package es.mpt.dsic.inside.web.controller;
 
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
@@ -31,9 +30,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.mysql.jdbc.StringUtils;
 import es.mpt.dsic.inside.configuration.ConstantsClave;
 import es.mpt.dsic.inside.service.exception.ServiceException;
 import es.mpt.dsic.inside.service.impl.LoginBusinessServiceImpl;
+import es.mpt.dsic.inside.web.security.interceptor.ClaveLoginFilter;
 import es.mpt.dsic.inside.web.util.WebConstants;
 import eu.stork.peps.auth.commons.PEPSUtil;
 
@@ -63,6 +64,9 @@ public class LoginController {
   @Value("${puntounicojusticia}")
   private boolean puntounicojusticia;
 
+  @Autowired
+  ClaveLoginFilter claveLoginFilter;
+
   @RequestMapping(value = "/", method = RequestMethod.GET)
   public ModelAndView init(HttpSession session) {
     ModelAndView retorno = new ModelAndView("login");
@@ -79,8 +83,12 @@ public class LoginController {
       HttpServletRequest request, Locale locale, HttpSession session) {
     ModelAndView retorno = new ModelAndView("login");
     if (error != null) {
-      ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
-      retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+      /*
+       * CARM ### v2.0.7.1 ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+       * retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+       */
+      retorno.addObject("error", context.getMessage(WebConstants.KEY_ERROR_LOGIN, null, locale));
+      // CARM 2.0.7.1 ###
     } else if (session.getAttribute(WebConstants.USUARIO_SESSION) != null) {
       retorno = new ModelAndView("principal");
     }
@@ -94,8 +102,12 @@ public class LoginController {
       HttpServletRequest request, Locale locale, HttpSession session) {
     ModelAndView retorno = new ModelAndView("login");
     if (error != null) {
-      ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
-      retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+      /*
+       * CARM ### v2.0.7.1 ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+       * retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+       */
+      retorno.addObject("error", context.getMessage(WebConstants.KEY_ERROR_LOGIN, null, locale));
+      // CARM 2.0.7.1 ###
     } else if (session.getAttribute(WebConstants.USUARIO_SESSION) != null) {
       retorno = new ModelAndView("principal");
     }
@@ -107,7 +119,17 @@ public class LoginController {
       RedirectAttributes redirectAttributes, Locale locale) {
     logger.debug("loginRedirectClave");
 
-    ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+    /*
+     * CARM ### v2.0.7.1 ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+     */
+    if (!StringUtils.isNullOrEmpty(claveLoginFilter.getClaveAuthFailFakeNif())) { // falseamos
+                                                                                  // autenticación
+                                                                                  // clave para
+                                                                                  // invitado
+      return "redirect:/accesoRedirectClave";
+    }
+    // CARM 2.0.7.1 ###
+
     try {
 
       String claveServiceUrl = env.getProperty(ConstantsClave.PROPERTY_URL_CLAVE);
@@ -131,14 +153,26 @@ public class LoginController {
 
       return "login-redirect";
     } catch (ServiceException e) {
-      model.addAttribute("errorMsg", context
-          .getMessage(bundle.getString(WebConstants.KEY_ERROR_LOGIN), null, request.getLocale()));
+      /*
+       * CARM ### v2.0.7.1 model.addAttribute("errorMsg",
+       * context.getMessage(bundle.getString(WebConstants.KEY_ERROR_LOGIN), null,
+       * request.getLocale()));
+       */
+      model.addAttribute("errorMsg",
+          context.getMessage(WebConstants.KEY_ERROR_LOGIN, null, request.getLocale()));
+      // CARM 2.0.7.1 ###
       return "login";
 
     } catch (Exception e) {
       logger.debug("Error: " + e.toString());
-      model.addAttribute("errorMsg", context
-          .getMessage(bundle.getString(WebConstants.KEY_ERROR_LOGIN), null, request.getLocale()));
+      /*
+       * CARM ### v2.0.7.1 model.addAttribute("errorMsg",
+       * context.getMessage(bundle.getString(WebConstants.KEY_ERROR_LOGIN), null,
+       * request.getLocale()));
+       */
+      model.addAttribute("errorMsg",
+          context.getMessage(WebConstants.KEY_ERROR_LOGIN, null, request.getLocale()));
+      // CARM 2.0.7.1 ###
       return "login";
     }
   }
