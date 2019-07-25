@@ -97,6 +97,25 @@ elementFormDefault="qualified" attributeFormDefault="unqualified">
 			<xsd:enumeration value="TD18"/>
 			<xsd:enumeration value="TD19"/>
 			<xsd:enumeration value="TD20"/>
+			<xsd:enumeration value="TD51"/>
+			<xsd:enumeration value="TD52"/>
+			<xsd:enumeration value="TD53"/>
+			<xsd:enumeration value="TD54"/>
+			<xsd:enumeration value="TD55"/>
+			<xsd:enumeration value="TD56"/>
+			<xsd:enumeration value="TD57"/>
+			<xsd:enumeration value="TD58"/>
+			<xsd:enumeration value="TD59"/>
+			<xsd:enumeration value="TD60"/>
+			<xsd:enumeration value="TD61"/>
+			<xsd:enumeration value="TD62"/>
+			<xsd:enumeration value="TD63"/>
+			<xsd:enumeration value="TD64"/>
+			<xsd:enumeration value="TD65"/>
+			<xsd:enumeration value="TD66"/>
+			<xsd:enumeration value="TD67"/>
+			<xsd:enumeration value="TD68"/>
+			<xsd:enumeration value="TD69"/>
 			<xsd:enumeration value="TD99"/>
 		</xsd:restriction>
 	</xsd:simpleType>
