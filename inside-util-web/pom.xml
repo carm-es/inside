@@ -182,6 +182,10 @@
                     <artifactId>log4j</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>apache-log4j-extras</artifactId>
+                </exclusion>
+                <exclusion>
                 	<artifactId>xercesImpl</artifactId>
                 	<groupId>xerces</groupId>
                 </exclusion>
