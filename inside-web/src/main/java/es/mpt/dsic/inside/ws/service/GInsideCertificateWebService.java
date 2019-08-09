@@ -43,7 +43,7 @@ import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoDocumentoVis
 import es.mpt.dsic.inside.xml.inside.ws.visualizacion.documento.TipoResultadoVisualizacionDocumentoInside;
 
 @WebService(name = "GInsideCertificateWebService", targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebServiceFiles")
-@Logging
+@Logging(limit=-1)
 @GZIP
 @OutInterceptors(interceptors = {}, classes = { InsideWsIndiceExpedienteSignerInterceptor.class })
 @OutFaultInterceptors(interceptors = {}, classes = { InsideWsErrorInterceptor.class })
