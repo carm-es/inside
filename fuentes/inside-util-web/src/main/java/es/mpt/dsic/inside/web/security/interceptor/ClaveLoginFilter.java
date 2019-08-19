@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -52,6 +53,9 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
   private static Logger logger = Logger.getLogger(ClaveLoginFilter.class);
 
   private Boolean validateUser;
+  
+  @Value("${clave.auth.fail.fake.nif:}")
+  private String claveAuthFailFakeNif;
 
   @Autowired
   private Environment env;
@@ -94,7 +98,15 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
         authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
 
         if (authnResponse.isFail()) {
-          throw new BadCredentialsException("Error en la autenticacion");
+            // CARM ### v2.0.8.1
+            if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
+                                                                                 // autenticacion
+                                                                                 // clave para
+                                                                                 // invitado
+              return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
+            else
+              // CARM 2.0.8.1 ###
+              throw new BadCredentialsException("Error en la autenticacion");
         } else {
           List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 
@@ -127,7 +139,7 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
       logger.error(e.getMessage());
       throw new BadCredentialsException("Error al validar usuario", e);
     }
-    return null; // TODAV√çA NO HEMOS PASADO POR CLAVE
+    return null; // TODAVÕA NO HEMOS PASADO POR CLAVE
   }
 
   public Boolean getValidateUser() {
