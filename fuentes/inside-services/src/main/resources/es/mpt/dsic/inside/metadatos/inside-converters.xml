@@ -72,7 +72,9 @@
 		<property name="documentoDIR3" value="${server.cmis.document.property.dir3}"/>
 		<property name="documentoIdENI" value="${server.cmis.document.property.idEni}"/>
 		<property name="documentoCSV" value="${server.cmis.document.property.csv}"/>
-				
+		<!-- CARM ### v2.0.8.1 -->	  
+	  	<property name="extendedBalancedFolderPathIntervalMinutes" value="${server.cmis.extended.balanced.folder.path.interval.minutes:}"/>
+	  	<!-- CARM 2.0.8.1 ### -->			
 	</bean>
 	
 </beans>
