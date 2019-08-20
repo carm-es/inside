@@ -43,6 +43,7 @@
 		<junit.version>4.10</junit.version>
 		<cxf.version>2.6.1</cxf.version>
 		<slf4j.version>1.6.6</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
 		<mimeutil.version>2.1.3</mimeutil.version>
 		<!-- Para indicar a Jetty o a Tomcat el context path de la aplicacion a 
 			levantar. El finalName es por defecto -->
@@ -142,7 +143,12 @@
 			<dependency>
 				<groupId>log4j</groupId>
 				<artifactId>log4j</artifactId>
-				<version>1.2.16</version>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+    			<groupId>log4j</groupId>
+    			<artifactId>apache-log4j-extras</artifactId>
+    			<version>${log4j.version}</version>
 			</dependency>
 			<!-- SPRING -->
 			<dependency>

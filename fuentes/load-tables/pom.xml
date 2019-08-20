@@ -225,6 +225,11 @@
 		</dependency>
 
 		<dependency>
+    		<groupId>log4j</groupId>
+    		<artifactId>apache-log4j-extras</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<scope>test</scope>
