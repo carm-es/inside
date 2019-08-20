@@ -56,6 +56,10 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
   
   @Value("${clave.auth.fail.fake.nif:}")
   private String claveAuthFailFakeNif;
+  
+  public String getClaveAuthFailFakeNif() {
+	    return claveAuthFailFakeNif;
+  }
 
   @Autowired
   private Environment env;
@@ -84,6 +88,12 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
     IPersonalAttributeList personalAttributeList = null;
 
     try {
+      // CARM ### v2.0.8.1
+      if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
+                                                                           // autenticación clave
+                                                                           // para invitado
+        return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
+      // CARM 2.0.8.1 ###
       /* Recuperamos la respuesta de la aplicaciÃ³n */
       String samlResponse = request.getParameter(ConstantsClave.ATRIBUTO_SAML_RESPONSE);
       if (!StringUtils.isBlank(samlResponse)) {
@@ -98,15 +108,7 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
         authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
 
         if (authnResponse.isFail()) {
-            // CARM ### v2.0.8.1
-            if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
-                                                                                 // autenticacion
-                                                                                 // clave para
-                                                                                 // invitado
-              return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
-            else
-              // CARM 2.0.8.1 ###
-              throw new BadCredentialsException("Error en la autenticacion");
+        	throw new BadCredentialsException("Error en la autenticacion");
         } else {
           List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 
