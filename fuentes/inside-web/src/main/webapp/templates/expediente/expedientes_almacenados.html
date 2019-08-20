@@ -243,15 +243,27 @@
 
 					<div class="fld">
 						<label for="mailEnvioToken" th:text="#{generar.token.mail}"></label>
+						<!-- CARM ### v2.0.8.1 --> <!--
 						<input class="large" type="email" id="mailEnvioToken"
 							name="mailEnvioToken" value="" maxlength="300"
 							onblur="validarEmail(this.value)" />
+						-->
+						<input class="large" type="email" id="mailEnvioToken"
+							name="mailEnvioToken" value="" maxlength="300"
+							onblur="validarEmail(this.value)" th:readonly="${!mailServiceActivo}" />
+						<!-- CARM 2.0.8.1 ### -->
 					</div>
 
 					<div class="fld">
+					<!-- CARM ### v2.0.8.1 --> <!--
 						<label for="asunto" th:text="#{generar.token.asunto}"></label> <input
 							class="large" type="text" id="asunto" name="asunto" value=""
 							maxlength="100" />
+							-->
+						<label for="asunto" th:text="#{generar.token.asunto}"></label> <input
+							class="large" type="text" id="asunto" name="asunto" value=""
+							maxlength="100" th:readonly="${!mailServiceActivo}" />
+						<!-- CARM 2.0.8.1 ### -->
 					</div>
 
 				</fieldset>
