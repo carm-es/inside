@@ -31,6 +31,7 @@ import org.apache.chemistry.opencmis.commons.enums.Action;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -55,6 +56,20 @@ public class CmisAdapter implements CmisAdapterInterface {
   private CmisSessionManager sessionManager;
 
   private static final String pathSeparator = "/";
+  
+  // CARM ### v2.0.8.2
+  private String numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation;
+
+  public String getNumberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation() {
+    return this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation;
+  }
+
+  public void setNumberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation(
+      final String numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation) {
+    this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation =
+        numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation;
+  }
+  // CARM 2.0.8.2 ###
 
   @CmisSession
   /**
@@ -124,7 +139,12 @@ public class CmisAdapter implements CmisAdapterInterface {
 
     try {
 
-      Folder parent = getFolder(cleanedRuta, crearRuta);
+    	Folder parent = getFolder(cleanedRuta, crearRuta
+        // CARM ### v2.0.8.2
+          , Integer.valueOf(this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation)
+        // CARM ### v2.0.8.2
+        );
+
 
       final Map<String, Object> folderProperties = new HashMap<String, Object>();
 
@@ -268,7 +288,11 @@ public class CmisAdapter implements CmisAdapterInterface {
 
     try {
       // Obtenemos un objeto folder, en el que se va a crear el documento.
-      Folder folder = getFolder(path, crearRuta);
+    	Folder folder = getFolder(path, crearRuta
+    	// CARM ### v2.0.8.2
+          , Integer.valueOf(this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation)
+        // CARM ### v2.0.8.2
+      );
 
 
 
@@ -564,7 +588,30 @@ public class CmisAdapter implements CmisAdapterInterface {
     return cmisObject;
   }
 
-
+  // CARM ### v2.0.8.2
+  public Folder getFolder(final String[] ruta, boolean crearRuta,
+      int numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation)
+      throws RepositoryCmisException {
+    int currentAttemps = 0;
+    while (true) {
+      try {
+        return getFolder(ruta, crearRuta);
+      } catch (CmisContentAlreadyExistsException cas) {
+        if (currentAttemps < numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation) {
+          currentAttemps++;
+          try {
+            Thread.sleep(500);
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+          }
+          continue;
+        }
+        throw cas;
+      }
+    }
+  }
+  // CARM 2.0.8.2 ###
+  
   @CmisSession
   /**
    * Devuelve el objeto que representa el Folder indicado en ruta Si el segundo parámetro es true,
