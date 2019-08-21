@@ -6,7 +6,7 @@
 	<entry key="keystorePath">almacen.jks</entry>
 	<entry key="keyStorePassword">password</entry>
 	<entry key="keyPassword">password</entry>
-	<entry key="issuer">OU=xxxx,O=xxx,C=ES</entry>
-	<entry key="serialNumber">xxx</entry>
+	<entry key="issuer">OU=AC Componentes Informáticos,O=FNMT-RCM,C=ES</entry>
+	<entry key="serialNumber">5BF3F21A</entry>
 	<entry key="keystoreType">JKS</entry>
 </properties>
