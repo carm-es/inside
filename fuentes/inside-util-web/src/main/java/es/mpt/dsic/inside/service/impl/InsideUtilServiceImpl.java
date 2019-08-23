@@ -492,18 +492,30 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 
     try {
       validarDoc = validarDocumentoEniFile(documentoValidacion);
+      
+      // CARM ### v2.0.8.1
+      boolean validarActivo = true;
+      if (validarDoc.getValidacionDetalle().isEmpty()) {
+        logger.warn("validateDocumentImport: El WS de VALIDACION no se encuentra activo");
+        validarActivo = false;
+      }
+      // CARM 2.0.8.1 ###
 
       // HAY QUE VALIDAR LA FIRMA DEL DOCUMENTO ANTES DE IMPORTARLO.
       // obtener el indice donde viene la validacion de la firma
       int indiceDondeVieneLaValidacionFirma = 0;
       boolean firmaCSV = false;
-      while (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
-          .getTipoValidacion().equals(TipoOpcionValidacionDocumento.fromValue("TOVD03"))) {
-        indiceDondeVieneLaValidacionFirma++;
+      // CARM ### v2.0.8.1
+      if (validarActivo) {
+        // CARM 2.0.8.1 ###
+        while (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
+            .getTipoValidacion().equals(TipoOpcionValidacionDocumento.fromValue("TOVD03"))) {
+          indiceDondeVieneLaValidacionFirma++;
 
-        if (indiceDondeVieneLaValidacionFirma == validarDoc.getValidacionDetalle().size()) {
-          firmaCSV = true;
-          break;
+          if (indiceDondeVieneLaValidacionFirma == validarDoc.getValidacionDetalle().size()) {
+            firmaCSV = true;
+            break;
+          }
         }
       }
 
@@ -530,15 +542,19 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      if (!firmaCSV && validarDoc != null && !validarDoc.getValidacionDetalle()
-          .get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion()) {
-        // de momento pasan todos hasta que podamos discernir firma
-        // invalida por certificado caducado
-        if (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
-            .getDetalleValidacion().contains(" "))
-          throw new InsideServiceInternalException(validarDoc.getValidacionDetalle()
-              .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
-
+      // CARM ### v2.0.7.1
+      if (validarActivo) {
+        // CARM 2.0.7.1 ###
+	      if (!firmaCSV && validarDoc != null && !validarDoc.getValidacionDetalle()
+	          .get(indiceDondeVieneLaValidacionFirma).isResultadoValidacion()) {
+	        // de momento pasan todos hasta que podamos discernir firma
+	        // invalida por certificado caducado
+	        if (!validarDoc.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
+	            .getDetalleValidacion().contains(" "))
+	          throw new InsideServiceInternalException(validarDoc.getValidacionDetalle()
+	              .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+	
+	      }
       }
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,7 +566,9 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      if (validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()) {
+      if (// CARM ### v2.0.8.1
+    	  validarActivo ? // CARM 2.0.8.1 ###
+    	  validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()) {
         tipoDoc = marshaller.unmarshallDataDocumentAditional(data);
         if (tipoDoc.getDocumento() == null) {
           tipoDoc = marshaller.unmarshallDataDocumentoArchive(data);
@@ -743,7 +761,7 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     TipoOpcionesValidacionExpedienteInside opciones = new TipoOpcionesValidacionExpedienteInside();
     TipoExpedienteInsideConMAdicionales expediente;
     TipoResultadoValidacionExpedienteInside validarExp;
-    ObjetoExpedienteInside objExp;
+    ObjetoExpedienteInside objExp = null;
 
     logger.info("Inicio validateExpedientImport");
 
@@ -753,33 +771,55 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 
     try {
 
-      validarExp = validarExpedienteEniFile(expedienteValidacion, true, false);
+      
+      
+      // CARM ### v2.0.8.1
+      boolean validarActivo = true;
+      if (validarExp.getValidacionDetalle().isEmpty()) {
+        logger.warn("validateExpedientImport: El WS de VALIDACION no se encuentra activo");
+        validarActivo = false;
+      }
+      // CARM 2.0.8.1 ###
 
       // HAY QUE VALIDAR LA FIRMA DEL EXPEDIENTE ANTES DE IMPORTARLO.
       // Obtener el indice en la lista donde viene la validacion de la
       // firma
       int indiceDondeVieneLaValidacionFirma = -1;
 
-      for (int i = 0; i < validarExp.getValidacionDetalle().size(); i++) {
-        if (validarExp.getValidacionDetalle().get(i).getTipoValidacion()
-            .equals(TipoOpcionValidacionExpediente.fromValue("TOVE04"))) {
-          indiceDondeVieneLaValidacionFirma = i;
-        }
+      // CARM ### v2.0.8.1
+      if (validarActivo) {
+        // CARM 2.0.8.1 ###
+	      for (int i = 0; i < validarExp.getValidacionDetalle().size(); i++) {
+	        if (validarExp.getValidacionDetalle().get(i).getTipoValidacion()
+	            .equals(TipoOpcionValidacionExpediente.fromValue("TOVE04"))) {
+	          indiceDondeVieneLaValidacionFirma = i;
+	        }
+	      }
       }
 
       // Si no encontramos indice de la validacion de la firma lanzamos
       // error.
-      if (indiceDondeVieneLaValidacionFirma == -1) {
-        throw new InsideServiceInternalException("No se encuentra la firma o contiene errores.");
-      }
+      // CARM ### v2.0.8.1
+	  if (validarActivo) {
+	        // CARM 2.0.8.1 ###
+		      if (indiceDondeVieneLaValidacionFirma == -1) {
+		        throw new InsideServiceInternalException("No se encuentra la firma o contiene errores.");
+		      }
+	  }
+	
+	  // CARM ### v2.0.8.1
+	  if (validarActivo) {
+	        // CARM 2.0.8.1 ###
+		      if (validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
+		          && !validarExp.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
+		              .isResultadoValidacion())
+		        throw new InsideServiceInternalException(validarExp.getValidacionDetalle()
+		            .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
+	  }
 
-      if (validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
-          && !validarExp.getValidacionDetalle().get(indiceDondeVieneLaValidacionFirma)
-              .isResultadoValidacion())
-        throw new InsideServiceInternalException(validarExp.getValidacionDetalle()
-            .get(indiceDondeVieneLaValidacionFirma).getDetalleValidacion());
-
-      if (validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
+      if (// CARM ### v2.0.8.1
+    	    validarActivo ? // CARM 2.0.8.1 ###
+    	    validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
           && validarExp.getValidacionDetalle().get(0).isResultadoValidacion()) {
 
         expediente = marshaller.unmarshallDataExpedientAditional(expedienteEniBytes);
