@@ -39,8 +39,8 @@
 	<!-- Standard Spring MessageSource implementation -->
 	<!-- **************************************************************** -->
 	<bean id="messageSource"
-		class="org.springframework.context.support.ResourceBundleMessageSource">
-		<property name="basename" value="messages" />
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="file:${config.path}/messages" />
 	</bean>
 
 	<bean id="templateResolver"
@@ -69,5 +69,7 @@
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 	    <property name="maxUploadSize" value="268435456"/> <!-- 256 megs -->
 	</bean>
+
+	<bean id="sysprops" class="java.lang.System" factory-method="getProperties" />
 
 </beans>
