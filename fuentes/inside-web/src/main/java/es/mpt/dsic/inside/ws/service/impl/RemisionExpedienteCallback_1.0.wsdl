@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
    This program is licensed and may be used, modified and redistributed under the terms
    of the European Public License (EUPL), either version 1.1 or (at your
@@ -11,7 +12,7 @@
    along with this program; if not, you may find it at
    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
 
-<?xml version="1.0" encoding="UTF-8"?>
+
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:err="http://justicia.es/esb/error/xsd-schemas/V1" xmlns:ns="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/xsd-schemas/V1" xmlns:tns="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/wsdl-schemas/V1" targetNamespace="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/wsdl-schemas/V1">
 	<wsdl:types>
 		<xs:schema targetNamespace="http://justicia.es/esb/expedienteElectronico/RemisionExpedienteCallback/xsd-schemas/V1" version="1.0">
