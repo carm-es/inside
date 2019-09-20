@@ -568,7 +568,10 @@ public class InsideUtilServiceImpl implements InsideUtilService {
 
       if (// CARM ### v2.0.8.1
     	  validarActivo ? // CARM 2.0.8.1 ###
-    	  validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()) {
+    	  validarDoc != null && validarDoc.getValidacionDetalle().get(0).isResultadoValidacion()
+    	// CARM ### v2.0.8.1
+			:true // CARM 2.0.8.1 ###
+			) {
         tipoDoc = marshaller.unmarshallDataDocumentAditional(data);
         if (tipoDoc.getDocumento() == null) {
           tipoDoc = marshaller.unmarshallDataDocumentoArchive(data);
@@ -820,7 +823,10 @@ public class InsideUtilServiceImpl implements InsideUtilService {
       if (// CARM ### v2.0.8.1
     	    validarActivo ? // CARM 2.0.8.1 ###
     	    validarExp != null && CollectionUtils.isNotEmpty(validarExp.getValidacionDetalle())
-          && validarExp.getValidacionDetalle().get(0).isResultadoValidacion()) {
+          && validarExp.getValidacionDetalle().get(0).isResultadoValidacion()
+       // CARM ### v2.0.8.1
+       			:true // CARM 2.0.8.1 ###
+          ) {
 
         expediente = marshaller.unmarshallDataExpedientAditional(expedienteEniBytes);
         if (expediente.getExpediente() == null) {
