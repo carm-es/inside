@@ -115,8 +115,12 @@ public class LoginController {
       HttpServletRequest request, Locale locale, HttpSession session) {
     ModelAndView retorno = new ModelAndView("login");
     if (error != null) {
-      ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
-      retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+    	/*
+         * CARM ### v2.0.8.1 ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
+         * retorno.addObject("error", bundle.getString(WebConstants.KEY_ERROR_LOGIN));
+         */
+        retorno.addObject("error", context.getMessage(WebConstants.KEY_ERROR_LOGIN, null, locale));
+        // CARM 2.0.8.1 ###
     } else if (session.getAttribute(WebConstants.USUARIO_SESSION) != null) {
       retorno = new ModelAndView("busquedaCredencialesExternas");
     }
