@@ -763,7 +763,7 @@ public class InsideUtilServiceImpl implements InsideUtilService {
     TipoExpedienteValidacionInside expedienteValidacion = new TipoExpedienteValidacionInside();
     TipoOpcionesValidacionExpedienteInside opciones = new TipoOpcionesValidacionExpedienteInside();
     TipoExpedienteInsideConMAdicionales expediente;
-    TipoResultadoValidacionExpedienteInside validarExp;
+    TipoResultadoValidacionExpedienteInside validarExp = null;
     ObjetoExpedienteInside objExp = null;
 
     logger.info("Inicio validateExpedientImport");
