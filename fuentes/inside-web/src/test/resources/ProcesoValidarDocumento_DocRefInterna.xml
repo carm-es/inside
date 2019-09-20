@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <!-- Copyright (C) 2012-13 MINHAP, Gobierno de España
    This program is licensed and may be used, modified and redistributed under the terms
    of the European Public License (EUPL), either version 1.1 or (at your
@@ -11,7 +12,7 @@
    along with this program; if not, you may find it at
    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl -->
 
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
 <enidoc:documento Id="ES_E04975701_2017_2046_sfd" xmlns:ns2="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/metadatos" xmlns="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e/contenido" xmlns:ns4="http://www.w3.org/2000/09/xmldsig#" xmlns:ns3="http://administracionelectronica.gob.es/ENI/XSD/v1.0/firma" xmlns:enidoc="http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e">
     <contenido Id="CONTENIDO_DOCUMENTO">
         <referenciaFichero>#FIRMA_0</referenciaFichero>
