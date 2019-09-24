@@ -24,6 +24,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
+import javax.annotation.PostConstruct;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 import org.apache.axiom.attachments.ByteArrayDataSource;
@@ -100,8 +101,10 @@ public class ConsumidorValidacionENI {
   }
   // CARM 2.0.8.1 ###
 
-
-  public boolean configure() {
+//CARM ### v2.0.8.1
+  @PostConstruct
+//CARM 2.0.8.1 ###
+  public void configure() {
     if (wsValidacionEniActivo.equals(activoCadena)) {
       EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
       try {
@@ -128,7 +131,6 @@ public class ConsumidorValidacionENI {
       activo = false;
     }
     // CARM 2.0.8.1 ###
-    return activo;
   }
 
   private void disableChunking(Client client) {
@@ -221,7 +223,7 @@ public class ConsumidorValidacionENI {
     }
 
     if (validaciones.isValidaFirma()) {
-      if (configure()) {
+      if (isActivo()) {
         RespuestaValidacionENI respuestValidarFirma =
             scMtom.validarFirmaDocumentoENI(aplicacionInfo, documentoENI);
         listaDetalles.addAll(respuestValidarFirma.getDetalle());
@@ -293,7 +295,7 @@ public class ConsumidorValidacionENI {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
     }
     // CARM 2.0.8.1 ###
-    if (configure()) {
+    if (isActivo()) {
       logger.debug("Inicio validaFirmaDocumentoENI");
 
       DocumentoEntradaMtom docEntrada = new DocumentoEntradaMtom();
@@ -433,7 +435,7 @@ public class ConsumidorValidacionENI {
     }
 
     if (validaciones.isValidaFirma()) {
-      if (configure()) {
+      if (isActivo()) {
         RespuestaValidacionENI detalleFirma =
             scMtom.validarFirmaExpedienteENI(aplicacionInfo, expEntrada);
         listaDetalles.addAll(detalleFirma.getDetalle());
@@ -493,7 +495,7 @@ public class ConsumidorValidacionENI {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
     }
     // CARM 2.0.8.1 ###
-    if (configure()) {
+    if (isActivo()) {
       logger.debug("Inicio validaFirmaExpedienteENI");
 
       DocumentoEntradaMtom expEntrada = new DocumentoEntradaMtom();
