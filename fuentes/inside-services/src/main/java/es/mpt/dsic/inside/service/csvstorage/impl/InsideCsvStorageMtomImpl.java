@@ -28,6 +28,10 @@ import javax.xml.ws.soap.MTOMFeature;
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 // import org.apache.cxf.frontend.ClientProxy;
 // import org.apache.cxf.transport.http.HTTPConduit;
 // import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
@@ -56,7 +60,26 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
 
   private Properties properties;
 
+  private Long connectionTimeout;
+  private Long receiveTimeout;
+
   private CSVDocumentMtomService csvDocumentMtomService;
+
+  public Long getConnectionTimeout() {
+    return connectionTimeout;
+  }
+
+  public void setConnectionTimeout(Long connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+  }
+
+  public Long getReceiveTimeout() {
+    return receiveTimeout;
+  }
+
+  public void setReceiveTimeout(Long receiveTimeout) {
+    this.receiveTimeout = receiveTimeout;
+  }
 
   // @PostConstruct
   public void configure() {
@@ -67,6 +90,23 @@ public class InsideCsvStorageMtomImpl implements InsideCsvStorageMtomService {
         CSVDocumentMtomService_Service csvService = new CSVDocumentMtomService_Service(url);
 
         csvDocumentMtomService = csvService.getCSVDocumentMtomServicePort(new MTOMFeature());
+
+        Client client = ClientProxy.getClient(csvDocumentMtomService);
+        HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+        HTTPClientPolicy policy = null;
+        if (this.getConnectionTimeout() != null) {
+          policy = httpConduit.getClient();
+          policy.setConnectionTimeout(this.getConnectionTimeout());
+        }
+        if (this.getReceiveTimeout() != null) {
+          if (policy == null) {
+            policy = httpConduit.getClient();
+          }
+          policy.setReceiveTimeout(this.getReceiveTimeout());
+        }
+        if (policy != null) {
+          httpConduit.setClient(policy);
+        }
 
         if (Boolean.valueOf((properties.getProperty("csvstorage.imprimirMensaje")))) {
           BindingProvider bindingProvider = (BindingProvider) csvDocumentMtomService;
