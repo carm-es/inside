@@ -156,10 +156,10 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
     }
 
     /*
-     * CARM ### v2.0.8.1 El conector CMIS busca la carpeta server.cmis.pathRootFolder en la raíz
-     * del repositorio documental. Cuando no la encuentra, si se ha proporcionado el property
-     * complementario server.cmis.complementary.root.defaultUserHomeSpacesFolder, la búsqueda se
-     * amplía a todas las carpetas que cuelguen de la raíz y contengan el nombre de la raíz
+     * CARM ### v2.0.8.1 El conector CMIS busca la carpeta server.cmis.pathRootFolder en la raï¿½z del
+     * repositorio documental. Cuando no la encuentra, si se ha proporcionado el property
+     * complementario server.cmis.complementary.root.defaultUserHomeSpacesFolder, la bï¿½squeda se
+     * amplï¿½a a todas las carpetas que cuelguen de la raï¿½z y contengan el nombre de la raï¿½z
      * complementaria
      */
     if (this.root == null && this.defaultUserHomeSpacesFolder != null
@@ -179,7 +179,7 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
       }
     }
     // CARM 2.0.8.1 ###
-    
+
     if (root == null) {
       for (final CmisObject children : session.getRootFolder().getChildren()) {
         if (StringUtils.equals(children.getName(), pathRootFolder)) {
@@ -238,10 +238,10 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
    * 
    */
   private String bindingType;
-  
-//CARM ### v2.0.8.1
- private String defaultUserHomeSpacesFolder;
- // CARM 2.0.8.1 ###
+
+  // CARM ### v2.0.8.1
+  private String defaultUserHomeSpacesFolder;
+  // CARM 2.0.8.1 ###
 
   /**
    * DuraciÃ³n mÃ¡xima (milisegundos) para permitir conectarse al servidor
@@ -288,7 +288,7 @@ public class CmisSessionManagerImpl implements CmisSessionManager {
   public void setBindingType(String bindingType) {
     this.bindingType = bindingType;
   }
-  
+
   // CARM ### v2.0.8.1
   public void setDefaultUserHomeSpacesFolder(final String defaultUserHomeSpacesFolder) {
     this.defaultUserHomeSpacesFolder = defaultUserHomeSpacesFolder;

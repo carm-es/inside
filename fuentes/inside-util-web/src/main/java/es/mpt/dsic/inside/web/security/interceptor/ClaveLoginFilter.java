@@ -53,12 +53,12 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
   private static Logger logger = Logger.getLogger(ClaveLoginFilter.class);
 
   private Boolean validateUser;
-  
+
   @Value("${clave.auth.fail.fake.nif:}")
   private String claveAuthFailFakeNif;
-  
+
   public String getClaveAuthFailFakeNif() {
-	    return claveAuthFailFakeNif;
+    return claveAuthFailFakeNif;
   }
 
   @Autowired
@@ -90,7 +90,7 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
     try {
       // CARM ### v2.0.8.1
       if (claveAuthFailFakeNif != null && !claveAuthFailFakeNif.isEmpty()) // falseamos
-                                                                           // autenticación clave
+                                                                           // autenticaciï¿½n clave
                                                                            // para invitado
         return validarUsuarioDatosTablas(request, null, claveAuthFailFakeNif);
       // CARM 2.0.8.1 ###
@@ -108,7 +108,7 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
         authnResponse = engine.validateSTORKAuthnResponse(decSamlToken, request.getRemoteHost());
 
         if (authnResponse.isFail()) {
-        	throw new BadCredentialsException("Error en la autenticacion");
+          throw new BadCredentialsException("Error en la autenticacion");
         } else {
           List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 
@@ -141,7 +141,7 @@ public class ClaveLoginFilter extends AbstractAuthenticationProcessingFilter {
       logger.error(e.getMessage());
       throw new BadCredentialsException("Error al validar usuario", e);
     }
-    return null; // TODAVÍA NO HEMOS PASADO POR CLAVE
+    return null; // TODAVï¿½A NO HEMOS PASADO POR CLAVE
   }
 
   public Boolean getValidateUser() {

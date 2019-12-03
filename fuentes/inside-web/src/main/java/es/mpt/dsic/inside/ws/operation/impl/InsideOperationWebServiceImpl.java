@@ -117,7 +117,7 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
 
   @Autowired
   GInsideOperationWebService gInsideOperationWebService;
-  
+
   @Autowired
   private InsideEnhancedConf wsEnhancedConf;
 
@@ -165,11 +165,11 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
         }
         // CARM 2.0.8.1 ###
         if (!resultado.isValido())
-        	// CARM ### v2.0.8.1
-            if (!flagAltaConDocuVacio)
-              // CARM 2.0.8.1 ###
-            	throw new InsideWSException(InsideWsErrors.ERRORES_EN_EL_INDICE_EXPEDIENTE, null,
-            			resultado.getMensaje());
+          // CARM ### v2.0.8.1
+          if (!flagAltaConDocuVacio)
+            // CARM 2.0.8.1 ###
+            throw new InsideWSException(InsideWsErrors.ERRORES_EN_EL_INDICE_EXPEDIENTE, null,
+                resultado.getMensaje());
 
         expediente = service.altaExpediente(expediente, aplicacion, false);
         for (ObjetoDocumentoInside documento : listaDocumentos) {
@@ -983,7 +983,7 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
         service.validateObjetoInsideIdentificador(documento);
       }
       // CARM 2.0.8.1 ###
-      
+
       docAdic = InsideConverterDocumento.documentoInsideToConMAdicionales(documento, null);
       documento =
           insideUtilService.validateDocumentImport(insideUtilService.generateDocXml(docAdic));

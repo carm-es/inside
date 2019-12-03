@@ -182,7 +182,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
         String[] rutaFirma =
             {String.valueOf(today.get(Calendar.YEAR)), String.valueOf(today.get(Calendar.MONTH)),
                 String.valueOf(today.get(Calendar.DAY_OF_MONTH)), dirusuario};
-     // CARM ### v2.0.8.1
+        // CARM ### v2.0.8.1
         if (!this.extendedBalancedFolderPathIntervalMinutes.isEmpty()) {
           rutaFirma = new String[] {String.valueOf(today.get(Calendar.YEAR)),
               String.valueOf(today.get(Calendar.MONTH)),
@@ -241,7 +241,7 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
     if (StringUtils.isNotEmpty(documentoIdENI)) {
       metadatosRepository.put(documentoIdENI, documento.getIdentificador());
     }
- // CARM ### v2.0.8.1
+    // CARM ### v2.0.8.1
     if (StringUtils.isNotEmpty(documentoCSV)) {
       String valorCsv = null;
       if (documento.getFirmas() != null) {
@@ -434,12 +434,12 @@ public class InsideServiceCmisAdapter implements InsideServiceAdapter {
         for (FirmaInside firma : expediente.getIndice().getFirmas()) {
           ContenidoFirmaInside contenidoFirma = firma.getContenidoFirma();
           if (contenidoFirma != null
-        		  && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside
-        		// CARM ### v2.0.8.1
-                  && ((ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma)
-                      .getIdentificadorRepositorio() != null
-                // CARM 2.0.8.1 ###
-              ) {
+              && contenidoFirma instanceof ContenidoFirmaCertificadoAlmacenableInside
+              // CARM ### v2.0.8.1
+              && ((ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma)
+                  .getIdentificadorRepositorio() != null
+          // CARM 2.0.8.1 ###
+          ) {
             ContenidoFirmaCertificadoAlmacenableInside contenidoFirmaAlmacenado =
                 (ContenidoFirmaCertificadoAlmacenableInside) contenidoFirma;
 

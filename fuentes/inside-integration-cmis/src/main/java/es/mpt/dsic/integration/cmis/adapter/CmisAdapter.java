@@ -56,7 +56,7 @@ public class CmisAdapter implements CmisAdapterInterface {
   private CmisSessionManager sessionManager;
 
   private static final String pathSeparator = "/";
-  
+
   // CARM ### v2.0.8.2
   private String numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation;
 
@@ -139,11 +139,11 @@ public class CmisAdapter implements CmisAdapterInterface {
 
     try {
 
-    	Folder parent = getFolder(cleanedRuta, crearRuta
-        // CARM ### v2.0.8.2
+      Folder parent = getFolder(cleanedRuta, crearRuta
+      // CARM ### v2.0.8.2
           , Integer.valueOf(this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation)
-        // CARM ### v2.0.8.2
-        );
+      // CARM ### v2.0.8.2
+      );
 
 
       final Map<String, Object> folderProperties = new HashMap<String, Object>();
@@ -288,10 +288,10 @@ public class CmisAdapter implements CmisAdapterInterface {
 
     try {
       // Obtenemos un objeto folder, en el que se va a crear el documento.
-    	Folder folder = getFolder(path, crearRuta
-    	// CARM ### v2.0.8.2
+      Folder folder = getFolder(path, crearRuta
+      // CARM ### v2.0.8.2
           , Integer.valueOf(this.numberRetriesGetFolderWithHalfSecondDelayToAvoidConcurrentCreation)
-        // CARM ### v2.0.8.2
+      // CARM ### v2.0.8.2
       );
 
 
@@ -611,7 +611,7 @@ public class CmisAdapter implements CmisAdapterInterface {
     }
   }
   // CARM 2.0.8.2 ###
-  
+
   @CmisSession
   /**
    * Devuelve el objeto que representa el Folder indicado en ruta Si el segundo parámetro es true,
