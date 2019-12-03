@@ -61,7 +61,7 @@ import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoRes
 import es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados.TipoResultadoValidacionExpedienteInside;
 
 public class ConsumidorValidacionENI {
-	
+
   // CARM ### v2.0.8.1
   @Value("${ws.validacionENI.activo:S}")
   private String wsValidacionEniActivo;
@@ -94,16 +94,16 @@ public class ConsumidorValidacionENI {
   private String identificadorObjeto;
 
   protected static final Log logger = LogFactory.getLog(ConsumidorValidacionENI.class);
-  
+
   // CARM ### v2.0.8.1
   public boolean isActivo() {
     return this.activo;
   }
   // CARM 2.0.8.1 ###
 
-//CARM ### v2.0.8.1
+  // CARM ### v2.0.8.1
   @PostConstruct
-//CARM 2.0.8.1 ###
+  // CARM 2.0.8.1 ###
   public void configure() {
     if (wsValidacionEniActivo.equals(activoCadena)) {
       EeUtilValidacionENIServiceMtomImplService servicioMtom = null;
@@ -125,7 +125,7 @@ public class ConsumidorValidacionENI {
       } catch (MalformedURLException | WebServiceException e) {
         logger.error("No se ha podido conectar al servicio :", e);
       }
-   // CARM ### v2.0.8.1
+      // CARM ### v2.0.8.1
     } else {
       logger.info("El WS de VALIDACIÓN no está activo");
       activo = false;
@@ -145,7 +145,7 @@ public class ConsumidorValidacionENI {
   public List<ResultadoValidacionDocumento> validaDocumentoENI(byte[] docuemnto,
       Validaciones validaciones) throws InsideServiceValidacionException {
 
-	// CARM ### v2.0.8.1
+    // CARM ### v2.0.8.1
     if (!this.isActivo()) {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
     }
@@ -288,8 +288,8 @@ public class ConsumidorValidacionENI {
     return tmpBuff.toString();
   }
 
-  public List<ResultadoValidacionDocumento> validaFirmaDocumentoENI(byte[] docuemnto) 
-	  throws InsideServiceValidacionException {
+  public List<ResultadoValidacionDocumento> validaFirmaDocumentoENI(byte[] docuemnto)
+      throws InsideServiceValidacionException {
     // CARM ### v2.0.8.1
     if (!this.isActivo()) {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
@@ -314,8 +314,8 @@ public class ConsumidorValidacionENI {
   }
 
   public List<ResultadoValidacionExpediente> validaExpedienteENI(byte[] expediente,
-      Validaciones validaciones) throws InsideServiceValidacionException{
-	// CARM ### v2.0.8.1
+      Validaciones validaciones) throws InsideServiceValidacionException {
+    // CARM ### v2.0.8.1
     if (!this.isActivo()) {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
     }
@@ -489,8 +489,9 @@ public class ConsumidorValidacionENI {
 
   }
 
-  public List<ResultadoValidacionExpediente> validaFirmaExpedienteENI(byte[] expediente) throws InsideServiceValidacionException{
-	// CARM ### v2.8.7.1
+  public List<ResultadoValidacionExpediente> validaFirmaExpedienteENI(byte[] expediente)
+      throws InsideServiceValidacionException {
+    // CARM ### v2.8.7.1
     if (!this.isActivo()) {
       throw new InsideServiceValidacionException("El WS de VALIDACION no se encuentra activo");
     }

@@ -20,7 +20,7 @@ public interface MailService {
   public boolean isActive();
 
   // CARM 2.0.8.1 ###
-	  
+
   public String sendToken(ObjetoExpedienteToken objetoExpedienteToken, String idSesion,
       String URLDeEntornoEjecucion) throws Exception;
 

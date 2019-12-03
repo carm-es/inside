@@ -1115,10 +1115,10 @@ public class InSideServiceImpl implements InSideService {
 
     Validaciones validaciones = configurarValidacionesExpediente(false);
     return
-	    // CARM ### v2.0.8.1
-	    !consumidorValidacionENI.isActivo() ? null :
-	    // CARM 2.0.8.1 ###
-	        consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
+    // CARM ### v2.0.8.1
+    !consumidorValidacionENI.isActivo() ? null :
+    // CARM 2.0.8.1 ###
+        consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
   }
 
   @Override
@@ -1137,11 +1137,11 @@ public class InSideServiceImpl implements InSideService {
     if (expedienteConDSSignature == null)
       return consumidorValidacionENI.validaExpedienteENI(expediente, validaciones);
     else
-    	return
-		    // CARM ### v2.0.7.1
-		    !consumidorValidacionENI.isActivo() ? null :
-		    // CARM 2.0.7.1 ###
-		        consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
+      return
+      // CARM ### v2.0.7.1
+      !consumidorValidacionENI.isActivo() ? null :
+      // CARM 2.0.7.1 ###
+          consumidorValidacionENI.validaExpedienteENI(expedienteConDSSignature, validaciones);
 
   }
 
@@ -1333,7 +1333,7 @@ public class InSideServiceImpl implements InSideService {
 
     Validaciones validaciones = configurarValidacionesDocumento(documentoInside, opciones);
     List<ResultadoValidacionDocumento> resultados =
-		// CARM ### v2.0.8.1
+        // CARM ### v2.0.8.1
         !consumidorValidacionENI.isActivo() ? null :
         // CARM 2.0.8.1 ###
             consumidorValidacionENI.validaDocumentoENI(documento, validaciones);
