@@ -26,14 +26,7 @@
                         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-	<!-- CARM ### v2.0.8.1 -->
-	<!--
-	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:config.properties"></property>
-    </bean>
-    	-->
 	<context:property-placeholder 
-		location="classpath:config.properties,file:${config.path}/enhanced_2-0-7-x.properties" ignore-unresolvable="true" ignore-resource-not-found="true" order="0" />
-	<!-- CARM 2.0.8.1 ### -->
+		location="classpath:config.properties,file:${config.path}/enhanced_carm.properties" ignore-unresolvable="true" ignore-resource-not-found="true" order="0" />
 	
 </beans>
