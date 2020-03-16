@@ -19,6 +19,7 @@ import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacion;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
+import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.exception.InSideServiceTemporalDataException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
@@ -163,5 +164,11 @@ public interface InsideUtilService {
 
   public byte[] tratarFirmaLongevaExpediente(byte[] firmaIndice)
       throws InfoFirmaServiceException, IOException;
+
+  public void controlNIFyDIR3(String NIFs, String dir3) throws InsideWSException;
+
+  public void controlMail(String emails) throws InsideWSException;
+
+  public String tokenXmlBase64(ObjetoExpedienteToken objetoExpedienteToken);
 
 }

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -175,6 +177,13 @@ public class InsideUtilServiceImpl implements InsideUtilService {
   private static final String PAdES_LTV = "urn:afirma:dss:1.0:profile:XSS:PAdES:1.1.2:forms:LTV";
   private static final String XAdES_T = "urn:oasis:names:tc:dss:1.0:profiles:AdES:forms:ES-T";
   private static final String XAdES_A = "urn:oasis:names:tc:dss:1.0:profiles:AdES:forms:ES-A";
+  public static final String REGEX_NIF = "[0-9]{1,8}[A-Z]";
+  public static final String REGEX_NIE = "[XYZ][0-9]{7}[A-Z]";
+  public static final String REGEX_CIF = "[A-W][0-9]{7}[A-Z0-9]";
+  public static final String REGEX_DOCUMENTO_NACIONAL =
+      REGEX_NIF + "|" + REGEX_NIE + "|" + REGEX_CIF;
+  public static final String REGEX_EMAIL = "^(.+)@(.+)$";
+
 
   @Override
   public TipoDocumento convertirDocumentoAEni(TipoDocumentoConversionInside documentoConversion,
@@ -1956,5 +1965,65 @@ public class InsideUtilServiceImpl implements InsideUtilService {
           .getContenidoFirma().getFirmaConCertificado().getFirmaBase64());
     }
     return respuesta;
+  }
+
+  public String tokenXmlBase64(ObjetoExpedienteToken objetoExpedienteToken) {
+
+    String textoXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" + "<token>\n"
+        + "\t<Identificador>" + objetoExpedienteToken.getIdentificador() + "</Identificador>\n"
+        + "\t<CSV>" + objetoExpedienteToken.getCsv() + "</CSV>\n" + "\t<UUID>"
+        + objetoExpedienteToken.getUuid() + "</UUID>\n" + "</token>";
+
+    return Base64.encodeBase64String(textoXML.getBytes());
+  }
+
+  public void controlNIFyDIR3(String NIFs, String dir3) throws InsideWSException {
+    String[] listaNifs;
+    String listaNifsError = "";
+    boolean devuelveError = false;
+    boolean nifValido = true;
+    Pattern pattern = Pattern.compile(REGEX_DOCUMENTO_NACIONAL);
+    Matcher matcher;
+
+    if (!"".equals(NIFs)) {
+      listaNifs = NIFs.split(";");
+      for (String nif : listaNifs) {
+        matcher = pattern.matcher(nif);
+        nifValido = matcher.matches();
+        if (!nifValido) {
+          listaNifsError += nif + ", ";
+          devuelveError = true;
+        }
+      }
+      if (devuelveError) {
+        listaNifsError = listaNifsError.substring(0, listaNifsError.lastIndexOf(", "));
+        throw new InsideWSException(InsideWsErrors.NIF_MALFORMADO, null, listaNifsError);
+      }
+    } else if ("".equals(dir3)) {
+      throw new InsideWSException(InsideWsErrors.DIR3_NIF_NECESARIO, null);
+    }
+  }
+
+  public void controlMail(String emails) throws InsideWSException {
+    String[] listaEmails;
+    String listaEmailsError = "";
+    boolean mailValido = true;
+    boolean devuelveError = false;
+    Pattern pattern = Pattern.compile(REGEX_EMAIL);
+    Matcher matcher;
+
+    listaEmails = emails.split(";");
+    for (String mail : listaEmails) {
+      matcher = pattern.matcher(mail);
+      mailValido = matcher.matches();
+      if (!mailValido) {
+        listaEmailsError += mail + ", ";
+        devuelveError = true;
+      }
+    }
+    if (devuelveError) {
+      listaEmailsError = listaEmailsError.substring(0, listaEmailsError.lastIndexOf(", "));
+      throw new InsideWSException(InsideWsErrors.MAIL_MALFORMADO, null, listaEmailsError);
+    }
   }
 }

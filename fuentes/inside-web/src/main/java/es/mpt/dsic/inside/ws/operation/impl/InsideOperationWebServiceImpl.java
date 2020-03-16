@@ -11,16 +11,20 @@
 
 package es.mpt.dsic.inside.ws.operation.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -36,25 +40,31 @@ import es.mpt.dsic.inside.model.converter.InsideConverterIndice;
 import es.mpt.dsic.inside.model.converter.InsideConverterMetadatos;
 import es.mpt.dsic.inside.model.converter.InsideConverterVersion;
 import es.mpt.dsic.inside.model.converter.exception.InsideConverterException;
+import es.mpt.dsic.inside.model.objetos.ObjetoInside;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
-import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInsideContenido;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatos;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatosEstadoElaboracion;
 import es.mpt.dsic.inside.model.objetos.documento.metadatos.ObjetoDocumentoInsideMetadatosEstadoElaboracionEnumeracion;
 import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacion;
-import es.mpt.dsic.inside.ws.config.InsideEnhancedConf;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
+import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
+import es.mpt.dsic.inside.model.objetos.expediente.indice.ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatos;
 import es.mpt.dsic.inside.model.objetos.expediente.metadatos.ObjetoExpedienteInsideMetadatosEnumeracionEstados;
+import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.InSideService;
 import es.mpt.dsic.inside.service.InSideServicePermisos;
 import es.mpt.dsic.inside.service.InsideUtilService;
+import es.mpt.dsic.inside.service.csv.CsvService;
 import es.mpt.dsic.inside.service.exception.InSideServiceException;
 import es.mpt.dsic.inside.service.exception.InsideServiceInternalException;
+import es.mpt.dsic.inside.service.mail.MailService;
 import es.mpt.dsic.inside.service.store.exception.InsideStoreObjectAlreadyExistsException;
+import es.mpt.dsic.inside.service.util.InsideWSUtils;
 import es.mpt.dsic.inside.service.util.XMLUtils;
 import es.mpt.dsic.inside.service.visualizacion.ResultadoVisualizacionDocumento;
+import es.mpt.dsic.inside.ws.config.InsideEnhancedConf;
 import es.mpt.dsic.inside.ws.exception.InsideExceptionConverter;
 import es.mpt.dsic.inside.ws.exception.InsideWSException;
 import es.mpt.dsic.inside.ws.exception.InsideWsErrors;
@@ -77,6 +87,7 @@ import es.mpt.dsic.inside.xml.inside.TipoExpedienteInside;
 import es.mpt.dsic.inside.xml.inside.TipoExpedienteInsideConMAdicionales;
 import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
 import es.mpt.dsic.inside.xml.inside.TipoVersionInside;
+import es.mpt.dsic.inside.xml.inside.TokenExpediente;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.ConsultaWsInside;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.DocumentoResultadoBusqueda;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.ExpedienteResultadoBusqueda;
@@ -121,7 +132,19 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
   @Autowired
   private InsideEnhancedConf wsEnhancedConf;
 
+  @Autowired
+  private CsvService csvService;
+
+  @Autowired
+  private InSideService insideService;
+
+  @Autowired
+  private MailService mailService;
+
   private Properties properties;
+
+  @Value("${clave.auth.fail.fake.nif}")
+  private String nifFake;
 
   @Override
   @Secured("ROLE_ALTA_EXPEDIENTE")
@@ -1553,6 +1576,89 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
     } catch (Exception e) {
       throw InsideExceptionConverter.convertToException(e);
     }
+  }
+
+  @Override
+  @Secured("ROLE_MODIFICA_EXPEDIENTE")
+  public TokenExpediente getCredencialesAccesoExpediente(String aplicacion, String identificador,
+      String emails, String asuntoMail, String dir3, String nifs, String fechaCaducidad)
+      throws InsideWSException {
+
+    TokenExpediente tokenExpediente = new TokenExpediente();
+    ObjetoInsideUsuario usuario = new ObjetoInsideUsuario();
+    ObjetoInside<?> expediente = null;
+    String csv = "";
+    String uuid = "";
+    boolean hayCorreo = true;
+    final String DIRECCION = "https://inside.carm.es/inside/";
+    final String TOKENFILE = "/token";
+    final String FORMATO_FECHA = "\\d{4}-\\d{2}-\\d{2}";
+    String resultadoEnvioCorreo = "";
+    String fichero = "";
+
+    try {
+      // control fecha
+      Date objetoFechaCaducidad = null;
+      if (org.apache.commons.lang.StringUtils.isNotEmpty(fechaCaducidad)) {
+        if (fechaCaducidad.matches(FORMATO_FECHA))
+          objetoFechaCaducidad = InsideWSUtils.stringToJavaDateToken(fechaCaducidad);
+        else
+          throw new InsideWSException(InsideWsErrors.FECHA_MALFORMATO, null, fechaCaducidad);
+      }
+      // control NIF y DIR3
+      insideUtilService.controlNIFyDIR3(nifs, dir3);
+
+      // control emails
+      if (!"".equals(emails.trim())) {
+        insideUtilService.controlMail(emails);
+      } else {
+        hayCorreo = false;
+      }
+
+      // Control Permisos
+      servicePermisos.checkPermisos(identificador, null, ObjetoExpedienteInside.class, aplicacion);
+
+      // Obtencion de credenciales
+      expediente = service.getExpediente(identificador, null, false);
+      usuario.setNif(nifFake);
+      csv = csvService.generarCSV((ObjetoExpedienteInside) expediente);
+      uuid = UUID.randomUUID().toString();
+
+      ObjetoExpedienteToken objetoExpedienteToken = new ObjetoExpedienteToken(usuario,
+          identificador, csv, uuid, ((ObjetoExpedienteInside) expediente).getVersion().getVersion(),
+          objetoFechaCaducidad, dir3, asuntoMail, nifs, emails);
+
+      // devolver fichero token
+      fichero = insideUtilService.tokenXmlBase64(objetoExpedienteToken);
+
+      // guardar en base de datos
+      insideService.saveToken(objetoExpedienteToken);
+
+      // envio correo
+      if (hayCorreo) {
+        try {
+          resultadoEnvioCorreo = mailService.sendToken(objetoExpedienteToken, TOKENFILE, DIRECCION);
+        } catch (Exception e) {
+          logger.error(
+              "expedienteGenerarTokenDescarga: Error en el envio de correo de Credenciales de Acceso"
+                  + e);
+          throw InsideExceptionConverter.convertToException(e);
+        }
+      }
+    } catch (InSideServiceException e) {
+      throw InsideExceptionConverter.convertToException(e);
+    } catch (ParseException e) {
+      logger.error("Se he producido un error al generar el Credencial de Acceso de descarga:"
+          + e.getMessage());
+      throw InsideExceptionConverter.convertToException(e);
+    }
+
+    tokenExpediente.setIdentificador(identificador);
+    tokenExpediente.setCsv(csv);
+    tokenExpediente.setUuid(uuid);
+    tokenExpediente.setResultadoEnvioCorreo(resultadoEnvioCorreo);
+    tokenExpediente.setFichero(fichero);
+    return tokenExpediente;
   }
 
 }

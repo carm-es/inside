@@ -28,6 +28,7 @@ import es.mpt.dsic.inside.xml.inside.TipoDocumentoInside;
 import es.mpt.dsic.inside.xml.inside.TipoExpedienteInside;
 import es.mpt.dsic.inside.xml.inside.TipoMetadatosAdicionales;
 import es.mpt.dsic.inside.xml.inside.TipoVersionInside;
+import es.mpt.dsic.inside.xml.inside.TokenExpediente;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.ConsultaWsInside;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.DocumentoResultadoBusqueda;
 import es.mpt.dsic.inside.xml.inside.ws.busqueda.ExpedienteResultadoBusqueda;
@@ -192,6 +193,10 @@ public interface InsideOperationWebService {
   public RespuestaPdfExpediente getPdfExpediente(byte[] expedienteEni) throws InsideWSException;
 
   public RespuestaPdfExpediente getPdfExpedientePorId(String identificador, String version)
+      throws InsideWSException;
+
+  public TokenExpediente getCredencialesAccesoExpediente(String aplicacion, String identificador,
+      String emails, String asuntoMail, String dir3, String NIFs, String fechaCaducidad)
       throws InsideWSException;
 
 }

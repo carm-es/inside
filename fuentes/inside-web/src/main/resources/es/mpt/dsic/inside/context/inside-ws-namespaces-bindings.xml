@@ -44,6 +44,7 @@
 				
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e" value="insideexp"/>
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/expedienteInfo" value="insideexpinfo"/>
+		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/tokenExpediente" value="insidetokenexp"/>
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/expedienteEniFile" value="insideexpenifile"/>
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/expedienteEniFileConDocumentos" value="insideexpenifilecondocumentos"/>
 		<entry key="https://ssweb.seap.minhap.es/Inside/XSD/v1.0/expediente-e/metadatos" value="insideexpmeta"/>
