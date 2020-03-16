@@ -212,7 +212,12 @@
     <schemaBindings>
       <package name="es.mpt.dsic.inside.xml.inside.ws.validacion.expediente.resultados"/>
     </schemaBindings>
-  </bindings> 
+  </bindings>
+  <bindings schemaLocation="../xsd/TokenExpediente.xsd">
+    <schemaBindings>
+      <package name="es.mpt.dsic.inside.xml.inside"/>
+    </schemaBindings>
+  </bindings>
   <bindings schemaLocation="../xsd/WSErrorInside.xsd">
     <schemaBindings>
       <package name="es.mpt.dsic.inside.xml.inside.ws.error"/>

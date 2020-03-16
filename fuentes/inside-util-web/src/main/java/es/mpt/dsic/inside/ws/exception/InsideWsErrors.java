@@ -110,7 +110,19 @@ public enum InsideWsErrors {
                                                                                                                                       "No existe ese mapeo dir3 padre para ese número de serie certificado")), MAPEO_DIR3PADRE_CERTIFICADO_NO_EXISTS_DIR3(
                                                                                                                                           new InsideWSError(
                                                                                                                                               414,
-                                                                                                                                              "No existe ese mapeo de certificado para ese dir3 padre")),
+                                                                                                                                              "No existe ese mapeo de certificado para ese dir3 padre")), NIF_MALFORMADO(
+                                                                                                                                                  new InsideWSError(
+                                                                                                                                                      415,
+                                                                                                                                                      "El NIF proporcionado no tiene el formato correcto")), MAIL_MALFORMADO(
+                                                                                                                                                          new InsideWSError(
+                                                                                                                                                              416,
+                                                                                                                                                              "El MAIL proporcionado no tiene el formato correcto")), DIR3_NIF_NECESARIO(
+                                                                                                                                                                  new InsideWSError(
+                                                                                                                                                                      417,
+                                                                                                                                                                      "Se ha de informar al menos alguno de estos campos: DIR3 o NIF")), FECHA_MALFORMATO(
+                                                                                                                                                                          new InsideWSError(
+                                                                                                                                                                              418,
+                                                                                                                                                                              "La fecha de caducidad debe tener el formato: yyyy-mm-dd")),
 
   INTERNAL_SERVICE_ERROR(new InsideWSError(500, "Error interno de Inside")),
 
