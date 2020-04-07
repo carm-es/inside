@@ -16,7 +16,7 @@ import es.mpt.dsic.inside.xml.inside.TokenExpediente;
 import es.mpt.dsic.inside.xml.inside.ws.credential.WSCredentialInside;
 
 @WebService(name = "INSIDECARMWebService",
-    targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebServiceFiles")
+    targetNamespace = "https://ssweb.seap.minhap.es/Inside/XSD/v1.0/WebService")
 @Logging(limit = -1)
 @GZIP
 @OutInterceptors(interceptors = {}, classes = {InsideWsIndiceExpedienteSignerInterceptor.class})

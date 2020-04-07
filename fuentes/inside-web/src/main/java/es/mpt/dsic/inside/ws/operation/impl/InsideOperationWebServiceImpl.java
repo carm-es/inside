@@ -113,6 +113,9 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
       "http://administracionelectronica.gob.es/ENI/XSD/v1.0/expediente-e";
   protected static final String VERSION_NTI_DOC =
       "http://administracionelectronica.gob.es/ENI/XSD/v1.0/documento-e";
+  final String DIRECCION_EMAIL = "https://inside.carm.es/inside/";
+  final String TOKENFILE = "/token";
+  final String FORMATO_FECHA = "\\d{4}-\\d{2}-\\d{2}";
 
   @Autowired
   private InSideService service;
@@ -1590,9 +1593,6 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
     String csv = "";
     String uuid = "";
     boolean hayCorreo = true;
-    final String DIRECCION = "https://inside.carm.es/inside/";
-    final String TOKENFILE = "/token";
-    final String FORMATO_FECHA = "\\d{4}-\\d{2}-\\d{2}";
     String resultadoEnvioCorreo = "";
     String fichero = "";
 
@@ -1606,10 +1606,14 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
           throw new InsideWSException(InsideWsErrors.FECHA_MALFORMATO, null, fechaCaducidad);
       }
       // control NIF y DIR3
+      if (nifs == null)
+        nifs = "";
+      if (dir3 == null)
+        dir3 = "";
       insideUtilService.controlNIFyDIR3(nifs, dir3);
 
       // control emails
-      if (!"".equals(emails.trim())) {
+      if (emails != null && !"".equals(emails.trim())) {
         insideUtilService.controlMail(emails);
       } else {
         hayCorreo = false;
@@ -1637,7 +1641,8 @@ public class InsideOperationWebServiceImpl implements InsideOperationWebService 
       // envio correo
       if (hayCorreo) {
         try {
-          resultadoEnvioCorreo = mailService.sendToken(objetoExpedienteToken, TOKENFILE, DIRECCION);
+          resultadoEnvioCorreo =
+              mailService.sendToken(objetoExpedienteToken, TOKENFILE, DIRECCION_EMAIL);
         } catch (Exception e) {
           logger.error(
               "expedienteGenerarTokenDescarga: Error en el envio de correo de Credenciales de Acceso"
