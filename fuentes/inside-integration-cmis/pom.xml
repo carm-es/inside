@@ -35,7 +35,7 @@
 		<chemistry-opencmis.version>0.12.0</chemistry-opencmis.version>
 		<skip.tests>true</skip.tests>
 		<spring.version>3.1.1.RELEASE</spring.version>
-		<spring.security.version> 3.1.0.RELEASE</spring.security.version>
+		<spring.security.version>5.3.3.RELEASE</spring.security.version>
 		<junit.version>4.10</junit.version>
 		<mimeutil.version>2.1.3</mimeutil.version>
 		<aspectj.version>1.8.1</aspectj.version>
