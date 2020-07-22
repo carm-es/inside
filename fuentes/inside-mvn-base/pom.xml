@@ -542,12 +542,12 @@
 	    <repository>
 	      <id>maven-mpt-es-libs-release</id>
 	      <name>maven-mpt-es-libs-release</name>
-		  <url>http://maven.mpt.es/artifactory/libs-release-local</url>
+		  <url>https://maven.mpt.es/artifactory/libs-release-local</url>
 	    </repository>
 	    <snapshotRepository>
 	      <id>maven-mpt-es-libs-snapshot</id>
 	      <name>maven-mpt-es-libs-snapshot</name>
-		  <url>http://maven.mpt.es/artifactory/libs-snapshot-local</url>
+		  <url>https://maven.mpt.es/artifactory/libs-snapshot-local</url>
 	    </snapshotRepository>
     </distributionManagement>
 
