@@ -27,7 +27,7 @@
 	<parent>
 		<groupId>es.mpt.dsic</groupId>
 		<artifactId>inside-mvn-base</artifactId>
-		<version>2.0.8.3-CARM.3-SNAPSHOT</version>
+		<version>2.0.8.3-CARM.3</version>
 		<relativePath>../inside-mvn-base</relativePath>
 	</parent>
 
