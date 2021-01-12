@@ -24,8 +24,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.endpoint.Client;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Value;
 import es.mpt.dsic.eeutil.client.model.DatosFirmados;
 import es.mpt.dsic.eeutil.client.operFirma.model.ResultadoValidacionInfo;
 import es.mpt.dsic.eeutil.client.visDocExp.model.ApplicationLogin;
@@ -80,6 +85,10 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   protected static final Log logger = LogFactory.getLog(InsideServiceVisualizacionImpl.class);
 
   private Properties properties;
+  @Value("${eeutils.cxf.client.logging.interceptor.enabled:false}")
+  private boolean eeutilsLoggingCxfEnabled;
+  @Value("${eeutils.cxf.client.logging.interceptor.limit:0}")
+  private Integer eeutilsLoggingCxfLimit;
   private EeUtilService port;
   private ApplicationLogin applicationLogin;
 
@@ -129,6 +138,8 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
 
           port = ss.getEeUtilServiceImplPort();
 
+          enableLoggingCxf(ClientProxy.getClient(port));
+
           applicationLogin = new ApplicationLogin();
           applicationLogin.setIdaplicacion(properties.getProperty("visualizacion.idaplicacion"));
           applicationLogin.setPassword(properties.getProperty("visualizacion.password"));
@@ -171,6 +182,15 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       }
     }
     return activo;
+  }
+
+  private void enableLoggingCxf(Client client) {
+    if (eeutilsLoggingCxfEnabled) {
+      client.getInInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingInInterceptor()
+          : new LoggingInInterceptor(eeutilsLoggingCxfLimit));
+      client.getOutInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingOutInterceptor()
+          : new LoggingOutInterceptor(eeutilsLoggingCxfLimit));
+    }
   }
 
   @Override
