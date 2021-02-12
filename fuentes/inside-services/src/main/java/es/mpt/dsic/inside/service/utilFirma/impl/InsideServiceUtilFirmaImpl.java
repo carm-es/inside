@@ -17,15 +17,13 @@ import java.net.URL;
 import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import es.mpt.dsic.eeutil.client.model.ApplicationLogin;
 import es.mpt.dsic.eeutil.client.model.CSVInfo;
 import es.mpt.dsic.eeutil.client.model.CSVInfoAmbito;
 import es.mpt.dsic.eeutil.client.model.InSideException;
+import es.mpt.dsic.eeutil.client.util.CxfClientUtil;
 import es.mpt.dsic.eeutil.client.utilFirma.EeUtilService;
 import es.mpt.dsic.eeutil.client.utilFirma.EeUtilServiceImplService;
 import es.mpt.dsic.inside.service.util.XMLUtils;
@@ -41,6 +39,10 @@ public class InsideServiceUtilFirmaImpl implements InsideServiceUtilFirma {
   private boolean eeutilsLoggingCxfEnabled;
   @Value("${eeutils.cxf.client.logging.interceptor.limit:0}")
   private Integer eeutilsLoggingCxfLimit;
+  @Value("${eeutils.cxf.client.connectionTimeout:#{null}}")
+  private Long eeutilsCxfConnectionTimeout;
+  @Value("${eeutils.cxf.client.receiveTimeout:#{null}}")
+  private Long eeutilsCxfReceiveTimeout;
   private EeUtilService port;
   private ApplicationLogin applicationLogin;
 
@@ -72,7 +74,10 @@ public class InsideServiceUtilFirmaImpl implements InsideServiceUtilFirma {
 
           port = ss.getEeUtilServiceImplPort();
 
-          enableLoggingCxf(ClientProxy.getClient(port));
+          CxfClientUtil.setupLoggingCxf(ClientProxy.getClient(port), eeutilsLoggingCxfEnabled,
+              eeutilsLoggingCxfLimit);
+          CxfClientUtil.setupTimeouts(ClientProxy.getClient(port), eeutilsCxfConnectionTimeout,
+              eeutilsCxfReceiveTimeout);
 
           applicationLogin = new ApplicationLogin();
           applicationLogin.setIdaplicacion(properties.getProperty("utilFirma.idaplicacion"));
@@ -87,15 +92,6 @@ public class InsideServiceUtilFirmaImpl implements InsideServiceUtilFirma {
       }
     }
     return activo;
-  }
-
-  private void enableLoggingCxf(Client client) {
-    if (eeutilsLoggingCxfEnabled) {
-      client.getInInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingInInterceptor()
-          : new LoggingInInterceptor(eeutilsLoggingCxfLimit));
-      client.getOutInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingOutInterceptor()
-          : new LoggingOutInterceptor(eeutilsLoggingCxfLimit));
-    }
   }
 
   @Override

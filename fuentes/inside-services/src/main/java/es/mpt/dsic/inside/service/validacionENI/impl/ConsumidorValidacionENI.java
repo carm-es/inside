@@ -33,15 +33,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
-import org.apache.cxf.interceptor.LoggingInInterceptor;
-import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import es.mpt.dsic.eeutil.client.util.CxfClientUtil;
 import es.mpt.dsic.inside.model.objetos.ObjetoInsideUnidad;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionDocumento;
 import es.mpt.dsic.inside.model.objetos.enivalidation.OpcionValidacionExpediente;
@@ -50,8 +49,8 @@ import es.mpt.dsic.inside.model.objetos.enivalidation.ResultadoValidacionExpedie
 import es.mpt.dsic.inside.service.sia.impl.ConsumidorSIA;
 import es.mpt.dsic.inside.service.store.InsideServiceStore;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
-import es.mpt.dsic.inside.service.validacionENIMtom.model.ApplicationLogin;
 import es.mpt.dsic.inside.service.validacionENI.exception.InsideServiceValidacionException;
+import es.mpt.dsic.inside.service.validacionENIMtom.model.ApplicationLogin;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.Detalle;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.DocumentoEntradaMtom;
 import es.mpt.dsic.inside.service.validacionENIMtom.model.EeUtilValidacionENIServiceMtom;
@@ -72,6 +71,10 @@ public class ConsumidorValidacionENI {
   private boolean eeutilsLoggingCxfEnabled;
   @Value("${eeutils.cxf.client.logging.interceptor.limit:0}")
   private Integer eeutilsLoggingCxfLimit;
+  @Value("${eeutils.cxf.client.connectionTimeout:#{null}}")
+  private Long eeutilsCxfConnectionTimeout;
+  @Value("${eeutils.cxf.client.receiveTimeout:#{null}}")
+  private Long eeutilsCxfReceiveTimeout;
 
   private final String XPATH_RUTA_ORGANOS_DOC = "documento/metadatos/Organo";
   private final String XPATH_RUTA_ORGANOS_EXP = "expediente/metadatosExp/Organo";
@@ -113,7 +116,10 @@ public class ConsumidorValidacionENI {
 
         disableChunking(ClientProxy.getClient(scMtom));
 
-        enableLoggingCxf(ClientProxy.getClient(scMtom));
+        CxfClientUtil.setupLoggingCxf(ClientProxy.getClient(scMtom), eeutilsLoggingCxfEnabled,
+            eeutilsLoggingCxfLimit);
+        CxfClientUtil.setupTimeouts(ClientProxy.getClient(scMtom), eeutilsCxfConnectionTimeout,
+            eeutilsCxfReceiveTimeout);
 
         String endpointURLMtom = url;
         BindingProvider bpMtom = (BindingProvider) scMtom;
@@ -139,15 +145,6 @@ public class ConsumidorValidacionENI {
     policy.setChunkingThreshold(0);
     logger.debug("AllowChunking:" + policy.isAllowChunking());
     logger.debug("ChunkingThreshold:" + policy.getChunkingThreshold());
-  }
-
-  private void enableLoggingCxf(Client client) {
-    if (eeutilsLoggingCxfEnabled) {
-      client.getInInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingInInterceptor()
-          : new LoggingInInterceptor(eeutilsLoggingCxfLimit));
-      client.getOutInterceptors().add(eeutilsLoggingCxfLimit == 0 ? new LoggingOutInterceptor()
-          : new LoggingOutInterceptor(eeutilsLoggingCxfLimit));
-    }
   }
 
   public List<ResultadoValidacionDocumento> validaDocumentoENI(byte[] docuemnto,

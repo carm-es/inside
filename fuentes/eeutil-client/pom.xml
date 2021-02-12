@@ -48,5 +48,23 @@
         </snapshotRepository>
     </distributionManagement -->
     
+	<dependencies>
+		<!-- cxf para configurar interceptores logging -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>jaxb-impl</artifactId>
+					<groupId>com.sun.xml.bind</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- cxf para configurar timeouts HTTP -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+		</dependency>
+	</dependencies>
     
 </project>
