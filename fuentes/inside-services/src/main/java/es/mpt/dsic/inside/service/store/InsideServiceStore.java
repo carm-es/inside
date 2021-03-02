@@ -13,9 +13,8 @@ package es.mpt.dsic.inside.service.store;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.SortedMap;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
 import es.mpt.dsic.inside.model.busqueda.consulta.ConsultaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaInside;
 import es.mpt.dsic.inside.model.busqueda.resultado.ResultadoBusquedaUsuario;
@@ -36,11 +35,9 @@ import es.mpt.dsic.inside.model.objetos.ObjetoUnidadOrganica;
 import es.mpt.dsic.inside.model.objetos.documento.ObjetoDocumentoInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaAccesoDocumento;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoAuditoriaToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoComunicacionTokenExpediente;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoEstructuraCarpetaInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteInside;
 import es.mpt.dsic.inside.model.objetos.expediente.ObjetoExpedienteToken;
-import es.mpt.dsic.inside.model.objetos.expediente.ObjetoSolicitudAccesoExpediente;
 import es.mpt.dsic.inside.model.objetos.filter.ObjetoFilterPageRequest;
 import es.mpt.dsic.inside.model.objetos.usuario.ObjetoInsideUsuario;
 import es.mpt.dsic.inside.service.store.exception.InsideServiceStoreException;
@@ -239,6 +236,9 @@ public interface InsideServiceStore {
       throws InsideServiceStoreException;
 
   public boolean existeUsuarioInsideConDir3(String dir3);
+
+  public Map<String, String> getMetadatoAdicionalDocumentos(List<String> idsEniDocumentos,
+      String nombreMetaAdic) throws InsideServiceStoreException;
 
   public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
       throws InsideServiceStoreException;
