@@ -14,10 +14,12 @@ package es.mpt.dsic.inside.service.store.impl.hibernate;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -245,7 +247,8 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
 
   private void saveExpediente(ExpedienteInside expedienteEntity, Session session,
       Object objectUnidad) throws InsideServiceStoreException {
-    logger.debug("Init saveExpediente");
+    logger.debug("Init saveExpediente " + expedienteEntity.getIdentificador() + ": "
+        + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
     logger.debug("Parameter <expedienteEntity>" + expedienteEntity.toString());
     Transaction tx = session.beginTransaction();
     try {
@@ -278,7 +281,8 @@ public class InsideServiceStoreHibernatePersister<I extends ObjetoInside<?>, E e
       throw new InsideServiceStoreException("Excepción almacenando Expediente en BBDD", e);
     }
 
-    logger.debug("End saveExpediente");
+    logger.debug("End saveExpediente " + expedienteEntity.getIdentificador() + ": "
+        + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
   }
 
   private void saveIndiceExpediente(ExpedienteInsideIndice indiceExpedienteEntity, Session session)

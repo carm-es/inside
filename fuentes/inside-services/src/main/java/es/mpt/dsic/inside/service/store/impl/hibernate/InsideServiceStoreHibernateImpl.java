@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
@@ -2577,6 +2578,32 @@ public class InsideServiceStoreHibernateImpl<I extends ObjetoInside<?>, E extend
       session.close();
     }
     return retorno;
+  }
+
+  @Override
+  public Map<String, String> getMetadatoAdicionalDocumentos(List<String> idsEniDocumentos,
+      String nombreMetaAdic) throws InsideServiceStoreException {
+    Session session = sessionFactory.openSession();
+    Map<String, String> metasAdicDocs = new HashMap<>();
+    try {
+      List<?> resultsRaw = session.createQuery(
+          "SELECT di.identificador, dimeta.valor FROM DocumentoInsideMetadatosAdicionales dimeta, DocumentoInside di "
+              + "WHERE dimeta.documentoInside.id = di.id AND di.identificador IN(:p1) AND dimeta.nombre = :p2")
+          .setParameterList("p1", idsEniDocumentos).setParameter("p2", nombreMetaAdic).list();
+      for (Object raw : resultsRaw) {
+        Object[] s = (Object[]) raw;
+        metasAdicDocs.put((String) s[0], (String) s[1]);
+      }
+    } catch (Exception e) {
+      throw new InsideServiceStoreException(
+          "Excepción obteniendo metadato adicional " + nombreMetaAdic + " en documentos "
+              + (idsEniDocumentos == null ? null : String.join(",", idsEniDocumentos)),
+          e);
+
+    } finally {
+      session.close();
+    }
+    return metasAdicDocs;
   }
 
   public ObjetoInsideDocumentoUnidad getDocumentoUnidad(String identificadorDocumento)
