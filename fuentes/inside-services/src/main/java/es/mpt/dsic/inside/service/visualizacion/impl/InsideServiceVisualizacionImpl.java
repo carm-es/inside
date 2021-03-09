@@ -16,12 +16,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.frontend.ClientProxy;
@@ -93,6 +98,9 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   private Long eeutilsCxfReceiveTimeout;
   private EeUtilService port;
   private ApplicationLogin applicationLogin;
+
+  @Value("${eeutils.vis-docexp.exp.optimizar.dml.indice:#{null}}")
+  private Boolean optimizarDmlIndice;
 
   private List<String> filasNombreOrganismo;
   private String modeloExpediente;
@@ -208,10 +216,17 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
     SalidaVisualizacion salida = null;
     try {
       // Llamada al servicio
+      logger.debug("Inicio operación eeutil-vis-docexp/visualizar expediente "
+          + itemExpediente.getIdentificador() + ": "
+          + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
       salida = port.visualizar(applicationLogin, itemExpediente, oVisualizacion);
     } catch (Exception t) {
       throw new InsideServiceVisualizacionException("Error al obtener la visualización del índice",
           t);
+    } finally {
+      logger.debug("Fin operación eeutil-vis-docexp/visualizar expediente "
+          + itemExpediente.getIdentificador() + ": "
+          + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
     }
 
     // Rellenamos el objeto que contiene la visualización del índice.
@@ -337,11 +352,67 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
     padre.setIdentificador(expediente.getIdentificador());
     padre.setNombre(expediente.getIdentificador());
     padre.setPropiedadesItem(getPropiedadesExpediente(expediente));
+    List<String> idsEniDocusExp = new ArrayList<>();
 
-    fillItemWithIndice(padre, expediente.getIndice().getIndiceContenido().getElementosIndizados(),
-        opciones);
-
+    if (BooleanUtils.isTrue(optimizarDmlIndice) && !opciones.isExterno()) {
+      /*
+       * Si entra aqui es que se ha optimizado la obtencion del nombre natural del documento. En vez
+       * de realizar una consulta a base de datos por cada documento, realiza una única consulta que
+       * los obtiene todos.
+       */
+      getIdsEniDocsExpediente(expediente.getIndice().getIndiceContenido().getElementosIndizados(),
+          idsEniDocusExp);
+      Map<String, String> nombreNatuDocsExpPorIdEni = new HashMap<>();
+      if (!idsEniDocusExp.isEmpty()) {
+        try {
+          nombreNatuDocsExpPorIdEni = insideStore.getMetadatoAdicionalDocumentos(idsEniDocusExp,
+              Constantes.METADATO_NOMBRE_NOMBRE_NATURAL);
+        } catch (InsideServiceStoreException e) {
+          throw new InsideServiceVisualizacionException(
+              "Error obteniendo nombres naturales de los documentos ["
+                  + String.join(",", idsEniDocusExp)
+                  + "] para construir petición eeutil visualización expediente ["
+                  + expediente.getIdentificador() + "]",
+              e);
+        }
+      }
+      fillItemWithIndice(padre, expediente.getIndice().getIndiceContenido().getElementosIndizados(),
+          opciones, nombreNatuDocsExpPorIdEni);
+    } else {
+      fillItemWithIndice(padre, expediente.getIndice().getIndiceContenido().getElementosIndizados(),
+          opciones, null);
+    }
     return padre;
+  }
+
+
+  /**
+   * Devuelve un listado con los identificadores de todos los documentos del expediente.
+   * 
+   * @param elementosIndice Elementos que serán hijos de "item"
+   * @param idsEniDocusExp Array que contendrá todos los identificadores de los documentos
+   */
+  private void getIdsEniDocsExpediente(
+      List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> elementosIndice,
+      List<String> idsEniDocusExp) throws InsideServiceVisualizacionException {
+
+    for (ObjetoExpedienteInsideIndiceContenidoElementoIndizado elementoHijo : elementosIndice) {
+      if (elementoHijo instanceof ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) {
+        ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado docIndizado =
+            (ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) elementoHijo;
+        idsEniDocusExp.add(docIndizado.getIdentificadorDocumento());
+
+      } else if (elementoHijo instanceof ObjetoExpedienteInsideIndiceContenido) {
+        ObjetoExpedienteInsideIndiceContenido indiceContenidoIndizado =
+            (ObjetoExpedienteInsideIndiceContenido) elementoHijo;
+        getIdsEniDocsExpediente(indiceContenidoIndizado.getElementosIndizados(), idsEniDocusExp);
+
+      } else if (elementoHijo instanceof ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) {
+        ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada carpetaIndizada =
+            (ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) elementoHijo;
+        getIdsEniDocsExpediente(carpetaIndizada.getElementosIndizados(), idsEniDocusExp);
+      }
+    }
   }
 
   /**
@@ -353,7 +424,8 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
    */
   private void fillItemWithIndice(Item item,
       List<ObjetoExpedienteInsideIndiceContenidoElementoIndizado> elementosIndice,
-      OpcionesVisualizacionIndice opciones) throws InsideServiceVisualizacionException {
+      OpcionesVisualizacionIndice opciones, Map<String, String> nombreNatuDocsExpPorIdEni)
+      throws InsideServiceVisualizacionException {
 
     // Metemos un AtomicInteger como parámetro porque los Integer no se
     // pueden incrementar, y los int se pasan por valor.
@@ -367,7 +439,8 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
         ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado docIndizado =
             (ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado) elementoHijo;
 
-        itemHijo.setNombre(getNombreDocumentoIndizado(docIndizado, opciones.isExterno()));
+        itemHijo.setNombre(getNombreDocumentoIndizado(docIndizado, opciones.isExterno(),
+            nombreNatuDocsExpPorIdEni));
         itemHijo.setPropiedadesItem(getPropiedadesDocumentoIndizado(docIndizado,
             docIndizado.getOrdenDocumentoExpediente()));
 
@@ -376,13 +449,15 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
             (ObjetoExpedienteInsideIndiceContenido) elementoHijo;
         itemHijo.setNombre("Expediente Electrónico: "
             + indiceContenidoIndizado.getIdentificadorExpedienteAsociado());
-        fillItemWithIndice(itemHijo, indiceContenidoIndizado.getElementosIndizados(), opciones);
+        fillItemWithIndice(itemHijo, indiceContenidoIndizado.getElementosIndizados(), opciones,
+            nombreNatuDocsExpPorIdEni);
 
       } else if (elementoHijo instanceof ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) {
         ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada carpetaIndizada =
             (ObjetoExpedienteInsideIndiceContenidoCarpetaIndizada) elementoHijo;
         itemHijo.setNombre(carpetaIndizada.getIdentificadorCarpeta());
-        fillItemWithIndice(itemHijo, carpetaIndizada.getElementosIndizados(), opciones);
+        fillItemWithIndice(itemHijo, carpetaIndizada.getElementosIndizados(), opciones,
+            nombreNatuDocsExpPorIdEni);
       }
 
       item.getHijos().getItems().getItems().add(itemHijo);
@@ -779,12 +854,16 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
    * se enviará ese junto al identificador del documento indizado.
    */
   private String getNombreDocumentoIndizado(
-      ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado documentoIndizado, boolean externo)
-      throws InsideServiceVisualizacionException {
+      ObjetoExpedienteInsideIndiceContenidoDocumentoIndizado documentoIndizado, boolean externo,
+      Map<String, String> nombreNatuDocsExpPorIdEni) throws InsideServiceVisualizacionException {
 
     String nombreDocumento;
     if (externo) {
       nombreDocumento = "[" + documentoIndizado.getIdentificadorDocumento() + "]";
+    } else if (nombreNatuDocsExpPorIdEni != null) {
+      nombreDocumento = StringUtils.stripToEmpty(
+          nombreNatuDocsExpPorIdEni.get(documentoIndizado.getIdentificadorDocumento())) + " ["
+          + documentoIndizado.getIdentificadorDocumento() + "]";
     } else {
       ObjetoDocumentoInsideMetadatos metadatosDocumento = null;
       try {
