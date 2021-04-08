@@ -102,6 +102,7 @@ public class ConsumidorValidacionENI {
   protected static final Log logger = LogFactory.getLog(ConsumidorValidacionENI.class);
 
   public boolean isActivo() {
+    configure();
     return this.activo;
   }
 
@@ -227,8 +228,10 @@ public class ConsumidorValidacionENI {
 
     if (validaciones.isValidaFirma()) {
       if (isActivo()) {
+        logger.debug("Inicio operación eeutil-vis-docexp/validar firma documento ENI ");
         RespuestaValidacionENI respuestValidarFirma =
             scMtom.validarFirmaDocumentoENI(aplicacionInfo, documentoENI);
+        logger.debug("Fin operación eeutil-vis-docexp/validar firma documento ENI ");
         listaDetalles.addAll(respuestValidarFirma.getDetalle());
       } else {
         logger.error("El servicio no se encuentra activo");
@@ -303,8 +306,10 @@ public class ConsumidorValidacionENI {
       ByteArrayDataSource dataSource = new ByteArrayDataSource(docuemnto);
       docEntrada.setContenido(new DataHandler(dataSource));
 
+      logger.debug("Inicio operación eeutil-vis-docexp/validar firma documento ENI");
       RespuestaValidacionENI respuesta =
           scMtom.validarFirmaDocumentoENI(aplicacionInfo, docEntrada);
+      logger.debug("Fin operación eeutil-vis-docexp/validar firma documento ENI");
 
       logger.debug("Fin validaFirmaDocumentoENI");
       return formatValidacionENIDocumentoInside(respuesta);
@@ -500,8 +505,10 @@ public class ConsumidorValidacionENI {
       ByteArrayDataSource dataSource = new ByteArrayDataSource(expediente);
       expEntrada.setContenido(new DataHandler(dataSource));
 
+      logger.debug("Inicio operación eeutil-vis-docexp/validar firma expediente ENI");
       RespuestaValidacionENI respuesta =
           scMtom.validarFirmaExpedienteENI(aplicacionInfo, expEntrada);
+      logger.debug("Fin operación eeutil-vis-docexp/validar firma expediente ENI");
 
       logger.debug("Fin validaFirmaExpedienteENI");
       return formatValidacionENIExpedienteInside(respuesta);

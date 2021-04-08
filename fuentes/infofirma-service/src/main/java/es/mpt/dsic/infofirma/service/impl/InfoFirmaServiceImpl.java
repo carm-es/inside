@@ -159,8 +159,12 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
         dataHanlerFirmaContenido = new DataHandler(dataSourceFirmaContenido);
       }
 
+      logger.debug("Inicio operación eeutil-oper-firma/obtener información de firma "
+          + firma.getTipoFirma());
       InformacionFirma infoFirma = port.obtenerInformacionFirma(applicationLogin, dataHanlerFirma,
           opcionesWS, dataHanlerFirmaContenido);
+      logger.debug(
+          "Fin operación eeutil-oper-firma/obtener información de firma " + firma.getTipoFirma());
 
       if (!infoFirma.isEsFirma()) {
         throw new InfoFirmaServiceNoEsFirmaException(
@@ -263,8 +267,10 @@ public class InfoFirmaServiceImpl implements InfoFirmaService {
 
       ResultadoValidacionInfo validacionInfo;
 
+      logger.debug("Inicio operación eeutil-oper-firma/validación de firma " + tipoFirma);
       validacionInfo = port.validacionFirma(applicationLogin, dataHanlerFirma, tipoFirma,
           dataHanlerDatosFirmados);
+      logger.debug("Fin operación eeutil-oper-firma/validación de firma " + tipoFirma);
       return validacionInfo;
     } catch (InSideException e) {
       logger.debug("Error de validación de firma" + e);
