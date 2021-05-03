@@ -119,8 +119,11 @@ public class InsideServiceSignerImpl implements InsideServiceSigner {
         loginFirma = applicationLogin;
       }
 
+      logger.debug("Inicio operación eeutil-firma/firma fichero remota " + formatoFirma);
       salida = port.firmaFichero(loginFirma, de);
+      logger.debug("Fin operación eeutil-firma/firma fichero remota " + formatoFirma);
     } catch (Exception e) {
+      logger.debug("Error en operación eeutil-firma/firma fichero remota" + formatoFirma);
       throw new InSideServiceSignerException(
           "Se ha producido un error en la llamada al servicio de firma remota ", e);
     }
@@ -169,8 +172,11 @@ public class InsideServiceSignerImpl implements InsideServiceSigner {
         loginFirma = applicationLogin;
       }
 
+      logger.debug("Inicio operación eeutil-firma/firma fichero propertie remota " + nodeToSign);
       salida = port.firmaFicheroWithPropertie(loginFirma, de);
+      logger.debug("Fin operación eeutil-firma/firma fichero propertie remota " + nodeToSign);
     } catch (Exception e) {
+      logger.debug("Error en operación eeutil-firma/firma fichero propertie remota" + nodeToSign);
       throw new InSideServiceSignerException(
           "Se ha producido un error en la llamada al servicio de firma remota ", e);
     }
@@ -200,6 +206,7 @@ public class InsideServiceSignerImpl implements InsideServiceSigner {
   }
 
   public boolean isActivo() {
+    configureSigner();
     return activo;
   }
 

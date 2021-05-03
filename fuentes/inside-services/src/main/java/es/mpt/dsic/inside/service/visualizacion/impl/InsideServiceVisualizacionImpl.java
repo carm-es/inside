@@ -16,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.frontend.ClientProxy;
@@ -217,16 +215,15 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
     try {
       // Llamada al servicio
       logger.debug("Inicio operación eeutil-vis-docexp/visualizar expediente "
-          + itemExpediente.getIdentificador() + ": "
-          + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
+          + itemExpediente.getIdentificador());
       salida = port.visualizar(applicationLogin, itemExpediente, oVisualizacion);
+      logger.debug("Fin operación eeutil-vis-docexp/visualizar expediente "
+          + itemExpediente.getIdentificador());
     } catch (Exception t) {
+      logger.error("Error en operación eeutil-vis-docexp/visualizar expediente "
+          + itemExpediente.getIdentificador());
       throw new InsideServiceVisualizacionException("Error al obtener la visualización del índice",
           t);
-    } finally {
-      logger.debug("Fin operación eeutil-vis-docexp/visualizar expediente "
-          + itemExpediente.getIdentificador() + ": "
-          + DateFormatUtils.ISO_TIME_NO_T_FORMAT.format(Calendar.getInstance().getTime()));
     }
 
     // Rellenamos el objeto que contiene la visualización del índice.
@@ -336,6 +333,7 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
    * Devuelve true si el servicio está activo, false en caso contrario
    */
   public boolean isActivo() {
+    configure();
     return this.activo;
   }
 
