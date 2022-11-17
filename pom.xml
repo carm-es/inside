@@ -8,6 +8,7 @@
 	<packaging>pom</packaging>
 
         <name>inside-carm</name>
+	<inceptionYear>2017</inceptionYear>
 
 	<description>Instalación y desarrollo evolutivo en la CARM, de la versión distribuible de Inside del CTT: https://administracionelectronica.gob.es/ctt/inside</description>
 
