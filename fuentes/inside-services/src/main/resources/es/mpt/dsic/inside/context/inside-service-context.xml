@@ -28,7 +28,7 @@
    		<property name="staticMethod" value="org.springframework.util.Log4jConfigurer.initLogging" />  
    		<property name="arguments">  
       		<list>  
-        		 <value>file:${config.path}/log4j.properties</value> 
+        		 <value>file:${config.path}/log4j2.xml</value> 
       		</list>  
    		</property>  
 	</bean>

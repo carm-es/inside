@@ -18,7 +18,7 @@ public class Constantes {
   public static String ETIQUETA_ORGANISMO = "Organismo";
   public static String ETIQUETA_UNIDAD = "tns:unidad";
   public static String FILE_SEPARATOR = System.getProperty("file.separator");
-  public static String RUTA_CONFIG_LOG = "log4j.properties";
+  public static String RUTA_CONFIG_LOG = "log4j2.xml";
 
   // etiquetas
   public static final String ETIQUETA_CODIGO_UNIDAD_ORGANICA = "tns:codigo";
