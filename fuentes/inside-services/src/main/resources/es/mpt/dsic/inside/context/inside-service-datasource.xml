@@ -25,32 +25,9 @@
 			  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
 
 	
-		<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-			<property name="driverClassName">
-				<value>${database.driverClassName}</value>
-			</property>
-			<property name="url">
-				<value>${database.url}</value>
-			</property>
-			<property name="username">
-				<value>${database.username}</value>
-			</property>
-			<property name="password">
-				<value>${database.password}</value>
-			</property>
-			<property name="defaultAutoCommit">
-				<value>false</value>
-			</property>
-			<property name="maxWait">
-				<value>-1</value>
-			</property>
-			<property name="maxIdle">
-				<value>10</value>
-			</property>
-			<property name="maxActive">
-				<value>20</value>
-			</property>
+		<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+			<property name="jndiName" value="${database.jndi}"/>
 		</bean>
 
-		  
+
 </beans>
