@@ -29,7 +29,11 @@
 	</properties>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.lmax</groupId>
+			<artifactId>disruptor</artifactId>
+			<version>${lmax_disruptor.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>es.mpt.dsic</groupId>
 			<artifactId>inside-util-web</artifactId>
