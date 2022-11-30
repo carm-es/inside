@@ -65,10 +65,11 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
       rs.close();
       rs = null;
       pstQuery.close();
-      pstQuery=null;
-      
-      log.debug("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '"+ sql +"'="+ retVal);
-      System.err.println("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '"+ sql +"'="+ retVal); 
+      pstQuery = null;
+
+      log.debug("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '" + sql + "'=" + retVal);
+      System.err.println(
+          "IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '" + sql + "'=" + retVal);
 
     } catch (SQLException ex) {
       log.error("Al ejecutar el SQL '" + sql + "'", ex);
@@ -134,7 +135,8 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     } catch (Exception e) {
       log.error("No se pudo conectar a Oracle '" + JNDI_ORACLE + "'", e);
     }
-    System.err.println("IBM78M-PARCHE-TableGenerator ... saliendo con ID="+ returnValue +" / para la SEQ="+ seq );
+    System.err.println("IBM78M-PARCHE-TableGenerator ... saliendo con ID=" + returnValue
+        + " / para la SEQ=" + seq);
     if (0 < returnValue) {
       return returnValue;
     }
