@@ -16,14 +16,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 
 @Entity
@@ -83,10 +83,9 @@ public class ExpedienteToken implements java.io.Serializable {
 
   @Id
   // @GeneratedValue(strategy = IDENTITY)
-  @TableGenerator(name = "GeneradorPk_ExpedienteToken", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_ExpedienteToken",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_ExpedienteToken")
+  @GenericGenerator(name = "GeneradorPk_ExpedienteToken", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_ExpedienteToken"))
+  @GeneratedValue(generator = "GeneradorPk_ExpedienteToken")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

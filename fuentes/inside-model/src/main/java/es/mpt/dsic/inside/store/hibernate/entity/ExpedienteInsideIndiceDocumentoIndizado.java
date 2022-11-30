@@ -18,14 +18,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import es.mpt.dsic.inside.util.InsideUtils;
 
 /**
@@ -35,6 +35,8 @@ import es.mpt.dsic.inside.util.InsideUtils;
 // @Table(name = "ExpedienteInsideIndiceDocumentoIndizado", catalog = "insidews")
 @Table(name = "ExpedienteInsideIndiceDocInd")
 public class ExpedienteInsideIndiceDocumentoIndizado implements java.io.Serializable {
+
+  private static final long serialVersionUID = 2L;
 
   private Integer id;
   private ExpedienteInsideIndiceCarpetaIndizada expedienteInsideIndiceCarpetaIndizada;
@@ -72,11 +74,10 @@ public class ExpedienteInsideIndiceDocumentoIndizado implements java.io.Serializ
 
   @Id
   // @GeneratedValue(strategy = IDENTITY)
-  @TableGenerator(name = "GeneradorPk_ExpedienteInsideIndiceDocInd", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_ExpedienteInsideIndiceDocInd", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE,
-      generator = "GeneradorPk_ExpedienteInsideIndiceDocInd")
+  @GenericGenerator(name = "GeneradorPk_ExpedienteInsideIndiceDocInd",
+      strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_ExpedienteInsideIndiceDocInd"))
+  @GeneratedValue(generator = "GeneradorPk_ExpedienteInsideIndiceDocInd")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

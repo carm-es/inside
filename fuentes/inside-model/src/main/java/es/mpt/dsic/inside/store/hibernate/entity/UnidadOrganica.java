@@ -17,13 +17,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import es.mpt.dsic.inside.util.InsideUtils;
 
 /**
@@ -103,10 +103,9 @@ public class UnidadOrganica extends Entidad {
   }
 
   @Id
-  @TableGenerator(name = "GeneradorPk_UnidadOrganica", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_UnidadOrganica",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_UnidadOrganica")
+  @GenericGenerator(name = "GeneradorPk_UnidadOrganica", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_UnidadOrganica"))
+  @GeneratedValue(generator = "GeneradorPk_UnidadOrganica")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

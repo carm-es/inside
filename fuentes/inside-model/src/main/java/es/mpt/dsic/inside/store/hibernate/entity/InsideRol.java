@@ -14,10 +14,10 @@ package es.mpt.dsic.inside.store.hibernate.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "InsideRol")
@@ -26,7 +26,7 @@ public class InsideRol implements java.io.Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
   private Integer id;
   private String descripcion;
   private String descripcionLarga;
@@ -39,10 +39,9 @@ public class InsideRol implements java.io.Serializable {
   }
 
   @Id
-  @TableGenerator(name = "GeneradorPk_InsideRol", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_InsideRol",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_InsideRol")
+  @GenericGenerator(name = "GeneradorPk_InsideRol", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_InsideRol"))
+  @GeneratedValue(generator = "GeneradorPk_InsideRol")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

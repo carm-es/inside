@@ -17,9 +17,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.TableGenerator;
-import static javax.persistence.GenerationType.IDENTITY;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,6 +31,8 @@ import javax.persistence.Table;
 // @Table(name = "ExpedienteInsideMetadatosAdicionales", catalog = "insidews")
 @Table(name = "ExpedienteInsideMetAdic")
 public class ExpedienteInsideMetadatosAdicionales implements java.io.Serializable {
+
+  private static final long serialVersionUID = 2L;
 
   private Integer id;
   private ExpedienteInside expedienteInside;
@@ -49,11 +50,10 @@ public class ExpedienteInsideMetadatosAdicionales implements java.io.Serializabl
 
   @Id
   // @GeneratedValue(strategy = IDENTITY)
-  @TableGenerator(name = "GeneradorPk_ExpedienteInsideMetAdic", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_ExpedienteInsideMetAdic", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE,
-      generator = "GeneradorPk_ExpedienteInsideMetAdic")
+  @GenericGenerator(name = "GeneradorPk_ExpedienteInsideMetAdic",
+      strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_ExpedienteInsideMetAdic"))
+  @GeneratedValue(generator = "GeneradorPk_ExpedienteInsideMetAdic")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

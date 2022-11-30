@@ -14,10 +14,10 @@ package es.mpt.dsic.inside.store.hibernate.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "NumeroProcedimiento")
@@ -33,10 +33,10 @@ public class NumeroProcedimiento implements java.io.Serializable {
   public NumeroProcedimiento() {}
 
   @Id
-  @TableGenerator(name = "GeneradorPk_NumeroProcedimiento", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_NumeroProcedimiento", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_NumeroProcedimiento")
+  @GenericGenerator(name = "GeneradorPk_NumeroProcedimiento",
+      strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_NumeroProcedimiento"))
+  @GeneratedValue(generator = "GeneradorPk_NumeroProcedimiento")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

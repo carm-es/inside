@@ -20,17 +20,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import es.mpt.dsic.inside.util.InsideUtils;
 
 /**
@@ -110,10 +110,9 @@ public class ExpedienteInside implements java.io.Serializable {
    */
 
   @Id
-  @TableGenerator(name = "GeneradorPk_ExpedienteInside", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_ExpedienteInside", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_ExpedienteInside")
+  @GenericGenerator(name = "GeneradorPk_ExpedienteInside", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_ExpedienteInside"))
+  @GeneratedValue(generator = "GeneradorPk_ExpedienteInside")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;
