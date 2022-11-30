@@ -4,4 +4,7 @@
 	<ResourceLink name="jdbc/DS_INSIDE" global="jdbc/DS_INSIDE"
 		type="javax.sql.DataSource" />
 
+	<ResourceLink name="Oracle_INSIDE"  global="jdbc/seq_inside"
+		type="javax.sql.DataSource" />
+
 </Context>
