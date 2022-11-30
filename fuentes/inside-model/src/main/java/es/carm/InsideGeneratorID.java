@@ -27,26 +27,26 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
 
   private String seq = null;
 
-  private String traduceSequence(String seq) {
+  private String traduceSequence(String sequence) {
 
-    if (seq.equalsIgnoreCase("GEN_AuditoriaRespuestaEnvioJusticia")) {
+    if (sequence.equalsIgnoreCase("GEN_AuditoriaRespuestaEnvioJusticia")) {
       return "GEN_AuditRespEnvioJusticia";
-    } else if (seq.equalsIgnoreCase("GEN_ComunicacionTokenExpediente")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ComunicacionTokenExpediente")) {
       return "GEN_ComTokenExpediente";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteInsideIndiceCarInd")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteInsideIndiceCarInd")) {
       return "GEN_ExpInsideIndiceCarInd";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteInsideIndiceDocInd")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteInsideIndiceDocInd")) {
       return "GEN_ExpInsideIndiceDocInd";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteInsideIndiceFirmas")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteInsideIndiceFirmas")) {
       return "GEN_ExpInsideIndiceFirmas";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteInsideRespuestaEnvioJusticia")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteInsideRespuestaEnvioJusticia")) {
       return "GEN_ExpInsideResEnvioJusticia";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteInsideResultadoEnvioJusticia")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteInsideResultadoEnvioJusticia")) {
       return "GEN_ExpInsideResultEnvJusticia";
-    } else if (seq.equalsIgnoreCase("GEN_ExpedienteNoInsideResultadoEnvioJusticia")) {
+    } else if (sequence.equalsIgnoreCase("GEN_ExpedienteNoInsideResultadoEnvioJusticia")) {
       return "GEN_ExpNoInsideRslEnvJusticia";
     }
-    return seq;
+    return sequence;
   }
 
   private long readSequence(Connection con, String sequence) {
@@ -65,7 +65,10 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
       rs.close();
       rs = null;
       pstQuery.close();
-      pstQuery.close();
+      pstQuery=null;
+      
+      log.debug("Resultado de ejecutar SQL '"+ sql +"'="+ retVal);
+      System.err.println("Resultado de ejecutar SQL '"+ sql +"'="+ retVal); 
 
     } catch (SQLException ex) {
       log.error("Al ejecutar el SQL '" + sql + "'", ex);
@@ -98,7 +101,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     long retVal = -1;
     try {
       retVal = readSequence(con, oraSeq);
-      if (0 < retVal) {
+      if (0 >= retVal) {
         log.error("Usando la secuencia por defecto '" + DEFAULT_SEQUENCE + "' al no existir '"
             + oraSeq + "'");
         retVal = readSequence(con, DEFAULT_SEQUENCE);
@@ -131,6 +134,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     } catch (Exception e) {
       log.error("No se pudo conectar a Oracle '" + JNDI_ORACLE + "'", e);
     }
+    System.err.println("IBM78M-PARCHE-TableGenerator ... saliendo con ID="+ returnValue +" / para la SEQ="+ seq );
     if (0 < returnValue) {
       return returnValue;
     }
