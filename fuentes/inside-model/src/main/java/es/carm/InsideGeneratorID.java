@@ -67,8 +67,8 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
       pstQuery.close();
       pstQuery=null;
       
-      log.debug("Resultado de ejecutar SQL '"+ sql +"'="+ retVal);
-      System.err.println("Resultado de ejecutar SQL '"+ sql +"'="+ retVal); 
+      log.debug("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '"+ sql +"'="+ retVal);
+      System.err.println("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '"+ sql +"'="+ retVal); 
 
     } catch (SQLException ex) {
       log.error("Al ejecutar el SQL '" + sql + "'", ex);
