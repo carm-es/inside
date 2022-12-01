@@ -18,13 +18,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Transient;
 import org.apache.commons.lang.ObjectUtils;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "UsuarioInside")
@@ -55,10 +55,9 @@ public class UsuarioInside implements java.io.Serializable {
 
   @Id
   // @GeneratedValue(strategy = IDENTITY)
-  @TableGenerator(name = "GeneradorPk_UsuarioInside", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_UsuarioInside",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_UsuarioInside")
+  @GenericGenerator(name = "GeneradorPk_UsuarioInside", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_UsuarioInside"))
+  @GeneratedValue(generator = "GeneradorPk_UsuarioInside")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

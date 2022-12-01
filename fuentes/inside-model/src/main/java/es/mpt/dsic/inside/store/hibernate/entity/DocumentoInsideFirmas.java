@@ -17,9 +17,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.TableGenerator;
-import static javax.persistence.GenerationType.IDENTITY;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,6 +31,7 @@ import javax.persistence.Table;
 @Table(name = "DocumentoInsideFirmas")
 public class DocumentoInsideFirmas implements java.io.Serializable {
 
+  private static final long serialVersionUID = 2L;
   private Integer id;
   private FirmaInside firmaInside;
   private DocumentoInside documentoInside;
@@ -51,10 +51,10 @@ public class DocumentoInsideFirmas implements java.io.Serializable {
 
 
   @Id
-  @TableGenerator(name = "GeneradorPk_DocumentoInsideFirmas", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_DocumentoInsideFirmas", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_DocumentoInsideFirmas")
+  @GenericGenerator(name = "GeneradorPk_DocumentoInsideFirmas",
+      strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_DocumentoInsideFirmas"))
+  @GeneratedValue(generator = "GeneradorPk_DocumentoInsideFirmas")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

@@ -15,10 +15,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "MensajeUsuario")
@@ -27,7 +27,7 @@ public class MensajeUsuario implements java.io.Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
   private Integer id;
   private String texto;
   private Boolean activo;
@@ -42,10 +42,9 @@ public class MensajeUsuario implements java.io.Serializable {
 
   @Id
   // @GeneratedValue(strategy = IDENTITY)
-  @TableGenerator(name = "GeneradorPk_MensajeUsuario", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_MensajeUsuario",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_MensajeUsuario")
+  @GenericGenerator(name = "GeneradorPk_MensajeUsuario", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_MensajeUsuario"))
+  @GeneratedValue(generator = "GeneradorPk_MensajeUsuario")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

@@ -16,12 +16,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "ExpedienteUnidad")
@@ -45,10 +45,9 @@ public class ExpedienteUnidad implements java.io.Serializable {
   public ExpedienteUnidad() {}
 
   @Id
-  @TableGenerator(name = "GeneradorPk_ExpedienteUnidad", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_ExpedienteUnidad", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_ExpedienteUnidad")
+  @GenericGenerator(name = "GeneradorPk_ExpedienteUnidad", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_ExpedienteUnidad"))
+  @GeneratedValue(generator = "GeneradorPk_ExpedienteUnidad")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;
