@@ -19,12 +19,8 @@
     <class name="es.mpt.dsic.inside.store.hibernate.entity.DocumentoInside" table="DocumentoInside">
         <id name="id" type="java.lang.Integer">
             <column name="id" />
-            <generator class="org.hibernate.id.enhanced.TableGenerator">
-            	<param name="table_name">GeneradorClaves</param>
-            	<param name="initial_value">1</param>
-            	<param name="value_column_name">GenValue</param>
-            	<param name="segment_column_name">GenName</param>
-            	<param name="segment_value">GEN_DocumentoInside</param>
+	    <generator class="es.carm.InsideGeneratorID">
+            	<param name="sequence">GEN_DocumentoInside</param>
             </generator>
             <!-- generator class="identity" /-->
         </id>
