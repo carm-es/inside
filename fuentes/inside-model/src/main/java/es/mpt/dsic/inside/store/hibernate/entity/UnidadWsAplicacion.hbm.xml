@@ -20,12 +20,8 @@
         <id name="id" type="java.lang.Integer">
             <column name="id"/>
             <!-- generator class="identity" /-->
-            <generator class="org.hibernate.id.enhanced.TableGenerator">
-            	<param name="table_name">GeneradorClaves</param>
-            	<param name="initial_value">1</param>
-            	<param name="value_column_name">GenValue</param>
-            	<param name="segment_column_name">GenName</param>
-            	<param name="segment_value">GEN_UnidadWsAplicacion</param>
+	    <generator class="es.carm.InsideGeneratorID">
+            	<param name="sequence">GEN_UnidadWsAplicacion</param>
             </generator>
         </id>  
         

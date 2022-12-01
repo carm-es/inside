@@ -15,10 +15,10 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "DocumentoUnidad")
@@ -37,10 +37,9 @@ public class DocumentoUnidad implements java.io.Serializable {
   public DocumentoUnidad() {}
 
   @Id
-  @TableGenerator(name = "GeneradorPk_DocumentoUnidad", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue", pkColumnValue = "GEN_DocumentoUnidad",
-      allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_DocumentoUnidad")
+  @GenericGenerator(name = "GeneradorPk_DocumentoUnidad", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_DocumentoUnidad"))
+  @GeneratedValue(generator = "GeneradorPk_DocumentoUnidad")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;

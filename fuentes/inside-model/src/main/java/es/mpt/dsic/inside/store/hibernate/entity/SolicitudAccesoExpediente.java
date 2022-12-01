@@ -15,11 +15,11 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "SolicitudAccesoExpediente")
@@ -45,11 +45,10 @@ public class SolicitudAccesoExpediente implements java.io.Serializable {
   private String nifUsuarioGeneraToken;
 
   @Id
-  @TableGenerator(name = "GeneradorPk_SolicitudAccesoExpediente", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_SolicitudAccesoExpediente", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE,
-      generator = "GeneradorPk_SolicitudAccesoExpediente")
+  @GenericGenerator(name = "GeneradorPk_SolicitudAccesoExpediente",
+      strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_SolicitudAccesoExpediente"))
+  @GeneratedValue(generator = "GeneradorPk_SolicitudAccesoExpediente")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return id;

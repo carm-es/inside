@@ -18,11 +18,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 
 @Entity
 @Table(name = "V_DOCUMENTOS_METADATOS_ADICIONALES")
 public class DocumentoMetadatosAdicionales implements java.io.Serializable {
+
+  private static final long serialVersionUID = 2L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)

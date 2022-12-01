@@ -14,10 +14,10 @@ package es.mpt.dsic.inside.store.hibernate.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 @Entity
 @Table(name = "UnidadWsAplicacion")
@@ -26,7 +26,7 @@ public class UnidadWsAplicacion implements java.io.Serializable {
   /**
    * 
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
   private Integer id;
   private Integer idUnidad;
   private Integer idAplicacion;
@@ -36,10 +36,9 @@ public class UnidadWsAplicacion implements java.io.Serializable {
   public UnidadWsAplicacion() {}
 
   @Id
-  @TableGenerator(name = "GeneradorPk_UnidadWsAplicacion", table = "GeneradorClaves",
-      pkColumnName = "GenName", valueColumnName = "GenValue",
-      pkColumnValue = "GEN_UnidadWsAplicacion", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.TABLE, generator = "GeneradorPk_UnidadWsAplicacion")
+  @GenericGenerator(name = "GeneradorPk_UnidadWsAplicacion", strategy = "es.carm.InsideGeneratorID",
+      parameters = @Parameter(name = "sequence", value = "GEN_UnidadWsAplicacion"))
+  @GeneratedValue(generator = "GeneradorPk_UnidadWsAplicacion")
   @Column(name = "id", unique = true, nullable = false)
   public Integer getId() {
     return this.id;
