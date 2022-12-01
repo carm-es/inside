@@ -49,8 +49,8 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     return sequence;
   }
 
-  private long readSequence(Connection con, String sequence) {
-    long retVal = -1;
+  private int readSequence(Connection con, String sequence) {
+    int retVal = -1;
     StringBuilder sql = new StringBuilder();
     sql.append(" SELECT " + sequence + ".nextval FROM dual ");
 
@@ -60,7 +60,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
       pstQuery = con.prepareStatement(sql.toString());
       rs = pstQuery.executeQuery();
       if (rs.next()) {
-        retVal = rs.getLong(1);
+        retVal = rs.getInt(1);
       }
       rs.close();
       rs = null;
@@ -68,8 +68,6 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
       pstQuery = null;
 
       log.debug("IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '" + sql + "'=" + retVal);
-      System.err.println(
-          "IBM78M-PARCHE-TableGenerator: Resultado de ejecutar SQL '" + sql + "'=" + retVal);
 
     } catch (SQLException ex) {
       log.error("Al ejecutar el SQL '" + sql + "'", ex);
@@ -91,7 +89,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     return retVal;
   }
 
-  private long readSequenceFromDatabase(Connection con) {
+  private int readSequenceFromDatabase(Connection con) {
     if (null == con) {
       return -1;
     }
@@ -99,7 +97,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     if (null == seq) {
       oraSeq = DEFAULT_SEQUENCE;
     }
-    long retVal = -1;
+    int retVal = -1;
     try {
       retVal = readSequence(con, oraSeq);
       if (0 >= retVal) {
@@ -123,8 +121,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
   @Override
   public Serializable generate(SessionImplementor session, Object object)
       throws HibernateException {
-    // Ejemplo: GEN_ExpedienteInsideIndiceFirmas
-    long returnValue = -1;
+    Integer returnValue = -1;
 
     try {
       // Obtener una conexion a la Base de datos, configurada desde el Tomcat...
@@ -135,8 +132,7 @@ public class InsideGeneratorID implements IdentifierGenerator, Configurable {
     } catch (Exception e) {
       log.error("No se pudo conectar a Oracle '" + JNDI_ORACLE + "'", e);
     }
-    System.err.println("IBM78M-PARCHE-TableGenerator ... saliendo con ID=" + returnValue
-        + " / para la SEQ=" + seq);
+
     if (0 < returnValue) {
       return returnValue;
     }
