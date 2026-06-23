@@ -105,6 +105,9 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
   private String modeloDocumento;
   private String estamparPie;
   private String textoPie;
+  // PARCHE 1 CARM: Flag para desactivar selectivamente visualizacion de expediente (modelo1)
+  // mientras mantiene activa la visualizacion de documentos (modelo2)
+  private String expedienteActivo;
 
   private boolean activo = false;
   private static String activoCadena = "S";
@@ -185,6 +188,15 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
           logger.debug(String.format("Utilizando modelo de documento: %s",
               properties.getProperty("visualizacion.modelo.documento")));
 
+          // PARCHE 1 CARM: Cargar flag para desactivar selectivamente expediente
+          expedienteActivo = properties.getProperty("visualizacion.expediente.activo");
+          if (expedienteActivo == null) {
+            expedienteActivo = VALUE_SI; // Compatibilidad: si no existe, asumir activo (S)
+          }
+
+          logger.debug(String.format("Visualizacion de expediente (modelo1): %s",
+              expedienteActivo));
+
           activo = true;
         } catch (MalformedURLException me) {
           logger.error("No se puede crear la URL del servicio de visualizacion " + urlVisualizacion,
@@ -207,6 +219,16 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
+    
+    // PARCHE 1 CARM: Bloquear visualizacion de expediente (modelo1) si esta desactivada
+    // Mantiene activa la visualizacion de documentos (modelo2)
+    if (VALUE_NO.equalsIgnoreCase(expedienteActivo)) {
+      logger.info("Visualizacion de expediente (modelo1) desactivada. "
+          + "Devolviendo expediente sin visualizacion de indice. "
+          + "Identificador expediente: " + expediente.getIdentificador());
+      return expediente;
+    }
+    
     // Construimos los parámetros de la llamada al servicio.
     Item itemExpediente = expedienteInsideToItemVisualizacion(expediente, opciones);
 
