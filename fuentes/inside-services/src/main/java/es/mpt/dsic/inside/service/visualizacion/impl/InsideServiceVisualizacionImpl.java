@@ -194,8 +194,8 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
             expedienteActivo = VALUE_SI; // Compatibilidad: si no existe, asumir activo (S)
           }
 
-          logger.debug(String.format("Visualizacion de expediente (modelo1): %s",
-              expedienteActivo));
+          logger
+              .debug(String.format("Visualizacion de expediente (modelo1): %s", expedienteActivo));
 
           activo = true;
         } catch (MalformedURLException me) {
@@ -219,16 +219,16 @@ public class InsideServiceVisualizacionImpl implements InsideServiceVisualizacio
       throw new InsideServiceVisualizacionException(
           "El WS de VISUALIZACION no se encuentra activo");
     }
-    
+
     // PARCHE 1 CARM: Bloquear visualizacion de expediente (modelo1) si esta desactivada
     // Mantiene activa la visualizacion de documentos (modelo2)
     if (VALUE_NO.equalsIgnoreCase(expedienteActivo)) {
       logger.info("Visualizacion de expediente (modelo1) desactivada. "
-          + "Devolviendo expediente sin visualizacion de indice. "
-          + "Identificador expediente: " + expediente.getIdentificador());
+          + "Devolviendo expediente sin visualizacion de indice. " + "Identificador expediente: "
+          + expediente.getIdentificador());
       return expediente;
     }
-    
+
     // Construimos los parámetros de la llamada al servicio.
     Item itemExpediente = expedienteInsideToItemVisualizacion(expediente, opciones);
 
